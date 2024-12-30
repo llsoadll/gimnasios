@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
         }}
       >
         <Toolbar />
-        <List>
+        <List sx={{ mt: 4 }}>
           {menuItems.map((item) => (
             <ListItem button key={item.text} onClick={() => navigate(item.path)}>
               <ListItemIcon>{item.icon}</ListItemIcon>
