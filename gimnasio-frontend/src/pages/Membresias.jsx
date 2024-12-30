@@ -140,6 +140,7 @@ const Membresias = () => {
         </Table>
       </TableContainer>
 
+
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Nueva Membresía</DialogTitle>
         <DialogContent>
