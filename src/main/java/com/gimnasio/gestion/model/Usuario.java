@@ -2,6 +2,7 @@ package com.gimnasio.gestion.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,34 +14,26 @@ import jakarta.validation.constraints.Email;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Column;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.gimnasio.gestion.enums.TipoUsuario;  // Change this import
 
 
 @Entity
 @Table(name = "usuarios")
 @Data
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "id"
+)
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Usuario)) return false;
-        Usuario usuario = (Usuario) o;
-        return id != null && id.equals(usuario.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
     @NotBlank(message = "El nombre es obligatorio")
     @Column(nullable = false, length = 50)
     private String nombre;
@@ -71,18 +64,30 @@ public class Usuario {
     @Column(nullable = false)
     private TipoUsuario tipo;
     
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Membresia> membresias = new ArrayList<>();
     
-    @OneToMany(mappedBy = "cliente")
-@JsonManagedReference
-private List<Membresia> membresias;
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Rutina> rutinas = new ArrayList<>();
     
-@OneToMany(mappedBy = "cliente")
-@JsonManagedReference(value = "cliente-rutinas")
-private List<Rutina> rutinas;
-
-@OneToMany(mappedBy = "entrenador")
-    @JsonManagedReference(value = "entrenador-rutinas")
-    private List<Rutina> rutinasComoEntrenador;
+    @OneToMany(mappedBy = "entrenador", fetch = FetchType.LAZY)
+    private List<Rutina> rutinasComoEntrenador = new ArrayList<>();
+    
+    // Helper methods
+    public void addMembresia(Membresia membresia) {
+        membresias.add(membresia);
+        membresia.setCliente(this);
+    }
+    
+    public void addRutina(Rutina rutina) {
+        rutinas.add(rutina);
+        rutina.setCliente(this);
+    }
+    
+    public void addRutinaComoEntrenador(Rutina rutina) {
+        rutinasComoEntrenador.add(rutina);
+        rutina.setEntrenador(this);
+    }
 
     //add getters and setters
 

@@ -3,6 +3,8 @@ package com.gimnasio.gestion.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gimnasio.gestion.model.Usuario;
@@ -19,7 +21,7 @@ public class UsuarioService {
     }
 
     public List<Usuario> obtenerTodos() {
-        return usuarioRepository.findAll();
+        return new ArrayList<>(usuarioRepository.findAll());
     }
     
     public boolean existeEmail(String email) {

@@ -5,16 +5,17 @@ import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.gimnasio.gestion.enums.TipoMembresia;
 
 @Entity
@@ -25,8 +26,8 @@ public class Membresia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)  // Cambiar a EAGER
+    @JoinColumn(name = "cliente_id", nullable = false)  // Agregar columna
     private Usuario cliente;
     
     private LocalDate fechaInicio;

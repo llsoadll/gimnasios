@@ -1,0 +1,159 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
+  Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
+  DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
+  Box
+} from '@mui/material';
+import axios from 'axios';
+
+const Usuarios = () => {
+  const [usuarios, setUsuarios] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [nuevoUsuario, setNuevoUsuario] = useState({
+    nombre: '',
+    apellido: '',
+    email: '',
+    password: '',
+    tipo: 'CLIENTE',
+    activo: true
+  });
+
+  useEffect(() => {
+    fetchUsuarios();
+  }, []);
+
+  const fetchUsuarios = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get('http://localhost:8080/api/usuarios');
+      // Asegurarse de que response.data es un array
+      const data = Array.isArray(response.data) ? response.data : [];
+      setUsuarios(data);
+    } catch (err) {
+      setError('Error al cargar usuarios');
+      setUsuarios([]); // En caso de error, establecer array vacío
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const agregarUsuario = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post('http://localhost:8080/api/usuarios', nuevoUsuario);
+      setUsuarios([...usuarios, response.data]);
+      setOpenDialog(false);
+    } catch (err) {
+      setError(`Error al crear usuario: ${err.response ? err.response.data.message : err.message}`);
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" m={4}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      
+      <Button 
+        variant="contained" 
+        onClick={() => setOpenDialog(true)} 
+        sx={{ mb: 2 }}
+      >
+        Nuevo Usuario
+      </Button>
+
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Tipo</TableCell>
+              <TableCell>Estado</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+        {Array.isArray(usuarios) && usuarios.map((usuario) => (
+          <TableRow key={usuario.id}>
+            <TableCell>{`${usuario.nombre} ${usuario.apellido}`}</TableCell>
+            <TableCell>{usuario.email}</TableCell>
+            <TableCell>{usuario.tipo}</TableCell>
+            <TableCell>{usuario.activo ? 'Activo' : 'Inactivo'}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+        </Table>
+      </TableContainer>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>Nuevo Usuario</DialogTitle>
+        <DialogContent>
+          <form onSubmit={agregarUsuario}>
+            <TextField 
+              fullWidth
+              margin="normal"
+              label="Nombre" 
+              value={nuevoUsuario.nombre}
+              onChange={e => setNuevoUsuario({...nuevoUsuario, nombre: e.target.value})}
+            />
+            <TextField 
+              fullWidth
+              margin="normal"
+              label="Apellido" 
+              value={nuevoUsuario.apellido}
+              onChange={e => setNuevoUsuario({...nuevoUsuario, apellido: e.target.value})}
+            />
+            <TextField 
+              fullWidth
+              margin="normal"
+              label="Email" 
+              type="email"
+              value={nuevoUsuario.email}
+              onChange={e => setNuevoUsuario({...nuevoUsuario, email: e.target.value})}
+            />
+            <TextField 
+              fullWidth
+              margin="normal"
+              label="Contraseña" 
+              type="password"
+              value={nuevoUsuario.password}
+              onChange={e => setNuevoUsuario({...nuevoUsuario, password: e.target.value})}
+            />
+            <FormControl fullWidth margin="normal">
+              <Select
+                value={nuevoUsuario.tipo}
+                onChange={e => setNuevoUsuario({...nuevoUsuario, tipo: e.target.value})}
+              >
+                <MenuItem value="CLIENTE">Cliente</MenuItem>
+                <MenuItem value="ENTRENADOR">Entrenador</MenuItem>
+              </Select>
+            </FormControl>
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
+          <Button onClick={agregarUsuario} variant="contained" color="primary">
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+export default Usuarios;

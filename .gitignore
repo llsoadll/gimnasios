@@ -1,11 +1,28 @@
-gitignore
+### Backend ###
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+application.properties
 
-### STS ###
+### Frontend ###
+gimnasio-frontend/node_modules/
+gimnasio-frontend/build/
+gimnasio-frontend/.env*
+gimnasio-frontend/.pnp
+gimnasio-frontend/.pnp.js
+gimnasio-frontend/coverage/
+gimnasio-frontend/npm-debug.log*
+gimnasio-frontend/yarn-debug.log*
+gimnasio-frontend/yarn-error.log*
+
+### IDEs and Editors ###
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
 .apt_generated
 .classpath
 .factorypath
@@ -14,14 +31,5 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### VS Code ###
-.vscode/
-
-### Application ###
-application.properties
+### OS ###
+.DS_Store
