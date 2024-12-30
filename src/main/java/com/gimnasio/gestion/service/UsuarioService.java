@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.repository.UsuarioRepository;
 
@@ -26,5 +27,11 @@ public class UsuarioService {
     
     public boolean existeEmail(String email) {
         return usuarioRepository.findByEmail(email).isPresent();
+    }
+
+    public void eliminarUsuario(Long id) {
+        usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        usuarioRepository.deleteById(id);
     }
 }

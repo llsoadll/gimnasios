@@ -49,6 +49,18 @@ const Membresias = () => {
     }
   };
 
+
+  const eliminarMembresia = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar esta membresía?')) {
+        try {
+            await axios.delete(`http://localhost:8080/api/membresias/${id}`);
+            setMembresias(membresias.filter(membresia => membresia.id !== id));
+        } catch (err) {
+            setError('Error al eliminar membresía');
+        }
+    }
+};
+
   const agregarMembresia = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -114,6 +126,14 @@ const Membresias = () => {
                 <TableCell>{membresia.fechaFin}</TableCell>
                 <TableCell>{membresia.precio}</TableCell>
                 <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
+                <TableCell>
+                            <Button 
+                                color="error"
+                                onClick={() => eliminarMembresia(membresia.id)}
+                            >
+                                Eliminar
+                            </Button>
+                        </TableCell>
               </TableRow>
             ))}
           </TableBody>

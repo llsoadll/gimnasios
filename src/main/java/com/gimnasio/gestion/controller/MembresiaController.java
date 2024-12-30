@@ -25,4 +25,10 @@ public class MembresiaController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(membresiaService.crearMembresia(membresia));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarMembresia(@PathVariable Long id) {
+        membresiaService.eliminarMembresia(id);
+        return ResponseEntity.noContent().build();
+    }
 }

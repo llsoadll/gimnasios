@@ -41,6 +41,18 @@ const Usuarios = () => {
     }
   };
 
+
+  const eliminarUsuario = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar este usuario?')) {
+        try {
+            await axios.delete(`http://localhost:8080/api/usuarios/${id}`);
+            setUsuarios(usuarios.filter(usuario => usuario.id !== id));
+        } catch (err) {
+            setError('Error al eliminar usuario');
+        }
+    }
+};
+
   const agregarUsuario = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -94,6 +106,14 @@ const Usuarios = () => {
             <TableCell>{usuario.email}</TableCell>
             <TableCell>{usuario.tipo}</TableCell>
             <TableCell>{usuario.activo ? 'Activo' : 'Inactivo'}</TableCell>
+            <TableCell>
+                            <Button 
+                                color="error"
+                                onClick={() => eliminarUsuario(usuario.id)}
+                            >
+                                Eliminar
+                            </Button>
+                        </TableCell>
           </TableRow>
         ))}
       </TableBody>

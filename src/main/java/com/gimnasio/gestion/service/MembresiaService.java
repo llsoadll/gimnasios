@@ -25,6 +25,12 @@ public class MembresiaService {
     public List<Membresia> obtenerTodas() {
         return membresiaRepository.findAll();
     }
+
+    public void eliminarMembresia(Long id) {
+        membresiaRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
+        membresiaRepository.deleteById(id);
+    }
     
     public Membresia crearMembresia(Membresia membresia) {
         if (membresia.getCliente() == null || membresia.getCliente().getId() == null) {
