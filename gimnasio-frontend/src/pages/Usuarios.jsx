@@ -44,11 +44,15 @@ const Usuarios = () => {
 
   const eliminarUsuario = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este usuario?')) {
+        setLoading(true);
         try {
             await axios.delete(`http://localhost:8080/api/usuarios/${id}`);
             setUsuarios(usuarios.filter(usuario => usuario.id !== id));
         } catch (err) {
-            setError('Error al eliminar usuario');
+            setError(`Error al eliminar usuario: ${err.response?.data?.message || err.message}`);
+            console.error('Error:', err);
+        } finally {
+            setLoading(false);
         }
     }
 };

@@ -30,8 +30,13 @@ public class UsuarioService {
     }
 
     public void eliminarUsuario(Long id) {
-        usuarioRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        usuarioRepository.deleteById(id);
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
+            
+        try {
+            usuarioRepository.delete(usuario);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al eliminar usuario: " + e.getMessage());
+        }
     }
 }
