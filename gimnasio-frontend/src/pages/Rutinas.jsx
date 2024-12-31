@@ -66,10 +66,11 @@ const Rutinas = () => {
         };
 
         const response = await api.post('/rutinas', rutinaData);
-        console.log('Rutina creada:', response.data); // Debug log
-        
-        // Update local state immediately
-        setRutinas(prevRutinas => [...prevRutinas, response.data]);
+        // Recargar tanto rutinas como usuarios
+        await Promise.all([
+            fetchRutinas(),
+            fetchUsuarios()
+        ]);
         
         setOpenDialog(false);
         setNuevaRutina({
