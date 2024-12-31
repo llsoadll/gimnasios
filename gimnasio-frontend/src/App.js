@@ -7,6 +7,7 @@ import Usuarios from './pages/Usuarios';
 import Membresias from './pages/Membresias';
 import Rutinas from './pages/Rutinas';
 import Clases from './pages/Clases';
+import Seguimientos from './pages/Seguimientos';
 
 const theme = createTheme({
   palette: {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/membresias" element={<Membresias />} />
             <Route path="/rutinas" element={<Rutinas />} />
             <Route path="/clases" element={<Clases />} />
+            <Route path="/seguimientos" element={<Seguimientos />} />
           </Routes>
         </Layout>
       </BrowserRouter>
