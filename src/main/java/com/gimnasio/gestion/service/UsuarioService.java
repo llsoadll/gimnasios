@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
+import com.gimnasio.gestion.enums.TipoUsuario;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.mapper.ClienteDetalleMapper;
 import com.gimnasio.gestion.model.Usuario;
@@ -29,6 +30,10 @@ public ClienteDetalleDTO obtenerDetalleCliente(Long id) {
 }
     
     public Usuario guardarUsuario(Usuario usuario) {
+        // Si es un cliente, establecer una contraseña por defecto o null
+        if (usuario.getTipo() == TipoUsuario.CLIENTE) {
+            usuario.setPassword(null); // O establecer una contraseña por defecto
+        }
         return usuarioRepository.save(usuario);
     }
 

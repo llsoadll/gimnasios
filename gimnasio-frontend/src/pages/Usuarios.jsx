@@ -19,7 +19,8 @@ const Usuarios = () => {
     nombre: '',
     apellido: '',
     email: '',
-    password: '',
+    telefono: '',
+    fechaNacimiento: '',
     tipo: 'CLIENTE',
     activo: true
   });
@@ -164,10 +165,18 @@ const Usuarios = () => {
             <TextField 
               fullWidth
               margin="normal"
-              label="Contraseña" 
-              type="password"
-              value={nuevoUsuario.password}
-              onChange={e => setNuevoUsuario({...nuevoUsuario, password: e.target.value})}
+              label="Teléfono"
+              value={nuevoUsuario.telefono}
+              onChange={e => setNuevoUsuario({...nuevoUsuario, telefono: e.target.value})}
+            />
+            <TextField 
+              fullWidth
+              margin="normal"
+              label="Fecha de Nacimiento"
+              type="date"
+              value={nuevoUsuario.fechaNacimiento}
+              onChange={e => setNuevoUsuario({...nuevoUsuario, fechaNacimiento: e.target.value})}
+              InputLabelProps={{ shrink: true }}
             />
             <FormControl fullWidth margin="normal">
               <Select

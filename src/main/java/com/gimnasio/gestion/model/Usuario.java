@@ -44,9 +44,9 @@ public class Usuario {
     @Column(unique = true, nullable = false)
     private String email;
     
-    @NotBlank(message = "La contraseña es obligatoria")
+    
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
     
     private LocalDate fechaNacimiento;
