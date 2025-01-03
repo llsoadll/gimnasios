@@ -3,7 +3,9 @@ package com.gimnasio.gestion.mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
+import com.gimnasio.gestion.dto.SeguimientoDTO;
 import com.gimnasio.gestion.model.Usuario;
+import com.gimnasio.gestion.repository.SeguimientoRepository;
 
 @Component
 public class ClienteDetalleMapper {
@@ -16,6 +18,9 @@ public class ClienteDetalleMapper {
     
     @Autowired
     private PagoMapper pagoMapper;
+
+    @Autowired
+    private SeguimientoRepository seguimientoRepository;
 
     public ClienteDetalleDTO toDTO(Usuario usuario) {
         if (usuario == null) return null;
@@ -43,6 +48,21 @@ public class ClienteDetalleMapper {
         dto.setPagos(usuario.getMembresias().stream()
             .flatMap(membresia -> membresia.getPagos().stream())
             .map(pagoMapper::toDTO)
+            .toList());
+
+        // Mapear seguimientos
+        dto.setSeguimientos(seguimientoRepository.findByClienteOrderByFechaDesc(usuario).stream()
+            .map(seguimiento -> {
+                SeguimientoDTO segDTO = new SeguimientoDTO();
+                segDTO.setId(seguimiento.getId());
+                segDTO.setFecha(seguimiento.getFecha());
+                segDTO.setPeso(seguimiento.getPeso());
+                segDTO.setAltura(seguimiento.getAltura());
+                segDTO.setImc(seguimiento.getImc());
+                segDTO.setObservaciones(seguimiento.getObservaciones());
+                segDTO.setClienteId(seguimiento.getCliente().getId());
+                return segDTO;
+            })
             .toList());
             
         return dto;
