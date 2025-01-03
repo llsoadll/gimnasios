@@ -20,17 +20,12 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import com.gimnasio.gestion.enums.TipoUsuario;  // Change this import
-
+import com.gimnasio.gestion.enums.TipoUsuario;
 
 @Entity
 @Table(name = "usuarios")
 @Data
-@JsonIgnoreProperties(value = {"rutinas", "rutinasComoEntrenador"}, allowSetters = true)
-@JsonIdentityInfo(
-  generator = ObjectIdGenerators.PropertyGenerator.class, 
-  property = "id"
-)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,27 +62,14 @@ public class Usuario {
     private TipoUsuario tipo;
     
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"cliente", "pagos"})
     private List<Membresia> membresias = new ArrayList<>();
     
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"cliente", "entrenador"})
     private List<Rutina> rutinas = new ArrayList<>();
     
     @OneToMany(mappedBy = "entrenador", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"cliente", "entrenador"})
     private List<Rutina> rutinasComoEntrenador = new ArrayList<>();
-    
-    // Helper methods
-    public void addMembresia(Membresia membresia) {
-        membresias.add(membresia);
-        membresia.setCliente(this);
-    }
-    
-    public void addRutina(Rutina rutina) {
-        rutinas.add(rutina);
-        rutina.setCliente(this);
-    }
-    
-    public void addRutinaComoEntrenador(Rutina rutina) {
-        rutinasComoEntrenador.add(rutina);
-        rutina.setEntrenador(this);
-    }
 }

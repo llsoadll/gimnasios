@@ -43,11 +43,15 @@ const Membresias = () => {
   const fetchClientes = async () => {
     try {
       const response = await axios.get('http://localhost:8080/api/usuarios');
-      setClientes(response.data);
+      // Filtra solo los clientes y asegúrate de que sea un array
+      const clientesData = Array.isArray(response.data) ? 
+        response.data.filter(u => u.tipo === 'CLIENTE') : [];
+      setClientes(clientesData);
     } catch (err) {
       console.error('Error:', err);
+      setClientes([]); // En caso de error, establece un array vacío
     }
-  };
+};
 
 
   const eliminarMembresia = async (id) => {

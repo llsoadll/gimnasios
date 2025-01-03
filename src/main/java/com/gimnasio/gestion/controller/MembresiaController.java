@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-import com.gimnasio.gestion.model.Membresia;
+import com.gimnasio.gestion.dto.MembresiaDTO;
 import com.gimnasio.gestion.service.MembresiaService;
 
 @RestController
@@ -16,14 +16,14 @@ public class MembresiaController {
     private MembresiaService membresiaService;
 
     @GetMapping
-    public ResponseEntity<List<Membresia>> obtenerMembresias() {
+    public ResponseEntity<List<MembresiaDTO>> obtenerMembresias() {
         return ResponseEntity.ok(membresiaService.obtenerTodas());
     }
 
     @PostMapping
-    public ResponseEntity<Membresia> crearMembresia(@RequestBody Membresia membresia) {
+    public ResponseEntity<MembresiaDTO> crearMembresia(@RequestBody MembresiaDTO membresiaDTO) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(membresiaService.crearMembresia(membresia));
+                .body(membresiaService.crearMembresia(membresiaDTO));
     }
 
     @DeleteMapping("/{id}")

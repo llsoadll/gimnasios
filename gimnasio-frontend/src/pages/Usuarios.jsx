@@ -41,7 +41,6 @@ const Usuarios = () => {
     }
   };
 
-
   const eliminarUsuario = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este usuario?')) {
         setLoading(true);
@@ -101,26 +100,27 @@ const Usuarios = () => {
               <TableCell>Email</TableCell>
               <TableCell>Tipo</TableCell>
               <TableCell>Estado</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-        {Array.isArray(usuarios) && usuarios.map((usuario) => (
-          <TableRow key={usuario.id}>
-            <TableCell>{`${usuario.nombre} ${usuario.apellido}`}</TableCell>
-            <TableCell>{usuario.email}</TableCell>
-            <TableCell>{usuario.tipo}</TableCell>
-            <TableCell>{usuario.activo ? 'Activo' : 'Inactivo'}</TableCell>
-            <TableCell>
-                            <Button 
-                                color="error"
-                                onClick={() => eliminarUsuario(usuario.id)}
-                            >
-                                Eliminar
-                            </Button>
-                        </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
+            {Array.isArray(usuarios) && usuarios.map((usuario) => (
+              <TableRow key={usuario.id}>
+                <TableCell>{`${usuario.nombre} ${usuario.apellido}`}</TableCell>
+                <TableCell>{usuario.email}</TableCell>
+                <TableCell>{usuario.tipo}</TableCell>
+                <TableCell>{usuario.activo ? 'Activo' : 'Inactivo'}</TableCell>
+                <TableCell>
+                  <Button 
+                    color="error"
+                    onClick={() => eliminarUsuario(usuario.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
         </Table>
       </TableContainer>
 
@@ -167,13 +167,13 @@ const Usuarios = () => {
                 <MenuItem value="ENTRENADOR">Entrenador</MenuItem>
               </Select>
             </FormControl>
+            <Button type="submit" variant="contained" color="primary">
+              Guardar
+            </Button>
           </form>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
-          <Button onClick={agregarUsuario} variant="contained" color="primary">
-            Guardar
-          </Button>
         </DialogActions>
       </Dialog>
     </>

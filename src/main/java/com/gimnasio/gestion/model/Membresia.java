@@ -26,8 +26,8 @@ public class Membresia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(fetch = FetchType.EAGER)  // Cambiar a EAGER
-    @JoinColumn(name = "cliente_id", nullable = false)  // Agregar columna
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Usuario cliente;
     
     private LocalDate fechaInicio;
@@ -40,5 +40,4 @@ public class Membresia {
     
     @OneToMany(mappedBy = "membresia")
     private List<Pago> pagos;
-
 }

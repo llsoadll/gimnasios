@@ -1,6 +1,8 @@
 package com.gimnasio.gestion.service;
 
+import com.gimnasio.gestion.dto.RutinaDTO;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
+import com.gimnasio.gestion.mapper.RutinaMapper;
 import com.gimnasio.gestion.model.Rutina;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.repository.RutinaRepository;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,9 +23,13 @@ public class RutinaService {
     
     @Autowired
     private UsuarioRepository usuarioRepository;
-
-    public Rutina crearRutina(Rutina rutina) {
-        // Cargar cliente y entrenador completos
+    
+    @Autowired
+    private RutinaMapper rutinaMapper;
+    
+    public RutinaDTO crearRutina(RutinaDTO rutinaDTO) {
+        Rutina rutina = rutinaMapper.toEntity(rutinaDTO);
+        
         Usuario cliente = usuarioRepository.findById(rutina.getCliente().getId())
             .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
         Usuario entrenador = usuarioRepository.findById(rutina.getEntrenador().getId())
@@ -31,22 +38,14 @@ public class RutinaService {
         rutina.setCliente(cliente);
         rutina.setEntrenador(entrenador);
         
-        // Actualizar las listas de rutinas
-        cliente.getRutinas().add(rutina);
-        entrenador.getRutinasComoEntrenador().add(rutina);
-        
-        // Guardar la rutina
         Rutina rutinaGuardada = rutinaRepository.save(rutina);
-        
-        // Actualizar usuarios
-        usuarioRepository.save(cliente);
-        usuarioRepository.save(entrenador);
-        
-        return rutinaGuardada;
+        return rutinaMapper.toDTO(rutinaGuardada);
     }
-
-    public List<Rutina> obtenerTodas() {
-        return rutinaRepository.findAll();
+    
+    public List<RutinaDTO> obtenerTodas() {
+        return rutinaRepository.findAll().stream()
+            .map(rutinaMapper::toDTO)
+            .collect(Collectors.toList());
     }
 
     public void eliminarRutina(Long id) {

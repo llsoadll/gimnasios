@@ -2,12 +2,15 @@ package com.gimnasio.gestion.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.gimnasio.gestion.dto.MembresiaDTO;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
+import com.gimnasio.gestion.mapper.MembresiaMapper;
 import com.gimnasio.gestion.model.Membresia;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.repository.MembresiaRepository;
@@ -18,12 +21,17 @@ import com.gimnasio.gestion.repository.UsuarioRepository;
 public class MembresiaService {
     @Autowired
     private MembresiaRepository membresiaRepository;
-    
+
     @Autowired
     private UsuarioRepository usuarioRepository;
     
-    public List<Membresia> obtenerTodas() {
-        return membresiaRepository.findAll();
+    @Autowired
+    private MembresiaMapper membresiaMapper;
+    
+    public List<MembresiaDTO> obtenerTodas() {
+        return membresiaRepository.findAll().stream()
+            .map(membresiaMapper::toDTO)
+            .collect(Collectors.toList());
     }
 
     public void eliminarMembresia(Long id) {
@@ -32,11 +40,9 @@ public class MembresiaService {
         membresiaRepository.deleteById(id);
     }
     
-    public Membresia crearMembresia(Membresia membresia) {
-        if (membresia.getCliente() == null || membresia.getCliente().getId() == null) {
-            throw new ResourceNotFoundException("Cliente no especificado");
-        }
-    
+    public MembresiaDTO crearMembresia(MembresiaDTO membresiaDTO) {
+        Membresia membresia = membresiaMapper.toEntity(membresiaDTO);
+        
         Usuario cliente = usuarioRepository.findById(membresia.getCliente().getId())
             .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
             
@@ -64,8 +70,6 @@ public class MembresiaService {
         }
         
         Membresia nuevaMembresia = membresiaRepository.save(membresia);
-        // Forzar la carga del cliente
-        nuevaMembresia.getCliente().getNombre();
-            return nuevaMembresia;
-        }
+        return membresiaMapper.toDTO(nuevaMembresia);
     }
+}

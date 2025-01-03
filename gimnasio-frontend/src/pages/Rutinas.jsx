@@ -5,7 +5,7 @@ import {
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
   Box
 } from '@mui/material';
-import api from '../utils/axios'; // Ensure this path is correct
+import api from '../utils/axios';
 
 const Rutinas = () => {
   const [rutinas, setRutinas] = useState([]);
@@ -31,7 +31,6 @@ const Rutinas = () => {
     setError(null);
     try {
         const response = await api.get('/rutinas');
-        console.log('Rutinas cargadas:', response.data); // Debug log
         const data = Array.isArray(response.data) ? response.data : [];
         setRutinas(data);
     } catch (err) {
@@ -66,12 +65,8 @@ const Rutinas = () => {
         };
 
         const response = await api.post('/rutinas', rutinaData);
-        // Recargar tanto rutinas como usuarios
-        await Promise.all([
-            fetchRutinas(),
-            fetchUsuarios()
-        ]);
-        
+        await fetchRutinas();
+        await fetchUsuarios(); // Recargar usuarios después de crear una rutina
         setOpenDialog(false);
         setNuevaRutina({
             nombre: '',
