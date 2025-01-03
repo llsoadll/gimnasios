@@ -2,22 +2,26 @@
 import React from 'react';
 import { Box, AppBar, Toolbar, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import PeopleIcon from '@mui/icons-material/People';
-import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import CardMembershipIcon from '@mui/icons-material/CardMembership';
-import EventIcon from '@mui/icons-material/Event';
-import { PersonOutline, FitnessCenterOutlined, ClassOutlined, CardMembershipOutlined, MonitorHeartOutlined } from '@mui/icons-material';
+import { 
+  PersonOutline, 
+  FitnessCenterOutlined, 
+  ClassOutlined, 
+  CardMembershipOutlined, 
+  MonitorHeartOutlined,
+  PaymentOutlined 
+} from '@mui/icons-material';
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
   const drawerWidth = 240;
 
   const menuItems = [
-    { text: 'Usuarios', icon: <PeopleIcon />, path: '/usuarios' },
-    { text: 'Membresías', icon: <CardMembershipIcon />, path: '/membresias' },
-    { text: 'Rutinas', icon: <FitnessCenterIcon />, path: '/rutinas' },
-    { text: 'Clases', icon: <EventIcon />, path: '/clases' },
-    { text: 'Seguimientos', icon: <MonitorHeartOutlined />, path: '/seguimientos' }  // Add this line
+    { text: 'Usuarios', icon: <PersonOutline />, path: '/usuarios' },
+    { text: 'Membresías', icon: <CardMembershipOutlined />, path: '/membresias' },
+    { text: 'Rutinas', icon: <FitnessCenterOutlined />, path: '/rutinas' },
+    { text: 'Clases', icon: <ClassOutlined />, path: '/clases' },
+    { text: 'Seguimientos', icon: <MonitorHeartOutlined />, path: '/seguimientos' },
+    { text: 'Pagos', icon: <PaymentOutlined />, path: '/pagos' }
   ];
 
   return (
