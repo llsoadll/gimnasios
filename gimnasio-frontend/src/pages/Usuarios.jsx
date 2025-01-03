@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
@@ -7,7 +8,9 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
+
 const Usuarios = () => {
+  const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -117,6 +120,14 @@ const Usuarios = () => {
                   >
                     Eliminar
                   </Button>
+                </TableCell>
+                <TableCell>
+                <Button 
+  color="primary"
+  onClick={() => navigate(`/usuario/${usuario.id}`)}
+>
+  Ver Detalle
+</Button>
                 </TableCell>
               </TableRow>
             ))}

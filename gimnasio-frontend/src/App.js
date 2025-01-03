@@ -9,6 +9,7 @@ import Rutinas from './pages/Rutinas';
 import Clases from './pages/Clases';
 import Seguimientos from './pages/Seguimientos';
 import Pagos from './pages/Pagos';
+import DetalleCliente from './pages/DetalleCliente';
 
 const theme = createTheme({
   palette: {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/clases" element={<Clases />} />
             <Route path="/seguimientos" element={<Seguimientos />} />
             <Route path="/pagos" element={<Pagos />} />
+            <Route path="/usuario/:id" element={<DetalleCliente />} />
           </Routes>
         </Layout>
       </BrowserRouter>

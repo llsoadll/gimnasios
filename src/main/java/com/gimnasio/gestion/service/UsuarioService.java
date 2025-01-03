@@ -7,7 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gimnasio.gestion.dto.ClienteDetalleDTO;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
+import com.gimnasio.gestion.mapper.ClienteDetalleMapper;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.repository.UsuarioRepository;
 
@@ -16,6 +18,15 @@ import com.gimnasio.gestion.repository.UsuarioRepository;
 public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+private ClienteDetalleMapper clienteDetalleMapper;
+
+public ClienteDetalleDTO obtenerDetalleCliente(Long id) {
+    Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+    return clienteDetalleMapper.toDTO(usuario);
+}
     
     public Usuario guardarUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);

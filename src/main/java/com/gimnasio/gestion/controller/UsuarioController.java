@@ -5,7 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-
+import com.gimnasio.gestion.dto.ClienteDetalleDTO;
+import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.service.UsuarioService;
 
@@ -35,4 +36,14 @@ public ResponseEntity<List<Usuario>> obtenerUsuarios() {
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/detalle")
+public ResponseEntity<ClienteDetalleDTO> obtenerDetalleCliente(@PathVariable Long id) {
+    try {
+        ClienteDetalleDTO detalle = usuarioService.obtenerDetalleCliente(id);
+        return ResponseEntity.ok(detalle);
+    } catch (ResourceNotFoundException e) {
+        return ResponseEntity.notFound().build();
+    }
+}
 }
