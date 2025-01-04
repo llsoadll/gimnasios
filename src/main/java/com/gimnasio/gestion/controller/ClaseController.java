@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gimnasio.gestion.model.Clase;
+import com.gimnasio.gestion.dto.ClaseDTO;
+import com.gimnasio.gestion.model.InscripcionClase;
 import com.gimnasio.gestion.service.ClaseService;
 
 @RestController
@@ -21,25 +22,31 @@ public class ClaseController {
     private ClaseService claseService;
     
     @GetMapping
-    public ResponseEntity<List<Clase>> obtenerClases() {
-        List<Clase> clases = claseService.obtenerTodas();
-        // Forzar la carga del entrenador
-        clases.forEach(clase -> {
-            if (clase.getEntrenador() != null) {
-                clase.getEntrenador().getNombre();
-            }
-        });
-        return ResponseEntity.ok(clases);
+    public ResponseEntity<List<ClaseDTO>> obtenerClases() {
+        return ResponseEntity.ok(claseService.obtenerTodas());
     }
 
     @PostMapping
-    public ResponseEntity<Clase> crearClase(@RequestBody Clase clase) {
-        return ResponseEntity.ok(claseService.crearClase(clase));
+    public ResponseEntity<ClaseDTO> crearClase(@RequestBody ClaseDTO claseDTO) {
+        return ResponseEntity.ok(claseService.crearClase(claseDTO));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarClase(@PathVariable Long id) {
         claseService.eliminarClase(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{claseId}/inscribir/{clienteId}")
+    public ResponseEntity<InscripcionClase> inscribirCliente(
+            @PathVariable Long claseId,
+            @PathVariable Long clienteId) {
+        return ResponseEntity.ok(claseService.inscribirCliente(claseId, clienteId));
+    }
+    
+    @PostMapping("/inscripciones/{inscripcionId}/cancelar")
+    public ResponseEntity<Void> cancelarInscripcion(@PathVariable Long inscripcionId) {
+        claseService.cancelarInscripcion(inscripcionId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,14 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
-  DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
-  Box
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableContainer, 
+  TableHead, 
+  TableRow,
+  Paper, 
+  Button, 
+  Dialog, 
+  TextField, 
+  FormControl, 
+  Select, 
+  MenuItem,
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  Alert, 
+  CircularProgress,
+  Box,
+  InputLabel,
+  Typography
 } from '@mui/material';
 import api from '../utils/axios';
 
 const Clases = () => {
   const [clases, setClases] = useState([]);
+  const handleOpenInscripcionDialog = (clase) => {
+    setSelectedClase(clase);
+    fetchClientes(); // Cargar clientes antes de abrir el diálogo
+    setInscripcionDialogOpen(true);
+  };
+  const [clientes, setClientes] = useState([]);
+  const [inscripcionDialogOpen, setInscripcionDialogOpen] = useState(false);
+  const [selectedClase, setSelectedClase] = useState(null);
+  const [selectedClienteId, setSelectedClienteId] = useState('');
   const [entrenadores, setEntrenadores] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,6 +51,7 @@ const Clases = () => {
   useEffect(() => {
     fetchClases();
     fetchEntrenadores();
+    fetchClientes();
   }, []);
 
   const fetchClases = async () => {
@@ -53,6 +80,27 @@ const Clases = () => {
     }
   };
 
+  const fetchClientes = async () => {
+    try {
+      const response = await api.get('/usuarios');
+      setClientes(response.data.filter(u => u.tipo === 'CLIENTE'));
+    } catch (err) {
+      setError('Error al cargar clientes');
+    }
+  };
+
+  const inscribirCliente = async () => {
+    try {
+      await api.post(`/clases/${selectedClase.id}/inscribir/${selectedClienteId}`);
+      setInscripcionDialogOpen(false);
+      await fetchClases(); // Recargar las clases para actualizar los cupos
+      setSelectedClienteId('');
+    } catch (err) {
+      setError('Error al inscribir cliente');
+      console.error('Error:', err);
+    }
+  };
+
   const agregarClase = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,14 +112,13 @@ const Clases = () => {
             dia: nuevaClase.dia,
             horario: nuevaClase.horario,
             cupo: parseInt(nuevaClase.cupo),
-            entrenador: { 
-                id: parseInt(nuevaClase.entrenadorId) 
+            entrenador: {
+                id: parseInt(nuevaClase.entrenadorId)
             }
         };
-        console.log('Enviando:', claseData); // Debug
-        const response = await api.post('/clases', claseData);
-        console.log('Respuesta:', response.data); // Debug
-        await fetchClases(); // Recargar todas las clases
+
+        await api.post('/clases', claseData);
+        await fetchClases();
         setOpenDialog(false);
         setNuevaClase({
             nombre: '',
@@ -124,42 +171,59 @@ const Clases = () => {
       </Button>
 
       <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Descripción</TableCell>
-              <TableCell>Día</TableCell>
-              <TableCell>Horario</TableCell>
-              <TableCell>Cupo</TableCell>
-              <TableCell>Entrenador</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {clases.map((clase) => (
-              <TableRow key={clase.id}>
-                <TableCell>{clase.nombre}</TableCell>
-                <TableCell>{clase.descripcion}</TableCell>
-                <TableCell>{clase.dia}</TableCell>
-                <TableCell>{clase.horario}</TableCell>
-                <TableCell>{clase.cupo}</TableCell>
-                <TableCell>
-                  {clase.entrenador ? `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 'Sin entrenador'}
-                </TableCell>
-                <TableCell>
-                  <Button 
-                    color="error"
-                    onClick={() => eliminarClase(clase.id)}
-                  >
-                    Eliminar
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+  <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell>Nombre</TableCell>
+        <TableCell>Descripción</TableCell>
+        <TableCell>Día</TableCell>
+        <TableCell>Horario</TableCell>
+        <TableCell>Cupos Total</TableCell>
+        <TableCell>Cupos Disponibles</TableCell>
+        <TableCell>Entrenador</TableCell>
+        <TableCell>Alumnos Inscriptos</TableCell>
+        <TableCell>Acciones</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {clases.map((clase) => (
+        <TableRow key={clase.id}>
+          <TableCell>{clase.nombre}</TableCell>
+          <TableCell>{clase.descripcion}</TableCell>
+          <TableCell>{clase.dia}</TableCell>
+          <TableCell>{clase.horario}</TableCell>
+          <TableCell>{clase.cupo}</TableCell>
+          <TableCell>{clase.cuposDisponibles}</TableCell>
+          <TableCell>
+            {clase.entrenador ? `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 'Sin entrenador'}
+          </TableCell>
+          <TableCell>
+            {clase.clientesInscritos?.length > 0 ? (
+              <ul style={{ margin: 0, paddingInlineStart: '20px' }}>
+                {clase.clientesInscritos.map(cliente => (
+                  <li key={cliente.id}>
+                    {`${cliente.nombre} ${cliente.apellido}`}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              'Sin alumnos'
+            )}
+          </TableCell>
+          <TableCell>
+            <Button
+              color="primary"
+              onClick={() => handleOpenInscripcionDialog(clase)}
+              disabled={clase.cuposDisponibles === 0}
+            >
+              Inscribir Cliente
+            </Button>
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Nueva Clase</DialogTitle>
@@ -233,6 +297,60 @@ const Clases = () => {
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
         </DialogActions>
       </Dialog>
+<Dialog 
+  open={inscripcionDialogOpen} 
+  onClose={() => setInscripcionDialogOpen(false)}
+>
+  <DialogTitle>Inscribir Cliente en Clase</DialogTitle>
+  <DialogContent>
+    {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+    
+    {loading ? (
+      <Box display="flex" justifyContent="center" m={2}>
+        <CircularProgress />
+      </Box>
+    ) : (
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Seleccionar Cliente</InputLabel>
+        <Select
+          value={selectedClienteId}
+          onChange={e => setSelectedClienteId(e.target.value)}
+          label="Seleccionar Cliente"
+        >
+          <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
+          {clientes.map(cliente => (
+            <MenuItem key={cliente.id} value={cliente.id}>
+              {`${cliente.nombre} ${cliente.apellido}`}
+            </MenuItem>
+          ))}
+        </Select>
+        {selectedClase && (
+          <Typography variant="body2" sx={{ mt: 2 }}>
+            Clase: {selectedClase.nombre} - {selectedClase.horario}
+          </Typography>
+        )}
+      </FormControl>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button 
+      onClick={() => {
+        setInscripcionDialogOpen(false);
+        setSelectedClienteId('');
+      }}
+    >
+      Cancelar
+    </Button>
+    <Button 
+      onClick={inscribirCliente} 
+      variant="contained" 
+      color="primary"
+      disabled={!selectedClienteId || loading}
+    >
+      Inscribir
+    </Button>
+  </DialogActions>
+</Dialog>
     </>
   );
 };
