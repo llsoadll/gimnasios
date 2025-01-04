@@ -61,5 +61,9 @@ public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         }
     }
 
+    @PostMapping("/logout")
+public ResponseEntity<?> logout() {
+    return ResponseEntity.ok().build();
+}
     
 }

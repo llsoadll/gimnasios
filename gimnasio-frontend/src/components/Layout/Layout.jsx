@@ -1,6 +1,7 @@
 // src/components/Layout/Layout.jsx
 import React from 'react';
 import { Box, AppBar, Toolbar, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { 
   PersonOutline, 
@@ -12,6 +13,14 @@ import {
 } from '@mui/icons-material';
 
 const Layout = ({ children }) => {
+  const handleLogout = () => {
+    // Eliminar datos de sesión
+    localStorage.removeItem('token');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
+    // Redireccionar al login
+    navigate('/login');
+};
   const navigate = useNavigate();
   const drawerWidth = 240;
 
@@ -29,6 +38,13 @@ const Layout = ({ children }) => {
       <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <Toolbar>
           <h1>Gestión de Gimnasio</h1>
+          <Button 
+                        color="inherit" 
+                        onClick={handleLogout}
+                        sx={{ marginLeft: 'auto' }}
+                    >
+                        Cerrar Sesión
+                    </Button>
         </Toolbar>
       </AppBar>
       <Drawer
