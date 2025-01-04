@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
-import com.gimnasio.gestion.enums.TipoUsuario;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.mapper.ClienteDetalleMapper;
 import com.gimnasio.gestion.model.Usuario;
@@ -29,13 +28,10 @@ public ClienteDetalleDTO obtenerDetalleCliente(Long id) {
     return clienteDetalleMapper.toDTO(usuario);
 }
     
-    public Usuario guardarUsuario(Usuario usuario) {
-        // Si es un cliente, establecer una contraseña por defecto o null
-        if (usuario.getTipo() == TipoUsuario.CLIENTE) {
-            usuario.setPassword(null); // O establecer una contraseña por defecto
-        }
-        return usuarioRepository.save(usuario);
-    }
+public Usuario guardarUsuario(Usuario usuario) {
+    // La contraseña se generará automáticamente en prePersist
+    return usuarioRepository.save(usuario);
+}
 
     public List<Usuario> obtenerTodos() {
         return new ArrayList<>(usuarioRepository.findAll());
@@ -71,5 +67,14 @@ public Usuario cambiarEstado(Long id, boolean activo) {
         } catch (Exception e) {
             throw new RuntimeException("Error al eliminar usuario: " + e.getMessage());
         }
+    }
+
+    public String obtenerCredenciales(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            
+        return String.format("Email: %s\nContraseña: %s", 
+            usuario.getEmail(), 
+            usuario.getPassword());
     }
 }

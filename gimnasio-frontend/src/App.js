@@ -10,6 +10,9 @@ import Clases from './pages/Clases';
 import Seguimientos from './pages/Seguimientos';
 import Pagos from './pages/Pagos';
 import DetalleCliente from './pages/DetalleCliente';
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
+
 
 const theme = createTheme({
   palette: {
@@ -29,14 +32,47 @@ function App() {
       <BrowserRouter>
         <Layout>
           <Routes>
-            <Route path="/" element={<Usuarios />} />
-            <Route path="/usuarios" element={<Usuarios />} />
-            <Route path="/membresias" element={<Membresias />} />
-            <Route path="/rutinas" element={<Rutinas />} />
-            <Route path="/clases" element={<Clases />} />
-            <Route path="/seguimientos" element={<Seguimientos />} />
-            <Route path="/pagos" element={<Pagos />} />
-            <Route path="/usuario/:id" element={<DetalleCliente />} />
+          <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+                <Usuarios />
+              </ProtectedRoute>
+            } />
+            <Route path="/usuarios" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <Usuarios />
+              </ProtectedRoute>
+            } />
+            <Route path="/membresias" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <Membresias />
+              </ProtectedRoute>
+            } />
+            <Route path="/rutinas" element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+                <Rutinas />
+              </ProtectedRoute>
+            } />
+            <Route path="/clases" element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+                <Clases />
+              </ProtectedRoute>
+            } />
+            <Route path="/seguimientos" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <Seguimientos />
+              </ProtectedRoute>
+            } />
+            <Route path="/pagos" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <Pagos />
+              </ProtectedRoute>
+            } />
+            <Route path="/usuario/:id" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <DetalleCliente />
+              </ProtectedRoute>
+            } />
           </Routes>
         </Layout>
       </BrowserRouter>

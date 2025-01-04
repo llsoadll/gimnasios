@@ -93,21 +93,32 @@ const Usuarios = () => {
     }
 };
 
-  const agregarUsuario = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
+const agregarUsuario = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
       const response = await axios.post('http://localhost:8080/api/usuarios', nuevoUsuario);
       setUsuarios([...usuarios, response.data]);
+      alert(`Usuario creado exitosamente!\n
+             Email: ${response.data.email}\n
+             Contraseña: ${response.data.password}`);
       setOpenDialog(false);
-    } catch (err) {
-      setError(`Error al crear usuario: ${err.response ? err.response.data.message : err.message}`);
+      setNuevoUsuario({
+          nombre: '',
+          apellido: '',
+          email: '',
+          telefono: '',
+          fechaNacimiento: '',
+          tipo: 'CLIENTE',
+          activo: true
+      });
+  } catch (err) {
+      setError(`Error al crear usuario: ${err.response?.data?.message || err.message}`);
       console.error('Error:', err);
-    } finally {
+  } finally {
       setLoading(false);
-    }
-  };
+  }
+};
 
   if (loading) {
     return (

@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
@@ -42,9 +43,13 @@ public class Usuario {
     @Email(message = "El email debe ser válido")
     @NotBlank(message = "El email es obligatorio")
     @Column(unique = true, nullable = false)
-    private String email;
+    private String email; // Será el username
     
     
+    private String username; // Podría ser el email
+
+    private String rol; // ROLE_CLIENTE, ROLE_ENTRENADOR, ROLE_ADMIN
+
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     @Column(nullable = true)
     private String password;
@@ -72,4 +77,40 @@ public class Usuario {
     @OneToMany(mappedBy = "entrenador", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"cliente", "entrenador"})
     private List<Rutina> rutinasComoEntrenador = new ArrayList<>();
+
+    @PrePersist
+public void prePersist() {
+    if (this.tipo == null) {
+        this.tipo = TipoUsuario.CLIENTE;
+    }
+
+    // Generate default password if not set
+    if (this.password == null || this.password.isEmpty()) {
+        if (this.tipo == TipoUsuario.ADMIN) {
+            this.password = "admin123";
+        } else {
+            this.password = generateDefaultPassword();
+        }
+        // Agregar log para debug
+        System.out.println("Contraseña generada para " + this.email + ": " + this.password);
+    }
+
+    this.activo = true;
+}
+
+private String generateDefaultPassword() {
+    if (this.email == null || this.telefono == null) {
+        throw new IllegalStateException("Email y teléfono son requeridos para generar la contraseña");
+    }
+
+    // Obtener las primeras 3 letras del email
+    String emailPrefix = this.email.substring(0, Math.min(3, this.email.length()));
+    
+    // Obtener los últimos 4 dígitos del teléfono
+    String phonePrefix = this.telefono.substring(Math.max(0, this.telefono.length() - 4));
+    
+    String password = emailPrefix + phonePrefix;
+    System.out.println("Password generada para " + this.email + ": " + password);
+    return password;
+}
 }
