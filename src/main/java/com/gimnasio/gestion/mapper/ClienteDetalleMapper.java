@@ -1,10 +1,16 @@
 package com.gimnasio.gestion.mapper;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
 import com.gimnasio.gestion.dto.SeguimientoDTO;
+import com.gimnasio.gestion.model.InscripcionClase;
 import com.gimnasio.gestion.model.Usuario;
+import com.gimnasio.gestion.repository.InscripcionClaseRepository;
 import com.gimnasio.gestion.repository.SeguimientoRepository;
 
 @Component
@@ -21,6 +27,12 @@ public class ClienteDetalleMapper {
 
     @Autowired
     private SeguimientoRepository seguimientoRepository;
+
+    @Autowired
+    private InscripcionClaseRepository inscripcionClaseRepository;
+    
+    @Autowired
+    private ClaseMapper claseMapper;
 
     public ClienteDetalleDTO toDTO(Usuario usuario) {
         if (usuario == null) return null;
@@ -64,6 +76,14 @@ public class ClienteDetalleMapper {
                 return segDTO;
             })
             .toList());
+
+            // Mapear clases inscritas
+        List<InscripcionClase> inscripcionesActivas = inscripcionClaseRepository
+            .findByClienteAndActivaTrue(usuario);
+            
+        dto.setClasesInscritas(inscripcionesActivas.stream()
+            .map(inscripcion -> claseMapper.toDTO(inscripcion.getClase()))
+            .collect(Collectors.toList()));
             
         return dto;
     }

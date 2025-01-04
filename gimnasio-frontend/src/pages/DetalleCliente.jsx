@@ -156,6 +156,44 @@ const DetalleCliente = () => {
         </Paper>
       </Grid>
 
+      {/* Clases Inscritas */}
+<Grid item xs={12} md={6}>
+  <Paper sx={{ p: 2 }}>
+    <Typography variant="h6">Clases Inscritas</Typography>
+    <Divider sx={{ my: 2 }} />
+    {cliente.clasesInscritas?.length > 0 ? (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Día</TableCell>
+              <TableCell>Horario</TableCell>
+              <TableCell>Entrenador</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {cliente.clasesInscritas.map(clase => (
+              <TableRow key={clase.id}>
+                <TableCell>{clase.nombre}</TableCell>
+                <TableCell>{clase.dia}</TableCell>
+                <TableCell>{clase.horario}</TableCell>
+                <TableCell>
+                  {clase.entrenador ? 
+                    `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 
+                    'Sin entrenador'}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    ) : (
+      <Typography>No está inscrito en ninguna clase</Typography>
+    )}
+  </Paper>
+</Grid>
+
       {/* Seguimiento */}
       <Grid item xs={12}>
         <Paper sx={{ p: 2 }}>

@@ -18,4 +18,5 @@ public class ClienteDetalleDTO {
     private List<RutinaDTO> rutinas = new ArrayList<>();
     private List<PagoDTO> pagos = new ArrayList<>();
     private List<SeguimientoDTO> seguimientos = new ArrayList<>();
+    private List<ClaseDTO> clasesInscritas = new ArrayList<>();
 }
