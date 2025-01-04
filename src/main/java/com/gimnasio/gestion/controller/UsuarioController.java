@@ -1,6 +1,7 @@
 package com.gimnasio.gestion.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -12,7 +13,9 @@ import com.gimnasio.gestion.service.UsuarioService;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UsuarioController {
+
     @Autowired
     private UsuarioService usuarioService;
 
@@ -36,6 +39,19 @@ public ResponseEntity<List<Usuario>> obtenerUsuarios() {
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/estado")
+@CrossOrigin(origins = "http://localhost:3000")
+public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestParam boolean activo) {
+    try {
+        Usuario usuario = usuarioService.cambiarEstado(id, activo);
+        return ResponseEntity.ok(usuario);
+    } catch (Exception e) {
+        e.printStackTrace(); // Para ver el error en los logs
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al cambiar estado: " + e.getMessage());
+    }
+}
 
     @GetMapping("/{id}/detalle")
 public ResponseEntity<ClienteDetalleDTO> obtenerDetalleCliente(@PathVariable Long id) {

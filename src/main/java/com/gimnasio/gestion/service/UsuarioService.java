@@ -45,6 +45,23 @@ public ClienteDetalleDTO obtenerDetalleCliente(Long id) {
         return usuarioRepository.findByEmail(email).isPresent();
     }
 
+    @Transactional
+public Usuario cambiarEstado(Long id, boolean activo) {
+    try {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        
+        usuario.setActivo(activo);
+        Usuario usuarioActualizado = usuarioRepository.save(usuario);
+        usuarioRepository.flush(); // Forzar la actualización en la base de datos
+        
+        return usuarioActualizado;
+    } catch (Exception e) {
+        e.printStackTrace(); // Para ver el error en los logs
+        throw new RuntimeException("Error al cambiar estado: " + e.getMessage());
+    }
+}
+
     public void eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));

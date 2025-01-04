@@ -6,6 +6,7 @@ import {
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
   Box
 } from '@mui/material';
+import { Switch } from '@mui/material'; // Agregar este import
 import axios from 'axios';
 
 
@@ -28,6 +29,38 @@ const Usuarios = () => {
   useEffect(() => {
     fetchUsuarios();
   }, []);
+
+
+  const toggleEstado = async (id, estadoActual) => {
+    try {
+        console.log(`Cambiando estado de usuario ${id} a ${!estadoActual}`);
+        
+        const response = await axios.patch(
+            `http://localhost:8080/api/usuarios/${id}/estado?activo=${!estadoActual}`,
+            {},
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        
+        if (response.status === 200) {
+            setUsuarios(prevUsuarios => 
+                prevUsuarios.map(usuario => 
+                    usuario.id === id 
+                        ? { ...usuario, activo: !estadoActual }
+                        : usuario
+                )
+            );
+            console.log('Estado cambiado exitosamente');
+        }
+    } catch (err) {
+        console.error('Error completo:', err);
+        setError(err.response?.data || 'Error al cambiar el estado del usuario');
+    }
+};
+
 
   const fetchUsuarios = async () => {
     setLoading(true);
@@ -113,7 +146,14 @@ const Usuarios = () => {
                 <TableCell>{`${usuario.nombre} ${usuario.apellido}`}</TableCell>
                 <TableCell>{usuario.email}</TableCell>
                 <TableCell>{usuario.tipo}</TableCell>
-                <TableCell>{usuario.activo ? 'Activo' : 'Inactivo'}</TableCell>
+                <TableCell>
+                  <Switch
+                    checked={usuario.activo}
+                    onChange={() => toggleEstado(usuario.id, usuario.activo)}
+                    color="primary"
+                  />
+                  {usuario.activo ? 'Activo' : 'Inactivo'}
+                </TableCell>
                 <TableCell>
                   <Button 
                     color="error"
