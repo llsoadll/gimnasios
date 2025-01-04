@@ -13,5 +13,5 @@ public class ClaseDTO {
     private Integer cupo;
     private UsuarioDTO entrenador;
     private Integer cuposDisponibles;
-    private List<UsuarioDTO> clientesInscritos;
+    private List<ClienteInscritoDTO> clientesInscritos;
 }

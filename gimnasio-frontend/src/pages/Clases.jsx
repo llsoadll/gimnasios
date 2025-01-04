@@ -35,6 +35,7 @@ const Clases = () => {
   const [inscripcionDialogOpen, setInscripcionDialogOpen] = useState(false);
   const [selectedClase, setSelectedClase] = useState(null);
   const [selectedClienteId, setSelectedClienteId] = useState('');
+  const [inscripciones, setInscripciones] = useState([]);
   const [entrenadores, setEntrenadores] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -68,6 +69,18 @@ const Clases = () => {
     } finally {
         setLoading(false);
     }
+};
+
+const darDeBajaInscripcion = async (inscripcionId) => {
+  if (window.confirm('¿Está seguro de dar de baja esta inscripción?')) {
+    try {
+      await api.post(`/clases/inscripciones/${inscripcionId}/cancelar`);
+      await fetchClases(); // Recargar las clases para actualizar la lista
+    } catch (err) {
+      setError('Error al dar de baja la inscripción');
+      console.error('Error:', err);
+    }
+  }
 };
 
   const fetchEntrenadores = async () => {
@@ -198,18 +211,25 @@ const Clases = () => {
             {clase.entrenador ? `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 'Sin entrenador'}
           </TableCell>
           <TableCell>
-            {clase.clientesInscritos?.length > 0 ? (
-              <ul style={{ margin: 0, paddingInlineStart: '20px' }}>
-                {clase.clientesInscritos.map(cliente => (
-                  <li key={cliente.id}>
-                    {`${cliente.nombre} ${cliente.apellido}`}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              'Sin alumnos'
-            )}
-          </TableCell>
+  {clase.clientesInscritos?.length > 0 ? (
+    <ul style={{ margin: 0, paddingInlineStart: '20px' }}>
+      {clase.clientesInscritos.map(cliente => (
+        <li key={cliente.id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {`${cliente.nombre} ${cliente.apellido}`}
+          <Button 
+            size="small" 
+            color="error"
+            onClick={() => darDeBajaInscripcion(cliente.inscripcionId)}
+          >
+            Dar de baja
+          </Button>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    'Sin alumnos'
+  )}
+</TableCell>
           <TableCell>
             <Button
               color="primary"
