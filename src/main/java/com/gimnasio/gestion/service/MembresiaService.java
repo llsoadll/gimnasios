@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import com.gimnasio.gestion.repository.MembresiaRepository;
 import com.gimnasio.gestion.repository.UsuarioRepository;
 
 @Service
+@EnableScheduling
 @Transactional
 public class MembresiaService {
     @Autowired
@@ -72,4 +75,25 @@ public class MembresiaService {
         Membresia nuevaMembresia = membresiaRepository.save(membresia);
         return membresiaMapper.toDTO(nuevaMembresia);
     }
+
+
+    public List<MembresiaDTO> obtenerMembresiasSinPagar() {
+        return membresiaRepository.findAll().stream()
+            .filter(membresia -> membresia.getPagos().isEmpty())  // Solo membresías sin pagos
+            .map(membresiaMapper::toDTO)
+            .collect(Collectors.toList());
+    }
+
+    
+    @Scheduled(cron = "0 0 0 * * *") // Se ejecuta todos los días a las 00:00
+public void actualizarEstadoMembresias() {
+    // Busca todas las membresías que están activas pero su fecha fin ya pasó
+    List<Membresia> membresiasExpiradas = membresiaRepository.findByActivaTrueAndFechaFinBefore(LocalDate.now());
+    
+    // Para cada membresía expirada
+    membresiasExpiradas.forEach(membresia -> {
+        membresia.setActiva(false);  // La marca como inactiva
+        membresiaRepository.save(membresia);  // Guarda los cambios
+    });
+}
 }

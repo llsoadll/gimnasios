@@ -31,4 +31,9 @@ public class MembresiaController {
         membresiaService.eliminarMembresia(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/sin-pagar")
+    public ResponseEntity<List<MembresiaDTO>> obtenerMembresiasSinPagar() {
+        return ResponseEntity.ok(membresiaService.obtenerMembresiasSinPagar());
+    }
 }

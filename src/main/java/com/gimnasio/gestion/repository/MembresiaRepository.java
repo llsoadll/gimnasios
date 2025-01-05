@@ -5,10 +5,14 @@ import org.springframework.stereotype.Repository;
 
 import com.gimnasio.gestion.model.Membresia;
 import com.gimnasio.gestion.model.Usuario;
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
     List<Membresia> findByCliente(Usuario cliente);
     List<Membresia> findByClienteAndActiva(Usuario cliente, boolean activa);
+        List<Membresia> findByActivaTrueAndFechaFinBefore(LocalDate fecha);
+
 }

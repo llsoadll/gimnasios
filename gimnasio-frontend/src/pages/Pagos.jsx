@@ -40,13 +40,14 @@ const Pagos = () => {
 
   const fetchMembresias = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/membresias');
-      setMembresias(response.data);
+        // Cambiar el endpoint para obtener solo membresías sin pagar
+        const response = await axios.get('http://localhost:8080/api/membresias/sin-pagar');
+        setMembresias(response.data);
     } catch (err) {
-      setError('Error al cargar membresías');
-      console.error('Error:', err);
+        setError('Error al cargar membresías');
+        console.error('Error:', err);
     }
-  };
+};
 
   const registrarPago = async (e) => {
     e.preventDefault();

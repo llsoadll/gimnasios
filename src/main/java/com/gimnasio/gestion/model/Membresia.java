@@ -28,4 +28,13 @@ public class Membresia {
     
     @OneToMany(mappedBy = "membresia")
     private List<Pago> pagos;
+
+    @PreUpdate
+    @PrePersist
+    public void validarFechas() {
+        // Actualizar estado según la fecha actual
+        if (this.fechaFin != null && this.fechaFin.isBefore(LocalDate.now())) {
+            this.activa = false;
+        }
+    }
 }
