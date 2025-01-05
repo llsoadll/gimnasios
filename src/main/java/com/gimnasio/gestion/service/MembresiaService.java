@@ -57,21 +57,22 @@ public class MembresiaService {
             membresia.setFechaInicio(fechaInicio);
         }
         
-        // Calcular fecha fin según tipo
+        // Calcular fecha fin según tipo de membresía
         switch(membresia.getTipo()) {
             case MENSUAL:
-                membresia.setFechaFin(fechaInicio.plusMonths(1));
+                membresia.setFechaFin(fechaInicio.plusDays(30)); // Usar 30 días exactos
                 break;
             case TRIMESTRAL:
-                membresia.setFechaFin(fechaInicio.plusMonths(3));
+                membresia.setFechaFin(fechaInicio.plusDays(90)); // Usar 90 días exactos
                 break;
             case ANUAL:
-                membresia.setFechaFin(fechaInicio.plusYears(1));
+                membresia.setFechaFin(fechaInicio.plusDays(365)); // Usar 365 días exactos
                 break;
             default:
                 throw new IllegalArgumentException("Tipo de membresía no válido");
         }
         
+        membresia.setActiva(true);
         Membresia nuevaMembresia = membresiaRepository.save(membresia);
         return membresiaMapper.toDTO(nuevaMembresia);
     }

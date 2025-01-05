@@ -13,6 +13,11 @@ import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.service.UsuarioService;
 import com.gimnasio.gestion.mapper.UsuarioMapper;
+import java.time.LocalDate;
+import com.gimnasio.gestion.model.Membresia;
+import com.gimnasio.gestion.mapper.MembresiaMapper;
+import com.gimnasio.gestion.repository.UsuarioRepository;
+import java.util.Comparator;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -23,11 +28,39 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private UsuarioMapper usuarioMapper;  // Add this line
+    private UsuarioMapper usuarioMapper;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private MembresiaMapper membresiaMapper;
 
     @GetMapping
 public ResponseEntity<List<Usuario>> obtenerUsuarios() {
     return ResponseEntity.ok(usuarioService.obtenerTodos());
+}
+
+@GetMapping("/{id}/membresia-activa")
+public ResponseEntity<?> getMembresiaActiva(@PathVariable Long id) {
+    try {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+                
+        // Obtener la membresía activa con la fecha de fin más próxima
+        Membresia membresiaActiva = usuario.getMembresias().stream()
+            .filter(m -> m.isActiva() && m.getFechaFin().isAfter(LocalDate.now()))
+            .min(Comparator.comparing(Membresia::getFechaFin))  // Tomar la que vence primero
+            .orElse(null);
+                
+        if (membresiaActiva == null) {
+            return ResponseEntity.ok(null);
+        }
+            
+        return ResponseEntity.ok(membresiaMapper.toDTO(membresiaActiva));
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body("Error al obtener membresía activa");
+    }
 }
 
     @PostMapping

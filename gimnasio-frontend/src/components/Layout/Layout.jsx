@@ -1,68 +1,91 @@
 // src/components/Layout/Layout.jsx
-import React from 'react';
-import { Box, AppBar, Toolbar, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import { Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  PersonOutline, 
-  FitnessCenterOutlined, 
-  ClassOutlined, 
-  CardMembershipOutlined, 
-  MonitorHeartOutlined,
-  PaymentOutlined 
-} from '@mui/icons-material';
+  Box, 
+  Drawer, 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText 
+} from '@mui/material';
+import api from '../../utils/axios';
+import moment from 'moment';
 
 const Layout = ({ children }) => {
-  const handleLogout = () => {
-    // Eliminar datos de sesión
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
-    localStorage.removeItem('userId');
-    // Redireccionar al login
-    navigate('/login');
-};
   const navigate = useNavigate();
+  const [membresia, setMembresia] = useState(null);
+  const userRole = localStorage.getItem('userRole');
+  const userId = localStorage.getItem('userId');
   const drawerWidth = 240;
-  const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
-  const token = localStorage.getItem('token'); // Verificar si hay un token
 
-  // Definir los menús según el rol
+  const fetchMembresia = async () => {
+    try {
+      const response = await api.get(`/usuarios/${userId}/membresia-activa`);
+      if (response.data) {
+        console.log('Fecha fin recibida:', response.data.fechaFin); // Para debug
+        setMembresia(response.data);
+      }
+    } catch (err) {
+      console.error('Error al cargar membresía:', err);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
   const getMenuItems = () => {
-    if (!token) return []; // Si no hay token, retornar array vacío
-
     const commonItems = [
-      { text: 'Rutinas', icon: <FitnessCenterOutlined />, path: '/rutinas' },
-      { text: 'Clases', icon: <ClassOutlined />, path: '/clases' },
-      { text: 'Seguimientos', icon: <MonitorHeartOutlined />, path: '/seguimientos' }
+      { text: 'Rutinas', path: '/rutinas' },
+      { text: 'Clases', path: '/clases' },
+      { text: 'Seguimientos', path: '/seguimientos' }
     ];
 
     const adminItems = [
-      { text: 'Usuarios', icon: <PersonOutline />, path: '/usuarios' },
-      { text: 'Membresías', icon: <CardMembershipOutlined />, path: '/membresias' },
-      { text: 'Pagos', icon: <PaymentOutlined />, path: '/pagos' },
+      { text: 'Usuarios', path: '/usuarios' },
+      { text: 'Membresías', path: '/membresias' },
+      { text: 'Pagos', path: '/pagos' },
       ...commonItems
     ];
 
     return userRole === 'ADMIN' ? adminItems : commonItems;
   };
 
-  // No mostrar el layout completo si no hay token
-  if (!token) {
+  useEffect(() => {
+    if (userRole === 'CLIENTE') {
+      fetchMembresia();
+    }
+  }, [userRole, userId]);
+
+  if (!userRole) {
     return children;
   }
 
+
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <AppBar position="fixed">
         <Toolbar>
-          <h1>Gestión de Gimnasio</h1>
-          <Button 
-                        color="inherit" 
-                        onClick={handleLogout}
-                        sx={{ marginLeft: 'auto' }}
-                    >
-                        Cerrar Sesión
-                    </Button>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            Gestión de Gimnasio
+          </Typography>
+          {userRole === 'CLIENTE' && membresia && (
+  <Box sx={{ mr: 2 }}>
+    <Typography variant="subtitle2">
+      Membresía {membresia.tipo}
+      {` - Vence: ${moment(membresia.fechaFin, 'YYYY-MM-DD').format('DD/MM/YYYY')}`}
+    </Typography>
+  </Box>
+)}
+          <Button color="inherit" onClick={handleLogout}>
+            Cerrar Sesión
+          </Button>
         </Toolbar>
       </AppBar>
       <Drawer

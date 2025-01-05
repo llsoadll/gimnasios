@@ -5,6 +5,7 @@ import {
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
   Box
 } from '@mui/material';
+import moment from 'moment';
 import axios from 'axios';
 
 const Membresias = () => {
@@ -110,39 +111,40 @@ const Membresias = () => {
       </Button>
 
       <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Cliente</TableCell>
-              <TableCell>Tipo</TableCell>
-              <TableCell>Fecha Inicio</TableCell>
-              <TableCell>Fecha Fin</TableCell>
-              <TableCell>Precio</TableCell>
-              <TableCell>Estado</TableCell>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Cliente</TableCell>
+            <TableCell>Tipo</TableCell>
+            <TableCell>Fecha Inicio</TableCell>
+            <TableCell>Fecha Fin</TableCell>
+            <TableCell>Precio</TableCell>
+            <TableCell>Estado</TableCell>
+            <TableCell>Acciones</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {membresias.map((membresia) => (
+            <TableRow key={membresia.id}>
+              <TableCell>{membresia.cliente ? `${membresia.cliente.nombre} ${membresia.cliente.apellido}` : 'Sin cliente'}</TableCell>
+              <TableCell>{membresia.tipo}</TableCell>
+              <TableCell>{moment(membresia.fechaInicio).format('DD/MM/YYYY')}</TableCell>
+              <TableCell>{moment(membresia.fechaFin).format('DD/MM/YYYY')}</TableCell>
+              <TableCell>{membresia.precio}</TableCell>
+              <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
+              <TableCell>
+                <Button 
+                  color="error"
+                  onClick={() => eliminarMembresia(membresia.id)}
+                >
+                  Eliminar
+                </Button>
+              </TableCell>
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {membresias.map((membresia) => (
-              <TableRow key={membresia.id}>
-                <TableCell>{membresia.cliente ? `${membresia.cliente.nombre} ${membresia.cliente.apellido}` : 'Sin cliente'}</TableCell>
-                <TableCell>{membresia.tipo}</TableCell>
-                <TableCell>{membresia.fechaInicio}</TableCell>
-                <TableCell>{membresia.fechaFin}</TableCell>
-                <TableCell>{membresia.precio}</TableCell>
-                <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
-                <TableCell>
-                            <Button 
-                                color="error"
-                                onClick={() => eliminarMembresia(membresia.id)}
-                            >
-                                Eliminar
-                            </Button>
-                        </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
 
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
