@@ -16,46 +16,47 @@ const Seguimientos = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [nuevoSeguimiento, setNuevoSeguimiento] = useState({
-    clienteId: '',
     fecha: new Date().toISOString().split('T')[0],
     peso: '',
     altura: '',
     imc: '',
     observaciones: ''
   });
+  
+  const userRole = localStorage.getItem('userRole');
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    fetchClientes();
-  }, []);
-
-  useEffect(() => {
-    if (selectedCliente) {
-      fetchSeguimientos(selectedCliente);
+    if (userRole === 'ADMIN') {
+      fetchClientes();
+    } else if (userRole === 'CLIENTE') {
+      fetchSeguimientos(userId);
     }
-  }, [selectedCliente]);
+  }, [userRole, userId]);
 
   const fetchClientes = async () => {
     try {
-      const response = await api.get('/usuarios');
-      setClientes(response.data.filter(u => u.tipo === 'CLIENTE'));
+      const response = await api.get('/usuarios/clientes');
+      setClientes(response.data);
     } catch (err) {
       setError('Error al cargar clientes');
-      console.error('Error:', err);
     }
   };
 
   const fetchSeguimientos = async (clienteId) => {
-    setLoading(true);
     try {
       const response = await api.get(`/seguimientos/cliente/${clienteId}`);
       setSeguimientos(response.data);
     } catch (err) {
       setError('Error al cargar seguimientos');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (selectedCliente && userRole === 'ADMIN') {
+      fetchSeguimientos(selectedCliente);
+    }
+  }, [selectedCliente]);
 
   const calcularIMC = (peso, altura) => {
     if (peso && altura) {
@@ -67,13 +68,15 @@ const Seguimientos = () => {
 
   const handlePesoAltura = (e, field) => {
     const value = e.target.value;
-    const updates = { ...nuevoSeguimiento, [field]: value };
-    
-    if (updates.peso && updates.altura) {
-      updates.imc = calcularIMC(parseFloat(updates.peso), parseFloat(updates.altura));
-    }
-    
-    setNuevoSeguimiento(updates);
+    setNuevoSeguimiento(prev => {
+      const updated = { ...prev, [field]: value };
+      if (field === 'peso' || field === 'altura') {
+        if (updated.peso && updated.altura) {
+          updated.imc = calcularIMC(updated.peso, updated.altura);
+        }
+      }
+      return updated;
+    });
   };
 
   const agregarSeguimiento = async (e) => {
@@ -120,32 +123,37 @@ const Seguimientos = () => {
   return (
     <>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+  
+      {/* Admin view */}
+      {userRole === 'ADMIN' && (
+        <Box mb={2}>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <Select
+              value={selectedCliente}
+              onChange={(e) => setSelectedCliente(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
+              {clientes.map(cliente => (
+                <MenuItem key={cliente.id} value={cliente.id}>
+                  {`${cliente.nombre} ${cliente.apellido}`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <Select
-          value={selectedCliente}
-          onChange={(e) => setSelectedCliente(e.target.value)}
-          displayEmpty
-        >
-          <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
-          {clientes.map(cliente => (
-            <MenuItem key={cliente.id} value={cliente.id}>
-              {`${cliente.nombre} ${cliente.apellido}`}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      {selectedCliente && (
-        <Button 
-          variant="contained" 
-          onClick={() => setOpenDialog(true)} 
-          sx={{ mb: 2 }}
-        >
-          Nuevo Seguimiento
-        </Button>
+          {selectedCliente && (
+            <Button 
+              variant="contained" 
+              onClick={() => setOpenDialog(true)}
+            >
+              Nuevo Seguimiento
+            </Button>
+          )}
+        </Box>
       )}
 
+      {/* Seguimientos table and chart - visible for both ADMIN and CLIENTE */}
       {seguimientos.length > 0 && (
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -189,6 +197,7 @@ const Seguimientos = () => {
         </Grid>
       )}
 
+      {userRole === 'ADMIN' && (
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Nuevo Seguimiento</DialogTitle>
         <DialogContent>
@@ -244,6 +253,7 @@ const Seguimientos = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      )}
     </>
   );
 };

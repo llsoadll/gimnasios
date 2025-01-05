@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
+import com.gimnasio.gestion.enums.TipoUsuario;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.mapper.ClienteDetalleMapper;
 import com.gimnasio.gestion.model.Usuario;
@@ -27,6 +28,10 @@ public ClienteDetalleDTO obtenerDetalleCliente(Long id) {
         .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     return clienteDetalleMapper.toDTO(usuario);
 }
+
+public List<Usuario> obtenerClientesActivos() {
+        return usuarioRepository.findByActivoTrueAndTipo(TipoUsuario.CLIENTE);
+    }
     
 public Usuario guardarUsuario(Usuario usuario) {
     // La contraseña se generará automáticamente en prePersist

@@ -5,11 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
+import com.gimnasio.gestion.dto.UsuarioDTO;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.service.UsuarioService;
+import com.gimnasio.gestion.mapper.UsuarioMapper;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -18,6 +21,9 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private UsuarioMapper usuarioMapper;  // Add this line
 
     @GetMapping
 public ResponseEntity<List<Usuario>> obtenerUsuarios() {
@@ -52,6 +58,15 @@ public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestParam bool
                 .body("Error al cambiar estado: " + e.getMessage());
     }
 }
+
+@GetMapping("/clientes")
+    public ResponseEntity<List<UsuarioDTO>> obtenerClientes() {
+        List<Usuario> clientes = usuarioService.obtenerClientesActivos();
+        List<UsuarioDTO> clientesDTO = clientes.stream()
+            .map(usuarioMapper::toDTO)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(clientesDTO);
+    }
 
     @GetMapping("/{id}/detalle")
 public ResponseEntity<ClienteDetalleDTO> obtenerDetalleCliente(@PathVariable Long id) {

@@ -1,5 +1,7 @@
 package com.gimnasio.gestion.dto;
 
+import java.time.LocalDate;
+
 import com.gimnasio.gestion.enums.TipoUsuario;
 import lombok.Data;
 
@@ -9,6 +11,8 @@ public class UsuarioDTO {
     private String nombre;
     private String apellido;
     private String email;
-    private TipoUsuario tipo;
+    private String telefono;
+    private LocalDate fechaNacimiento;
     private boolean activo;
+    private TipoUsuario tipo;
 }

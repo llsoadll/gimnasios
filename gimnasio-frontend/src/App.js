@@ -58,11 +58,14 @@ function App() {
                 <Clases />
               </ProtectedRoute>
             } />
-            <Route path="/seguimientos" element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <Seguimientos />
-              </ProtectedRoute>
-            } />
+            <Route 
+  path="/seguimientos" 
+  element={
+    <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+      <Seguimientos />
+    </ProtectedRoute>
+  } 
+/>
             <Route path="/pagos" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <Pagos />
