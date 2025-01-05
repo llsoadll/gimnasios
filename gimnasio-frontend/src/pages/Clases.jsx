@@ -26,11 +26,14 @@ import api from '../utils/axios';
 
 const Clases = () => {
   const [clases, setClases] = useState([]);
+  const [mensaje, setMensaje] = useState(null); 
   const handleOpenInscripcionDialog = (clase) => {
     setSelectedClase(clase);
     fetchClientes(); // Cargar clientes antes de abrir el diálogo
     setInscripcionDialogOpen(true);
   };
+  const userId = localStorage.getItem('userId'); // Obtener ID del usuario actual
+  const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
   const [clientes, setClientes] = useState([]);
   const [inscripcionDialogOpen, setInscripcionDialogOpen] = useState(false);
   const [selectedClase, setSelectedClase] = useState(null);
@@ -80,6 +83,46 @@ const darDeBajaInscripcion = async (inscripcionId) => {
       setError('Error al dar de baja la inscripción');
       console.error('Error:', err);
     }
+  }
+};
+
+const darmedeBaja = async (claseId) => {
+  try {
+    // Buscar la inscripción del usuario en la clase
+    const inscripcion = clases.find(c => c.id === claseId)
+      ?.clientesInscritos?.find(c => c.id === parseInt(userId));
+    
+    if (!inscripcion) {
+      setError('No se encontró tu inscripción');
+      return;
+    }
+
+    await api.post(`/clases/inscripciones/${inscripcion.inscripcionId}/cancelar`);
+    fetchClases();
+    setMensaje("Te has dado de baja exitosamente");
+    setTimeout(() => setMensaje(null), 3000);
+  } catch (err) {
+    console.error('Error al darse de baja:', err);
+    setError('Error al darse de baja de la clase');
+  }
+};
+
+const estaInscrito = (clase) => {
+  return clase.clientesInscritos?.some(cliente => cliente.id === parseInt(userId));
+};
+
+const inscribirme = async (claseId) => {
+  try {
+    const response = await api.post(`/clases/${claseId}/inscribir/${userId}`);
+    
+    if (response.status === 200) {
+      fetchClases();
+      setMensaje("¡Te has inscrito exitosamente!");
+      setTimeout(() => setMensaje(null), 3000); // El mensaje desaparece después de 3 segundos
+    }
+  } catch (err) {
+    console.error('Error al inscribirse:', err);
+    setError('Ya estás inscrito en esta clase o ha ocurrido un error');
   }
 };
 
@@ -173,8 +216,10 @@ const darDeBajaInscripcion = async (inscripcionId) => {
 
   return (
     <>
+      {mensaje && <Alert severity="success" sx={{ mb: 2 }}>{mensaje}</Alert>}
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
+      {userRole === 'ADMIN' && (
       <Button 
         variant="contained" 
         onClick={() => setOpenDialog(true)} 
@@ -182,6 +227,7 @@ const darDeBajaInscripcion = async (inscripcionId) => {
       >
         Nueva Clase
       </Button>
+      )}
 
       <TableContainer component={Paper}>
   <Table>
@@ -194,6 +240,7 @@ const darDeBajaInscripcion = async (inscripcionId) => {
         <TableCell>Cupos Total</TableCell>
         <TableCell>Cupos Disponibles</TableCell>
         <TableCell>Entrenador</TableCell>
+        {userRole === 'ADMIN' && <TableCell>Alumnos Inscriptos</TableCell>}
         <TableCell>Alumnos Inscriptos</TableCell>
         <TableCell>Acciones</TableCell>
       </TableRow>
@@ -210,6 +257,7 @@ const darDeBajaInscripcion = async (inscripcionId) => {
           <TableCell>
             {clase.entrenador ? `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 'Sin entrenador'}
           </TableCell>
+          {userRole === 'ADMIN' && (
           <TableCell>
   {clase.clientesInscritos?.length > 0 ? (
     <ul style={{ margin: 0, paddingInlineStart: '20px' }}>
@@ -228,17 +276,29 @@ const darDeBajaInscripcion = async (inscripcionId) => {
     </ul>
   ) : (
     'Sin alumnos'
-  )}
-</TableCell>
-          <TableCell>
+                    )}
+                  </TableCell>
+                )}
+                <TableCell>
+        {userRole === 'CLIENTE' && (
+          estaInscrito(clase) ? (
+            <Button
+              color="error"
+              onClick={() => darmedeBaja(clase.id)}
+            >
+              Darme de baja
+            </Button>
+          ) : (
             <Button
               color="primary"
-              onClick={() => handleOpenInscripcionDialog(clase)}
+              onClick={() => inscribirme(clase.id)}
               disabled={clase.cuposDisponibles === 0}
             >
-              Inscribir Cliente
+              Inscribirme
             </Button>
-          </TableCell>
+          )
+        )}
+      </TableCell>
         </TableRow>
       ))}
     </TableBody>
