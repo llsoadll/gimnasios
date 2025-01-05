@@ -32,6 +32,8 @@ public class PagoService {
         Membresia membresia = membresiaRepository.findById(pagoDTO.getMembresiaId())
             .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
             
+        // Usar el precio de la membresía
+        pago.setMonto(membresia.getPrecio());
         pago.setMembresia(membresia);
         
         Pago pagoGuardado = pagoRepository.save(pago);

@@ -49,31 +49,30 @@ const Pagos = () => {
     }
 };
 
-  const registrarPago = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await axios.post('http://localhost:8080/api/pagos', {
-        membresiaId: parseInt(nuevoPago.membresiaId),
-        fecha: nuevoPago.fecha,
-        monto: parseFloat(nuevoPago.monto),
-        metodoPago: nuevoPago.metodoPago
-      });
-      await fetchPagos();
-      setOpenDialog(false);
-      setNuevoPago({
-        membresiaId: '',
-        fecha: '',
-        monto: '',
-        metodoPago: ''
-      });
-    } catch (err) {
-      setError('Error al registrar pago');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+const registrarPago = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const response = await axios.post('http://localhost:8080/api/pagos', {
+      membresiaId: parseInt(nuevoPago.membresiaId),
+      fecha: nuevoPago.fecha,
+      metodoPago: nuevoPago.metodoPago
+      // Ya no enviamos el monto, se tomará de la membresía
+    });
+    
+    await fetchPagos();
+    setOpenDialog(false);
+    setNuevoPago({
+      membresiaId: '',
+      fecha: '',
+      metodoPago: ''
+    });
+  } catch (err) {
+    setError('Error al registrar pago');
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (loading) {
     return (
@@ -121,55 +120,51 @@ const Pagos = () => {
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Registrar Pago</DialogTitle>
         <DialogContent>
-          <form onSubmit={registrarPago}>
-            <FormControl fullWidth margin="normal">
-              <Select
-                value={nuevoPago.membresiaId}
-                onChange={e => setNuevoPago({...nuevoPago, membresiaId: e.target.value})}
-                displayEmpty
-              >
-                <MenuItem value="" disabled>Seleccionar Membresía</MenuItem>
-                {membresias.map(membresia => (
-                  <MenuItem key={membresia.id} value={membresia.id}>
-                    {`${membresia.cliente.nombre} ${membresia.cliente.apellido} - ${membresia.tipo}`}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <TextField 
-              fullWidth
-              margin="normal"
-              label="Fecha" 
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={nuevoPago.fecha}
-              onChange={e => setNuevoPago({...nuevoPago, fecha: e.target.value})}
-            />
-            <TextField 
-              fullWidth
-              margin="normal"
-              label="Monto" 
-              type="number"
-              value={nuevoPago.monto}
-              onChange={e => setNuevoPago({...nuevoPago, monto: e.target.value})}
-            />
-            <FormControl fullWidth margin="normal">
-              <Select
-                value={nuevoPago.metodoPago}
-                onChange={e => setNuevoPago({...nuevoPago, metodoPago: e.target.value})}
-                displayEmpty
-              >
-                <MenuItem value="" disabled>Método de Pago</MenuItem>
-                <MenuItem value="EFECTIVO">Efectivo</MenuItem>
-                <MenuItem value="TARJETA">Tarjeta</MenuItem>
-                <MenuItem value="TRANSFERENCIA">Transferencia</MenuItem>
-              </Select>
-            </FormControl>
-            <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-              Guardar
-            </Button>
-          </form>
-        </DialogContent>
+  <form onSubmit={registrarPago}>
+    <FormControl fullWidth margin="normal">
+      <Select
+        value={nuevoPago.membresiaId}
+        onChange={e => setNuevoPago({...nuevoPago, membresiaId: e.target.value})}
+      >
+        <MenuItem value="" disabled>Seleccionar Membresía</MenuItem>
+        {membresias.map(membresia => (
+          <MenuItem key={membresia.id} value={membresia.id}>
+            {`${membresia.cliente.nombre} ${membresia.cliente.apellido} - ${membresia.tipo} - $${membresia.precio}`}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+    <TextField 
+      fullWidth
+      margin="normal"
+      label="Fecha" 
+      type="date"
+      InputLabelProps={{ shrink: true }}
+      value={nuevoPago.fecha}
+      onChange={e => setNuevoPago({...nuevoPago, fecha: e.target.value})}
+    />
+    <FormControl fullWidth margin="normal">
+      <Select
+        value={nuevoPago.metodoPago}
+        onChange={e => setNuevoPago({...nuevoPago, metodoPago: e.target.value})}
+      >
+        <MenuItem value="EFECTIVO">Efectivo</MenuItem>
+        <MenuItem value="TARJETA">Tarjeta</MenuItem>
+        <MenuItem value="TRANSFERENCIA">Transferencia</MenuItem>
+      </Select>
+    </FormControl>
+  </form>
+</DialogContent>
+<DialogActions>
+  <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
+  <Button 
+    onClick={registrarPago} 
+    color="primary" 
+    disabled={loading}
+  >
+    {loading ? 'Guardando...' : 'Guardar'}
+  </Button>
+</DialogActions>
       </Dialog>
     </>
   );
