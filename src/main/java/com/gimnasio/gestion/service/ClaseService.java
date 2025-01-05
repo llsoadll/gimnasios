@@ -50,6 +50,15 @@ public class ClaseService {
             throw new RuntimeException("Tu membresía no está activa");
         }
 
+        // Verificar si tiene pagos pendientes
+    boolean tienePagosAlDia = cliente.getMembresias().stream()
+    .filter(m -> m.isActiva())
+    .allMatch(m -> !m.getPagos().isEmpty());
+    
+if (!tienePagosAlDia) {
+    throw new RuntimeException("Tienes pagos pendientes. Por favor, regulariza tu situación.");
+}
+
         // Validar que tenga una membresía vigente
         boolean tieneMembresiaActiva = cliente.getMembresias().stream()
             .anyMatch(m -> m.isActiva() && m.getFechaFin().isAfter(LocalDate.now()));
