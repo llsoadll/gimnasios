@@ -23,15 +23,33 @@ const Layout = ({ children }) => {
 };
   const navigate = useNavigate();
   const drawerWidth = 240;
+  const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
+  const token = localStorage.getItem('token'); // Verificar si hay un token
 
-  const menuItems = [
-    { text: 'Usuarios', icon: <PersonOutline />, path: '/usuarios' },
-    { text: 'Membresías', icon: <CardMembershipOutlined />, path: '/membresias' },
-    { text: 'Rutinas', icon: <FitnessCenterOutlined />, path: '/rutinas' },
-    { text: 'Clases', icon: <ClassOutlined />, path: '/clases' },
-    { text: 'Seguimientos', icon: <MonitorHeartOutlined />, path: '/seguimientos' },
-    { text: 'Pagos', icon: <PaymentOutlined />, path: '/pagos' }
-  ];
+  // Definir los menús según el rol
+  const getMenuItems = () => {
+    if (!token) return []; // Si no hay token, retornar array vacío
+
+    const commonItems = [
+      { text: 'Rutinas', icon: <FitnessCenterOutlined />, path: '/rutinas' },
+      { text: 'Clases', icon: <ClassOutlined />, path: '/clases' },
+      { text: 'Seguimientos', icon: <MonitorHeartOutlined />, path: '/seguimientos' }
+    ];
+
+    const adminItems = [
+      { text: 'Usuarios', icon: <PersonOutline />, path: '/usuarios' },
+      { text: 'Membresías', icon: <CardMembershipOutlined />, path: '/membresias' },
+      { text: 'Pagos', icon: <PaymentOutlined />, path: '/pagos' },
+      ...commonItems
+    ];
+
+    return userRole === 'ADMIN' ? adminItems : commonItems;
+  };
+
+  // No mostrar el layout completo si no hay token
+  if (!token) {
+    return children;
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -57,7 +75,7 @@ const Layout = ({ children }) => {
       >
         <Toolbar />
         <List sx={{ mt: 4 }}>
-          {menuItems.map((item) => (
+          {getMenuItems().map((item) => (
             <ListItem button key={item.text} onClick={() => navigate(item.path)}>
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

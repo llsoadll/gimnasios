@@ -280,25 +280,33 @@ const inscribirme = async (claseId) => {
                   </TableCell>
                 )}
                 <TableCell>
-        {userRole === 'CLIENTE' && (
-          estaInscrito(clase) ? (
-            <Button
-              color="error"
-              onClick={() => darmedeBaja(clase.id)}
-            >
-              Darme de baja
-            </Button>
-          ) : (
-            <Button
-              color="primary"
-              onClick={() => inscribirme(clase.id)}
-              disabled={clase.cuposDisponibles === 0}
-            >
-              Inscribirme
-            </Button>
-          )
-        )}
-      </TableCell>
+  {userRole === 'ADMIN' ? (
+    <Button
+      color="primary"
+      onClick={() => handleOpenInscripcionDialog(clase)}
+      disabled={clase.cuposDisponibles === 0}
+    >
+      Inscribir Cliente
+    </Button>
+  ) : userRole === 'CLIENTE' && (
+    estaInscrito(clase) ? (
+      <Button
+        color="error"
+        onClick={() => darmedeBaja(clase.id)}
+      >
+        Darme de baja
+      </Button>
+    ) : (
+      <Button
+        color="primary"
+        onClick={() => inscribirme(clase.id)}
+        disabled={clase.cuposDisponibles === 0}
+      >
+        Inscribirme
+      </Button>
+    )
+  )}
+</TableCell>
         </TableRow>
       ))}
     </TableBody>

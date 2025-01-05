@@ -12,7 +12,10 @@ public class Rutina {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(length = 255)
     private String nombre;
+
+    @Column(columnDefinition = "TEXT")  // Para permitir textos largos
     private String descripcion;
     
     @ManyToOne(fetch = FetchType.EAGER)
