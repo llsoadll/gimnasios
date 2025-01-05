@@ -26,20 +26,32 @@ const Rutinas = () => {
     fetchUsuarios();
   }, []);
 
+
+  // Obtener el rol y ID del usuario actual
+  const userRole = localStorage.getItem('userRole');
+  const userId = localStorage.getItem('userId');
+
   const fetchRutinas = async () => {
     setLoading(true);
     setError(null);
     try {
-        const response = await api.get('/rutinas');
-        const data = Array.isArray(response.data) ? response.data : [];
-        setRutinas(data);
+      let response;
+      if (userRole === 'CLIENTE') {
+        // Si es cliente, solo obtener sus rutinas
+        response = await api.get(`/rutinas/cliente/${userId}`);
+      } else {
+        // Si es admin o entrenador, obtener todas las rutinas
+        response = await api.get('/rutinas');
+      }
+      const data = Array.isArray(response.data) ? response.data : [];
+      setRutinas(data);
     } catch (err) {
-        setError('Error al cargar rutinas');
-        console.error('Error:', err);
+      setError('Error al cargar rutinas');
+      console.error('Error:', err);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   const fetchUsuarios = async () => {
     try {
@@ -106,6 +118,8 @@ const Rutinas = () => {
     <>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
+
+      {userRole === 'ADMIN' && (
       <Button 
         variant="contained" 
         onClick={() => setOpenDialog(true)} 
@@ -113,29 +127,33 @@ const Rutinas = () => {
       >
         Nueva Rutina
       </Button>
+      )}
 
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Descripción</TableCell>
-              <TableCell>Cliente</TableCell>
-              <TableCell>Entrenador</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
+          <TableRow>
+  <TableCell>Nombre</TableCell>
+  <TableCell>Descripción</TableCell>
+  {userRole !== 'CLIENTE' && <TableCell>Cliente</TableCell>}
+  <TableCell>Entrenador</TableCell>
+  {userRole === 'ADMIN' && <TableCell>Acciones</TableCell>}
+</TableRow>
           </TableHead>
           <TableBody>
             {rutinas.map((rutina) => (
               <TableRow key={rutina.id}>
                 <TableCell>{rutina.nombre}</TableCell>
                 <TableCell>{rutina.descripcion}</TableCell>
+                {userRole !== 'CLIENTE' && (
                 <TableCell>
                   {rutina.cliente ? `${rutina.cliente.nombre} ${rutina.cliente.apellido}` : 'Sin cliente'}
                 </TableCell>
+                )}
                 <TableCell>
                   {rutina.entrenador ? `${rutina.entrenador.nombre} ${rutina.entrenador.apellido}` : 'Sin entrenador'}
                 </TableCell>
+                {userRole === 'ADMIN' && (
                 <TableCell>
                   <Button 
                     color="error"
@@ -144,6 +162,7 @@ const Rutinas = () => {
                     Eliminar
                   </Button>
                 </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

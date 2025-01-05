@@ -51,4 +51,13 @@ public class RutinaService {
     public void eliminarRutina(Long id) {
         rutinaRepository.deleteById(id);
     }
+
+    public List<RutinaDTO> obtenerRutinasCliente(Long clienteId) {
+        Usuario cliente = usuarioRepository.findById(clienteId)
+            .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+            
+        return rutinaRepository.findByCliente(cliente).stream()
+            .map(rutinaMapper::toDTO)
+            .collect(Collectors.toList());
+    }
 }

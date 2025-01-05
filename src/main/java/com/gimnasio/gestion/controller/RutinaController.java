@@ -31,4 +31,9 @@ public class RutinaController {
         rutinaService.eliminarRutina(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/cliente/{clienteId}")
+public ResponseEntity<List<RutinaDTO>> obtenerRutinasCliente(@PathVariable Long clienteId) {
+    return ResponseEntity.ok(rutinaService.obtenerRutinasCliente(clienteId));
+}
 }
