@@ -30,11 +30,10 @@ public class Membresia {
     private List<Pago> pagos;
 
     @PreUpdate
-    @PrePersist
-    public void validarFechas() {
-        // Actualizar estado según la fecha actual
-        if (this.fechaFin != null && this.fechaFin.isBefore(LocalDate.now())) {
-            this.activa = false;
+@PrePersist
+public void validarFechas() {
+    if (this.fechaFin != null && this.fechaFin.isBefore(LocalDate.now())) {
+        this.activa = false;
         }
     }
 }

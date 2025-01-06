@@ -47,19 +47,18 @@ public ResponseEntity<?> getMembresiaActiva(@PathVariable Long id) {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
                 
-        // Obtener la membresía activa con la fecha de fin más próxima
-        Membresia membresiaActiva = usuario.getMembresias().stream()
-            .filter(m -> m.isActiva() && m.getFechaFin().isAfter(LocalDate.now()))
-            .min(Comparator.comparing(Membresia::getFechaFin))  // Tomar la que vence primero
+        // Obtener la última membresía, esté activa o no
+        Membresia ultimaMembresia = usuario.getMembresias().stream()
+            .max(Comparator.comparing(Membresia::getFechaFin))
             .orElse(null);
                 
-        if (membresiaActiva == null) {
+        if (ultimaMembresia == null) {
             return ResponseEntity.ok(null);
         }
             
-        return ResponseEntity.ok(membresiaMapper.toDTO(membresiaActiva));
+        return ResponseEntity.ok(membresiaMapper.toDTO(ultimaMembresia));
     } catch (Exception e) {
-        return ResponseEntity.status(500).body("Error al obtener membresía activa");
+        return ResponseEntity.status(500).body("Error al obtener membresía");
     }
 }
 

@@ -77,9 +77,20 @@ const Layout = ({ children }) => {
           </Typography>
           {userRole === 'CLIENTE' && membresia && (
   <Box sx={{ mr: 2 }}>
-    <Typography variant="subtitle2">
+    <Typography 
+      variant="subtitle2" 
+      color={membresia.fechaFin && moment(Array.isArray(membresia.fechaFin) ? 
+        membresia.fechaFin : moment(membresia.fechaFin)).isBefore(moment()) ? 'error' : 'inherit'}
+    >
       Membresía {membresia.tipo}
-      {` - Vence: ${moment(membresia.fechaFin, 'YYYY-MM-DD').format('DD/MM/YYYY')}`}
+      {membresia.fechaFin ? (
+        Array.isArray(membresia.fechaFin) && 
+        moment([membresia.fechaFin[0], membresia.fechaFin[1] - 1, membresia.fechaFin[2]]).isBefore(moment()) ? 
+          ' - VENCIDA' :
+          ` - Vence: ${Array.isArray(membresia.fechaFin) ? 
+            moment([membresia.fechaFin[0], membresia.fechaFin[1] - 1, membresia.fechaFin[2]]).format('DD/MM/YYYY') :
+            moment(membresia.fechaFin).format('DD/MM/YYYY')}`
+      ) : ''}
     </Typography>
   </Box>
 )}
