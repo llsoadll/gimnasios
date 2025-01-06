@@ -5,7 +5,17 @@ import {
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
   Box, Grid
 } from '@mui/material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 import api from '../utils/axios';
 
 const Seguimientos = () => {
@@ -25,6 +35,16 @@ const Seguimientos = () => {
   
   const userRole = localStorage.getItem('userRole');
   const userId = localStorage.getItem('userId');
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
 
   useEffect(() => {
     if (userRole === 'ADMIN') {
@@ -120,6 +140,66 @@ const Seguimientos = () => {
     );
   }
 
+  const chartData = {
+    labels: seguimientos.map(s => {
+      const fecha = new Date(s.fecha);
+      return fecha.toLocaleDateString('es-AR');
+    }),
+    datasets: [
+      {
+        label: 'Peso (kg)',
+        data: seguimientos.map(s => ({
+          x: new Date(s.fecha).toLocaleDateString('es-AR'),
+          y: s.peso
+        })),
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+      },
+      {
+        label: 'IMC',
+        data: seguimientos.map(s => ({
+          x: new Date(s.fecha).toLocaleDateString('es-AR'),
+          y: s.imc
+        })),
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1
+      }
+    ]
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          title: function(tooltipItems) {
+            return tooltipItems[0].label;
+          },
+          label: function(context) {
+            return `${context.dataset.label}: ${context.parsed.y}`;
+          }
+        }
+      },
+      legend: {
+        position: 'top',
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Fecha'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Valor'
+        }
+      }
+    }
+  };
+
   return (
     <>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -183,16 +263,7 @@ const Seguimientos = () => {
             </TableContainer>
           </Grid>
           <Grid item xs={12}>
-            <LineChart width={800} height={400} data={seguimientos}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="fecha" />
-              <YAxis yAxisId="left" />
-              <YAxis yAxisId="right" orientation="right" />
-              <Tooltip />
-              <Legend />
-              <Line yAxisId="left" type="monotone" dataKey="peso" stroke="#8884d8" name="Peso (kg)" />
-              <Line yAxisId="right" type="monotone" dataKey="imc" stroke="#82ca9d" name="IMC" />
-            </LineChart>
+            <Line data={chartData} options={chartOptions} />
           </Grid>
         </Grid>
       )}
