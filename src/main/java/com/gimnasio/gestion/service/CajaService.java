@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
-import com.gimnasio.gestion.model.CajaIngreso;
 import com.gimnasio.gestion.repository.CajaIngresoRepository;
 
 @Service
