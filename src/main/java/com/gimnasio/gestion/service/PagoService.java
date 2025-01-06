@@ -8,11 +8,14 @@ import java.util.stream.Collectors;
 
 import com.gimnasio.gestion.dto.PagoDTO;
 import com.gimnasio.gestion.model.Pago;
+import com.gimnasio.gestion.model.CajaIngreso;
 import com.gimnasio.gestion.model.Membresia;
 import com.gimnasio.gestion.repository.PagoRepository;
+import com.gimnasio.gestion.repository.CajaIngresoRepository;
 import com.gimnasio.gestion.repository.MembresiaRepository;
 import com.gimnasio.gestion.mapper.PagoMapper;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
+
 
 @Service
 @Transactional
@@ -25,25 +28,31 @@ public class PagoService {
     
     @Autowired
     private PagoMapper pagoMapper;
+
+    @Autowired
+    private CajaIngresoRepository cajaIngresoRepository;
     
-    public PagoDTO registrarPago(PagoDTO pagoDTO) {
+     public PagoDTO registrarPago(PagoDTO pagoDTO) {
         Pago pago = pagoMapper.toEntity(pagoDTO);
         
         Membresia membresia = membresiaRepository.findById(pagoDTO.getMembresiaId())
             .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
             
-        // Usar el precio de la membresía
-        pago.setMonto(membresia.getPrecio());
         pago.setMembresia(membresia);
-        
+        pago.setMonto(membresia.getPrecio()); 
+
         Pago pagoGuardado = pagoRepository.save(pago);
+        
+        // Registrar en caja
+        CajaIngreso ingreso = new CajaIngreso();
+        ingreso.setFecha(pago.getFecha());
+        ingreso.setMonto(pago.getMonto());
+        ingreso.setConcepto("MEMBRESIA");
+        ingreso.setCliente(membresia.getCliente());
+        ingreso.setPago(pago);
+        cajaIngresoRepository.save(ingreso);
+        
         return pagoMapper.toDTO(pagoGuardado);
-    }
-    
-    public List<PagoDTO> obtenerTodos() {
-        return pagoRepository.findAll().stream()
-            .map(pagoMapper::toDTO)
-            .collect(Collectors.toList());
     }
     
     public List<PagoDTO> obtenerPagosPorMembresia(Long membresiaId) {
@@ -51,6 +60,12 @@ public class PagoService {
             .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
             
         return pagoRepository.findByMembresia(membresia).stream()
+            .map(pagoMapper::toDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<PagoDTO> obtenerTodos() {
+        return pagoRepository.findAll().stream()
             .map(pagoMapper::toDTO)
             .collect(Collectors.toList());
     }

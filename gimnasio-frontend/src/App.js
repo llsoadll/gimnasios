@@ -12,6 +12,7 @@ import Pagos from './pages/Pagos';
 import DetalleCliente from './pages/DetalleCliente';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
+import Caja from './pages/Caja';
 
 
 const theme = createTheme({
@@ -71,6 +72,13 @@ function App() {
                 <Pagos />
               </ProtectedRoute>
             } />
+
+<Route path="/caja" element={
+  <ProtectedRoute allowedRoles={['ADMIN']}>  {/* Cambiar roles por allowedRoles */}
+    <Caja />
+  </ProtectedRoute>
+} />
+
             <Route path="/usuario/:id" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <DetalleCliente />

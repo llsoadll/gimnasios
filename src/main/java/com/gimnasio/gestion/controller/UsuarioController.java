@@ -13,7 +13,6 @@ import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.service.UsuarioService;
 import com.gimnasio.gestion.mapper.UsuarioMapper;
-import java.time.LocalDate;
 import com.gimnasio.gestion.model.Membresia;
 import com.gimnasio.gestion.mapper.MembresiaMapper;
 import com.gimnasio.gestion.repository.UsuarioRepository;

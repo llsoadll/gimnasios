@@ -51,6 +51,7 @@ const Layout = ({ children }) => {
       { text: 'Usuarios', path: '/usuarios' },
       { text: 'Membresías', path: '/membresias' },
       { text: 'Pagos', path: '/pagos' },
+      { text: 'Caja', path: '/caja' }, 
       ...commonItems
     ];
 
