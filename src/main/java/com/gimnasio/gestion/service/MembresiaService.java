@@ -60,13 +60,13 @@ public class MembresiaService {
         // Calcular fecha fin según tipo de membresía
         switch(membresia.getTipo()) {
             case MENSUAL:
-                membresia.setFechaFin(fechaInicio.plusDays(30)); // Usar 30 días exactos
+                membresia.setFechaFin(fechaInicio.plusMonths(1).minusDays(1)); 
                 break;
             case TRIMESTRAL:
-                membresia.setFechaFin(fechaInicio.plusDays(90)); // Usar 90 días exactos
+                membresia.setFechaFin(fechaInicio.plusMonths(3).minusDays(1)); 
                 break;
             case ANUAL:
-                membresia.setFechaFin(fechaInicio.plusDays(365)); // Usar 365 días exactos
+                membresia.setFechaFin(fechaInicio.plusYears(1).minusDays(1)); 
                 break;
             default:
                 throw new IllegalArgumentException("Tipo de membresía no válido");

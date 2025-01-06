@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import api from '../utils/axios';
+import moment from 'moment';
 
 const DetalleCliente = () => {
   const { id } = useParams();
@@ -14,19 +15,24 @@ const DetalleCliente = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const formatearFecha = (fecha) => {
+    // Si la fecha viene como array [año, mes, día]
+    if (Array.isArray(fecha)) {
+      return moment([fecha[0], fecha[1] - 1, fecha[2]]).format('DD/MM/YYYY');
+    }
+    // Si la fecha viene como string
+    return moment(fecha).format('DD/MM/YYYY');
+  };
+
   useEffect(() => {
-    console.log("ID recibido:", id); // Debug
     fetchClienteDetalle();
   }, [id]);
 
   const fetchClienteDetalle = async () => {
     try {
-      console.log("Haciendo fetch de cliente..."); // Debug
       const response = await api.get(`/usuarios/${id}/detalle`);
-      console.log("Respuesta:", response.data); // Debug
       setCliente(response.data);
     } catch (err) {
-      console.error("Error:", err); // Debug
       setError('Error al cargar detalles del cliente');
     } finally {
       setLoading(false);
@@ -52,7 +58,7 @@ const DetalleCliente = () => {
             </Grid>
             <Grid item xs={6}>
               <Typography>Estado: {cliente.activo ? 'Activo' : 'Inactivo'}</Typography>
-              <Typography>Fecha de Nacimiento: {cliente.fechaNacimiento}</Typography>
+              <Typography>Fecha de Nacimiento: {moment(cliente.fechaNacimiento).format('DD/MM/YYYY')}</Typography>
             </Grid>
           </Grid>
         </Paper>
@@ -77,11 +83,11 @@ const DetalleCliente = () => {
                 <TableBody>
                   {cliente.membresias.map(membresia => (
                     <TableRow key={membresia.id}>
-                      <TableCell>{membresia.tipo}</TableCell>
-                      <TableCell>{membresia.fechaInicio}</TableCell>
-                      <TableCell>{membresia.fechaFin}</TableCell>
-                      <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
-                    </TableRow>
+                    <TableCell>{membresia.tipo}</TableCell>
+                    <TableCell>{formatearFecha(membresia.fechaInicio)}</TableCell>
+                    <TableCell>{formatearFecha(membresia.fechaFin)}</TableCell>
+                    <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
+                  </TableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -108,12 +114,12 @@ const DetalleCliente = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {cliente.pagos.map(pago => (
-                    <TableRow key={pago.id}>
-                      <TableCell>{pago.fecha}</TableCell>
-                      <TableCell>${pago.monto}</TableCell>
-                      <TableCell>{pago.metodoPago}</TableCell>
-                    </TableRow>
+                {cliente.pagos.map(pago => (
+              <TableRow key={pago.id}>
+                <TableCell>{formatearFecha(pago.fecha)}</TableCell>
+                <TableCell>${pago.monto}</TableCell>
+                <TableCell>{pago.metodoPago}</TableCell>
+              </TableRow>
                   ))}
                 </TableBody>
               </Table>
@@ -157,43 +163,42 @@ const DetalleCliente = () => {
       </Grid>
 
       {/* Clases Inscritas */}
-<Grid item xs={12} md={6}>
-  <Paper sx={{ p: 2 }}>
-    <Typography variant="h6">Clases Inscritas</Typography>
-    <Divider sx={{ my: 2 }} />
-    {cliente.clasesInscritas?.length > 0 ? (
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Día</TableCell>
-              <TableCell>Horario</TableCell>
-              <TableCell>Entrenador</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {cliente.clasesInscritas.map(clase => (
-              <TableRow key={clase.id}>
-                <TableCell>{clase.nombre}</TableCell>
-                <TableCell>{clase.dia}</TableCell>
-                <TableCell>{clase.horario}</TableCell>
-                <TableCell>
-                  {clase.entrenador ? 
-                    `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 
-                    'Sin entrenador'}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    ) : (
-      <Typography>No está inscrito en ninguna clase</Typography>
-    )}
-  </Paper>
-</Grid>
-
+      <Grid item xs={12} md={6}>
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h6">Clases Inscritas</Typography>
+          <Divider sx={{ my: 2 }} />
+          {cliente.clasesInscritas?.length > 0 ? (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Nombre</TableCell>
+                    <TableCell>Día</TableCell>
+                    <TableCell>Horario</TableCell>
+                    <TableCell>Entrenador</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {cliente.clasesInscritas.map(clase => (
+                    <TableRow key={clase.id}>
+                      <TableCell>{clase.nombre}</TableCell>
+                      <TableCell>{clase.dia}</TableCell>
+                      <TableCell>{clase.horario}</TableCell>
+                      <TableCell>
+                        {clase.entrenador ? 
+                          `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 
+                          'Sin entrenador'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <Typography>No está inscrito en ninguna clase</Typography>
+          )}
+        </Paper>
+      </Grid>
       {/* Seguimiento */}
       <Grid item xs={12}>
         <Paper sx={{ p: 2 }}>

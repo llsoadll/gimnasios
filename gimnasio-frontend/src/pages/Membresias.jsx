@@ -27,6 +27,15 @@ const Membresias = () => {
     fetchClientes();
   }, []);
 
+  const formatearFecha = (fecha) => {
+    // Si la fecha viene como array [año, mes, día]
+    if (Array.isArray(fecha)) {
+      return moment([fecha[0], fecha[1] - 1, fecha[2]]).format('DD/MM/YYYY');
+    }
+    // Si la fecha viene como string
+    return moment(fecha).format('DD/MM/YYYY');
+  };
+
   const fetchMembresias = async () => {
     setLoading(true);
     setError(null);
@@ -66,28 +75,31 @@ const Membresias = () => {
     }
 };
 
-  const agregarMembresia = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    try {
-        const response = await axios.post('http://localhost:8080/api/membresias', {
-            cliente: {
-                id: parseInt(nuevaMembresia.clienteId)  // Asegurarnos que el ID es un número
-            },
-            fechaInicio: nuevaMembresia.fechaInicio,
-            precio: parseFloat(nuevaMembresia.precio),
-            tipo: nuevaMembresia.tipo,
-            activa: nuevaMembresia.activa
-        });
-        await fetchMembresias(); // Recargar las membresías después de crear una nueva
-        setOpenDialog(false);
-    } catch (err) {
-        setError(`Error al crear membresía: ${err.response?.data?.message || err.message}`);
-        console.error('Error:', err);
-    } finally {
-        setLoading(false);
-    }
+const agregarMembresia = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  try {
+      // Formatear la fecha correctamente antes de enviarla
+      const fechaInicio = moment(nuevaMembresia.fechaInicio).format('YYYY-MM-DD');
+      
+      const response = await axios.post('http://localhost:8080/api/membresias', {
+          cliente: {
+              id: parseInt(nuevaMembresia.clienteId)
+          },
+          fechaInicio: fechaInicio,
+          precio: parseFloat(nuevaMembresia.precio),
+          tipo: nuevaMembresia.tipo,
+          activa: nuevaMembresia.activa
+      });
+      console.log('Fecha inicio enviada:', fechaInicio); // Para debug
+      await fetchMembresias();
+      setOpenDialog(false);
+  } catch (err) {
+      setError('Error al crear membresía');
+  } finally {
+      setLoading(false);
+  }
 };
 
   if (loading) {
@@ -111,25 +123,25 @@ const Membresias = () => {
       </Button>
 
       <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Cliente</TableCell>
-            <TableCell>Tipo</TableCell>
-            <TableCell>Fecha Inicio</TableCell>
-            <TableCell>Fecha Fin</TableCell>
-            <TableCell>Precio</TableCell>
-            <TableCell>Estado</TableCell>
-            <TableCell>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {membresias.map((membresia) => (
-            <TableRow key={membresia.id}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Cliente</TableCell>
+              <TableCell>Tipo</TableCell>
+              <TableCell>Fecha Inicio</TableCell>
+              <TableCell>Fecha Fin</TableCell>
+              <TableCell>Precio</TableCell>
+              <TableCell>Estado</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {membresias.map((membresia) => (
+              <TableRow key={membresia.id}>
               <TableCell>{membresia.cliente ? `${membresia.cliente.nombre} ${membresia.cliente.apellido}` : 'Sin cliente'}</TableCell>
               <TableCell>{membresia.tipo}</TableCell>
-              <TableCell>{moment(membresia.fechaInicio).format('DD/MM/YYYY')}</TableCell>
-              <TableCell>{moment(membresia.fechaFin).format('DD/MM/YYYY')}</TableCell>
+              <TableCell>{formatearFecha(membresia.fechaInicio)}</TableCell>
+              <TableCell>{formatearFecha(membresia.fechaFin)}</TableCell>
               <TableCell>{membresia.precio}</TableCell>
               <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
               <TableCell>
@@ -141,10 +153,10 @@ const Membresias = () => {
                 </Button>
               </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
