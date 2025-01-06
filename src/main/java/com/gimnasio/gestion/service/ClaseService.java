@@ -1,6 +1,7 @@
 package com.gimnasio.gestion.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,42 +37,44 @@ public class ClaseService {
     public void eliminarClase(Long id) {
         Clase clase = claseRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada"));
+            
+        // Primero eliminar todas las inscripciones asociadas
+        List<InscripcionClase> inscripciones = inscripcionClaseRepository.findByClase(clase);
+        inscripcionClaseRepository.deleteAll(inscripciones);
+        
+        // Luego eliminar la clase
         claseRepository.delete(clase);
     }
 
     public InscripcionClase inscribirCliente(Long claseId, Long clienteId) {
-        Clase clase = claseRepository.findById(claseId)
-            .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada"));
-            
+        try {
+            Clase clase = claseRepository.findById(claseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada"));
+                
             Usuario cliente = usuarioRepository.findById(clienteId)
-            .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
-            
-        if (!cliente.isActivo()) {
-            throw new RuntimeException("Tu membresía no está activa");
-        }
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
 
-        // Verificar si tiene pagos pendientes
-    boolean tienePagosAlDia = cliente.getMembresias().stream()
-    .filter(m -> m.isActiva())
-    .allMatch(m -> !m.getPagos().isEmpty());
-    
-if (!tienePagosAlDia) {
-    throw new RuntimeException("Tienes pagos pendientes. Por favor, regulariza tu situación.");
-}
+            // Verificar si ya está inscrito
+            boolean yaInscrito = inscripcionClaseRepository.existsByClaseAndClienteAndActivaTrue(clase, cliente);
+            if (yaInscrito) {
+                throw new RuntimeException("El cliente ya está inscrito en esta clase");
+            }
 
-        // Validar que tenga una membresía vigente
-        boolean tieneMembresiaActiva = cliente.getMembresias().stream()
-            .anyMatch(m -> m.isActiva() && m.getFechaFin().isAfter(LocalDate.now()));
+            // Verificar cupos disponibles
+            if (!clase.tieneEspacioDisponible()) {
+                throw new RuntimeException("No hay cupos disponibles en esta clase");
+            }
+
+            InscripcionClase inscripcion = new InscripcionClase();
+            inscripcion.setClase(clase);
+            inscripcion.setCliente(cliente);
+            inscripcion.setActiva(true);
+            inscripcion.setFechaInscripcion(LocalDateTime.now());
             
-        if (!tieneMembresiaActiva) {
-            throw new RuntimeException("Necesitas una membresía activa para inscribirte");
+            return inscripcionClaseRepository.save(inscripcion);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al inscribir cliente: " + e.getMessage());
         }
-        
-        InscripcionClase inscripcion = new InscripcionClase();
-        inscripcion.setClase(clase);
-        inscripcion.setCliente(cliente);
-        
-        return inscripcionClaseRepository.save(inscripcion);
     }
 
     public void cancelarInscripcion(Long inscripcionId) {

@@ -36,8 +36,8 @@ public class ClaseMapper {
         long clientesActivos = clase.getClientesInscritos().size();
         dto.setCuposDisponibles(clase.getCupo() - (int)clientesActivos);
         
-        // Mapear clientes inscritos
-         dto.setClientesInscritos(clase.getInscripciones().stream()
+        // Mapear clientes inscritos activos
+        dto.setClientesInscritos(clase.getInscripciones().stream()
             .filter(InscripcionClase::isActiva)
             .map(inscripcion -> {
                 ClienteInscritoDTO clienteDTO = new ClienteInscritoDTO();
@@ -49,6 +49,7 @@ public class ClaseMapper {
                 return clienteDTO;
             })
             .collect(Collectors.toList()));
+            
         
         return dto;
     }

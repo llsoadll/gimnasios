@@ -13,4 +13,5 @@ public interface InscripcionClaseRepository extends JpaRepository<InscripcionCla
     List<InscripcionClase> findByClaseAndActivaTrue(Clase clase);
     List<InscripcionClase> findByClienteAndActivaTrue(Usuario cliente);
     boolean existsByClaseAndClienteAndActivaTrue(Clase clase, Usuario cliente);
+    List<InscripcionClase> findByClase(Clase clase);
 }
