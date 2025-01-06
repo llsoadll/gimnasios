@@ -14,5 +14,6 @@ public interface MembresiaRepository extends JpaRepository<Membresia, Long> {
     List<Membresia> findByCliente(Usuario cliente);
     List<Membresia> findByClienteAndActiva(Usuario cliente, boolean activa);
         List<Membresia> findByActivaTrueAndFechaFinBefore(LocalDate fecha);
+        List<Membresia> findByActivaTrue();
 
 }

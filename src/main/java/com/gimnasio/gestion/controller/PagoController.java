@@ -28,4 +28,10 @@ public class PagoController {
     public ResponseEntity<List<PagoDTO>> obtenerPagosPorMembresia(@PathVariable Long membresiaId) {
         return ResponseEntity.ok(pagoService.obtenerPagosPorMembresia(membresiaId));
     }
+
+    @DeleteMapping("/{id}")
+public ResponseEntity<Void> eliminarPago(@PathVariable Long id) {
+    pagoService.eliminarPago(id);
+    return ResponseEntity.noContent().build();
+}
 }

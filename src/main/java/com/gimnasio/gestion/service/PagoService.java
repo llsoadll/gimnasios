@@ -69,4 +69,20 @@ public class PagoService {
             .map(pagoMapper::toDTO)
             .collect(Collectors.toList());
     }
+
+    public void eliminarPago(Long id) {
+        Pago pago = pagoRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado"));
+            
+        // First try to find and delete any associated CajaIngreso
+        CajaIngreso cajaIngreso = cajaIngresoRepository.findByPago(pago)
+            .orElse(null);
+            
+        if (cajaIngreso != null) {
+            cajaIngresoRepository.delete(cajaIngreso);
+        }
+        
+        // Then delete the pago
+        pagoRepository.delete(pago);
+    }
 }

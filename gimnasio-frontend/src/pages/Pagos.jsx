@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
-  DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
-  Box
+  Button, Table, TableBody, TableCell, TableContainer, 
+  TableHead, TableRow, Paper, TextField, FormControl, 
+  Select, MenuItem, Dialog, DialogTitle, DialogContent,
+  DialogActions, Alert, Box, CircularProgress
 } from '@mui/material';
-import axios from 'axios';
+import api from '../utils/axios';
 
 const Pagos = () => {
   const [pagos, setPagos] = useState([]);
@@ -16,7 +16,6 @@ const Pagos = () => {
   const [nuevoPago, setNuevoPago] = useState({
     membresiaId: '',
     fecha: '',
-    monto: '',
     metodoPago: ''
   });
 
@@ -28,7 +27,7 @@ const Pagos = () => {
   const fetchPagos = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:8080/api/pagos');
+      const response = await api.get('/pagos');
       setPagos(response.data);
     } catch (err) {
       setError('Error al cargar pagos');
@@ -40,39 +39,52 @@ const Pagos = () => {
 
   const fetchMembresias = async () => {
     try {
-        // Cambiar el endpoint para obtener solo membresías sin pagar
-        const response = await axios.get('http://localhost:8080/api/membresias/sin-pagar');
-        setMembresias(response.data);
+      const response = await api.get('/membresias');
+      const membresiasActivas = response.data.filter(membresia => 
+        membresia.activa && (!membresia.pagos || membresia.pagos.length === 0)
+      );
+      setMembresias(membresiasActivas);
     } catch (err) {
-        setError('Error al cargar membresías');
-        console.error('Error:', err);
+      setError('Error al cargar membresías');
+      console.error('Error:', err);
+    }
+  };
+
+  const eliminarPago = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar este pago?')) {
+        try {
+            await api.delete(`/pagos/${id}`);
+            setPagos(pagos.filter(pago => pago.id !== id));
+        } catch (err) {
+            console.error('Error:', err);
+            setError(err.response?.data?.message || 'Error al eliminar el pago');
+        }
     }
 };
 
-const registrarPago = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const response = await axios.post('http://localhost:8080/api/pagos', {
-      membresiaId: parseInt(nuevoPago.membresiaId),
-      fecha: nuevoPago.fecha,
-      metodoPago: nuevoPago.metodoPago
-      // Ya no enviamos el monto, se tomará de la membresía
-    });
-    
-    await fetchPagos();
-    setOpenDialog(false);
-    setNuevoPago({
-      membresiaId: '',
-      fecha: '',
-      metodoPago: ''
-    });
-  } catch (err) {
-    setError('Error al registrar pago');
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api.post('/pagos', {
+        membresiaId: parseInt(nuevoPago.membresiaId),
+        fecha: nuevoPago.fecha,
+        metodoPago: nuevoPago.metodoPago
+      });
+      
+      await fetchPagos();
+      setOpenDialog(false);
+      setNuevoPago({
+        membresiaId: '',
+        fecha: '',
+        metodoPago: ''
+      });
+    } catch (err) {
+      setError('Error al registrar pago');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -86,11 +98,7 @@ const registrarPago = async (e) => {
     <>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      <Button 
-        variant="contained" 
-        onClick={() => setOpenDialog(true)} 
-        sx={{ mb: 2 }}
-      >
+      <Button variant="contained" onClick={() => setOpenDialog(true)} sx={{ mb: 2 }}>
         Registrar Pago
       </Button>
 
@@ -102,6 +110,7 @@ const registrarPago = async (e) => {
               <TableCell>Fecha</TableCell>
               <TableCell>Monto</TableCell>
               <TableCell>Método de Pago</TableCell>
+              <TableCell>Acciones</TableCell> 
             </TableRow>
           </TableHead>
           <TableBody>
@@ -111,6 +120,16 @@ const registrarPago = async (e) => {
                 <TableCell>{pago.fecha}</TableCell>
                 <TableCell>{pago.monto}</TableCell>
                 <TableCell>{pago.metodoPago}</TableCell>
+                <TableCell>
+                  <Button 
+                    variant="contained"
+                    color="error"
+                    size="small"
+                    onClick={() => eliminarPago(pago.id)}
+                  >
+                    Eliminar
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -120,51 +139,47 @@ const registrarPago = async (e) => {
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Registrar Pago</DialogTitle>
         <DialogContent>
-  <form onSubmit={registrarPago}>
-    <FormControl fullWidth margin="normal">
-      <Select
-        value={nuevoPago.membresiaId}
-        onChange={e => setNuevoPago({...nuevoPago, membresiaId: e.target.value})}
-      >
-        <MenuItem value="" disabled>Seleccionar Membresía</MenuItem>
-        {membresias.map(membresia => (
-          <MenuItem key={membresia.id} value={membresia.id}>
-            {`${membresia.cliente.nombre} ${membresia.cliente.apellido} - ${membresia.tipo} - $${membresia.precio}`}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-    <TextField 
-      fullWidth
-      margin="normal"
-      label="Fecha" 
-      type="date"
-      InputLabelProps={{ shrink: true }}
-      value={nuevoPago.fecha}
-      onChange={e => setNuevoPago({...nuevoPago, fecha: e.target.value})}
-    />
-    <FormControl fullWidth margin="normal">
-      <Select
-        value={nuevoPago.metodoPago}
-        onChange={e => setNuevoPago({...nuevoPago, metodoPago: e.target.value})}
-      >
-        <MenuItem value="EFECTIVO">Efectivo</MenuItem>
-        <MenuItem value="TARJETA">Tarjeta</MenuItem>
-        <MenuItem value="TRANSFERENCIA">Transferencia</MenuItem>
-      </Select>
-    </FormControl>
-  </form>
-</DialogContent>
-<DialogActions>
-  <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
-  <Button 
-    onClick={registrarPago} 
-    color="primary" 
-    disabled={loading}
-  >
-    {loading ? 'Guardando...' : 'Guardar'}
-  </Button>
-</DialogActions>
+          <form onSubmit={handleSubmit}>
+            <FormControl fullWidth margin="normal">
+              <Select
+                value={nuevoPago.membresiaId}
+                onChange={e => setNuevoPago({...nuevoPago, membresiaId: e.target.value})}
+              >
+                <MenuItem value="" disabled>Seleccionar Membresía</MenuItem>
+                {membresias.map(membresia => (
+                  <MenuItem key={membresia.id} value={membresia.id}>
+                    {`${membresia.cliente.nombre} ${membresia.cliente.apellido} - ${membresia.tipo} - $${membresia.precio}`}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField 
+              fullWidth
+              margin="normal"
+              label="Fecha" 
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              value={nuevoPago.fecha}
+              onChange={e => setNuevoPago({...nuevoPago, fecha: e.target.value})}
+            />
+            <FormControl fullWidth margin="normal">
+              <Select
+                value={nuevoPago.metodoPago}
+                onChange={e => setNuevoPago({...nuevoPago, metodoPago: e.target.value})}
+              >
+                <MenuItem value="EFECTIVO">Efectivo</MenuItem>
+                <MenuItem value="TARJETA">Tarjeta</MenuItem>
+                <MenuItem value="TRANSFERENCIA">Transferencia</MenuItem>
+              </Select>
+            </FormControl>
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
+          <Button onClick={handleSubmit} color="primary" disabled={loading}>
+            {loading ? 'Guardando...' : 'Guardar'}
+          </Button>
+        </DialogActions>
       </Dialog>
     </>
   );

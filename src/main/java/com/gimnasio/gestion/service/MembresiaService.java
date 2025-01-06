@@ -79,8 +79,8 @@ public class MembresiaService {
 
 
     public List<MembresiaDTO> obtenerMembresiasSinPagar() {
-        return membresiaRepository.findAll().stream()
-            .filter(membresia -> membresia.getPagos().isEmpty())  // Solo membresías sin pagos
+        return membresiaRepository.findByActivaTrue().stream()
+            .filter(membresia -> membresia.getPagos() == null || membresia.getPagos().isEmpty())
             .map(membresiaMapper::toDTO)
             .collect(Collectors.toList());
     }
