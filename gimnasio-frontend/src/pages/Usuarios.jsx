@@ -5,7 +5,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
-  Box
+  Box, Typography
 } from '@mui/material';
 import { Switch } from '@mui/material'; // Agregar este import
 import api from '../utils/axios'; 
@@ -13,6 +13,8 @@ import api from '../utils/axios';
 
 const Usuarios = () => {
   const navigate = useNavigate();
+  const [itemsPorPagina] = useState(10);
+  const [paginaActual, setPaginaActual] = useState(1);
   const [usuarios, setUsuarios] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -66,12 +68,19 @@ const [usuarioEdit, setUsuarioEdit] = useState({
     }
   };
 
-  const usuariosFiltrados = usuarios.filter(usuario => 
-    usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    usuario.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    usuario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    usuario.tipo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const totalPaginas = Math.ceil(usuarios.length / itemsPorPagina);
+
+
+  const usuariosFiltrados = usuarios
+  .filter(usuario => 
+    searchTerm ? (
+      usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      usuario.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      usuario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      usuario.tipo.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : true
+  )
+  .slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
 
 const actualizarUsuario = async (e) => {
   e.preventDefault();
@@ -261,6 +270,24 @@ const agregarUsuario = async (e) => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+  <Button 
+    disabled={paginaActual === 1} 
+    onClick={() => setPaginaActual(prev => prev - 1)}
+  >
+    Anterior
+  </Button>
+  <Typography sx={{ alignSelf: 'center' }}>
+    Página {paginaActual} de {totalPaginas}
+  </Typography>
+  <Button 
+    disabled={paginaActual === totalPaginas} 
+    onClick={() => setPaginaActual(prev => prev + 1)}
+  >
+    Siguiente
+  </Button>
+</Box>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Nuevo Usuario</DialogTitle>
