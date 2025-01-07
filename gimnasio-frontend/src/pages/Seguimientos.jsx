@@ -63,6 +63,20 @@ const Seguimientos = () => {
     }
   };
 
+  const eliminarSeguimiento = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar este seguimiento?')) {
+      try {
+        await api.delete(`/seguimientos/${id}`);
+        await fetchSeguimientos(selectedCliente);
+        setMensaje("Seguimiento eliminado exitosamente");
+        setTimeout(() => setMensaje(null), 3000);
+      } catch (err) {
+        setError('Error al eliminar seguimiento');
+        console.error('Error:', err);
+      }
+    }
+  };
+
   const fetchSeguimientos = async (clienteId) => {
     try {
       const response = await api.get(`/seguimientos/cliente/${clienteId}`);
@@ -246,6 +260,7 @@ const Seguimientos = () => {
                     <TableCell>Altura (cm)</TableCell>
                     <TableCell>IMC</TableCell>
                     <TableCell>Observaciones</TableCell>
+                    {userRole === 'ADMIN' && <TableCell>Acciones</TableCell>}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -256,6 +271,18 @@ const Seguimientos = () => {
                       <TableCell>{seguimiento.altura}</TableCell>
                       <TableCell>{seguimiento.imc}</TableCell>
                       <TableCell>{seguimiento.observaciones}</TableCell>
+                      {userRole === 'ADMIN' && (
+        <TableCell>
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            onClick={() => eliminarSeguimiento(seguimiento.id)}
+          >
+            Eliminar
+          </Button>
+        </TableCell>
+      )}
                     </TableRow>
                   ))}
                 </TableBody>

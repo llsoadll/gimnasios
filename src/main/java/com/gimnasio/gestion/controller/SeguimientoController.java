@@ -2,6 +2,7 @@ package com.gimnasio.gestion.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,4 +29,10 @@ public class SeguimientoController {
     public ResponseEntity<List<Seguimiento>> obtenerHistorial(@PathVariable Long clienteId) {
         return ResponseEntity.ok(seguimientoService.obtenerHistorialCliente(clienteId));
     }
+
+    @DeleteMapping("/{id}")
+public ResponseEntity<Void> eliminarSeguimiento(@PathVariable Long id) {
+    seguimientoService.eliminarSeguimiento(id);
+    return ResponseEntity.noContent().build();
+}
 }

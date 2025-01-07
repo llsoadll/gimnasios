@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
+import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.model.Seguimiento;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.repository.SeguimientoRepository;
@@ -28,4 +29,10 @@ public class SeguimientoService {
             .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
         return seguimientoRepository.findByClienteOrderByFechaDesc(cliente);
     }
+
+    public void eliminarSeguimiento(Long id) {
+    seguimientoRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Seguimiento no encontrado"));
+    seguimientoRepository.deleteById(id);
+}
 }

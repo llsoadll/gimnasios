@@ -1,13 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
-  Grid, Paper, Typography, Divider, Box,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  CircularProgress, Alert
+  Grid,
+  Paper,
+  Typography,
+  Box,
+  Divider,
+  CircularProgress,
+  // ...existing material-ui imports...
 } from '@mui/material';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
 import api from '../utils/axios';
 import moment from 'moment';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const DetalleCliente = () => {
   const { id } = useParams();
@@ -36,6 +60,61 @@ const DetalleCliente = () => {
       setError('Error al cargar detalles del cliente');
     } finally {
       setLoading(false);
+    }
+  };
+
+
+  const chartData = {
+    labels: cliente?.seguimientos?.map(s => {
+      const fecha = new Date(s.fecha);
+      return fecha.toLocaleDateString('es-AR');
+    }) || [],
+    datasets: [
+      {
+        label: 'Peso (kg)',
+        data: cliente?.seguimientos?.map(s => s.peso) || [],
+        borderColor: 'rgb(75, 192, 192)',
+        tension: 0.1
+      },
+      {
+        label: 'IMC',
+        data: cliente?.seguimientos?.map(s => s.imc) || [],
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1
+      }
+    ]
+  };
+  
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          title: function(tooltipItems) {
+            return tooltipItems[0].label;
+          },
+          label: function(context) {
+            return `${context.dataset.label}: ${context.parsed.y}`;
+          }
+        }
+      },
+      legend: {
+        position: 'top',
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Fecha'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Valor'
+        }
+      }
     }
   };
 
@@ -201,27 +280,19 @@ const DetalleCliente = () => {
       </Grid>
       {/* Seguimiento */}
       <Grid item xs={12}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Seguimiento</Typography>
-          <Divider sx={{ my: 2 }} />
-          {cliente.seguimientos?.length > 0 ? (
-            <Box sx={{ height: 300 }}>
-              <LineChart width={800} height={250} data={cliente.seguimientos}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="fecha" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
-                <Legend />
-                <Line yAxisId="left" type="monotone" dataKey="peso" stroke="#8884d8" name="Peso (kg)" />
-                <Line yAxisId="right" type="monotone" dataKey="imc" stroke="#82ca9d" name="IMC" />
-              </LineChart>
-            </Box>
-          ) : (
-            <Typography>No hay seguimientos registrados</Typography>
-          )}
-        </Paper>
-      </Grid>
+      <Paper sx={{ p: 2 }}>
+        <Typography variant="h6">Seguimiento</Typography>
+        <Divider sx={{ my: 2 }} />
+        {cliente?.seguimientos?.length > 0 ? (
+      <Box sx={{ height: 300, mt: 3 }}>
+        <Typography variant="h6">Progreso</Typography>
+        <Line data={chartData} options={chartOptions} />
+      </Box>
+    ) : (
+      <Typography>No hay seguimientos registrados</Typography>
+    )}
+      </Paper>
+    </Grid>
     </Grid>
   );
 };
