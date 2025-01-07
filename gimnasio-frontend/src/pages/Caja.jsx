@@ -98,7 +98,7 @@ const fetchTotales = async () => {
   color: 'white' 
 }}>
           <Typography variant="h5" gutterBottom>Total Diario</Typography>
-          <Typography variant="h4" gutterBottom>${totalDiario}</Typography>
+          <Typography variant="h6" gutterBottom>${totalDiario}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={12} md={4}>
@@ -109,7 +109,7 @@ const fetchTotales = async () => {
   color: 'white' 
 }}>
           <Typography variant="h5" gutterBottom>Total Mensual</Typography>
-          <Typography variant="h4" gutterBottom>${totalMensual}</Typography>
+          <Typography variant="h6" gutterBottom>${totalMensual}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={12} md={4}>
@@ -120,7 +120,7 @@ const fetchTotales = async () => {
   color: 'white' 
 }}>
           <Typography variant="h5" gutterBottom>Total Anual</Typography>
-          <Typography variant="h4" gutterBottom>${totalAnual}</Typography>
+          <Typography variant="h6" gutterBottom>${totalAnual}</Typography>
         </Paper>
       </Grid>
       

@@ -37,12 +37,6 @@ public class MembresiaService {
             .collect(Collectors.toList());
     }
 
-    public void eliminarMembresia(Long id) {
-        membresiaRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
-        membresiaRepository.deleteById(id);
-    }
-    
     public MembresiaDTO crearMembresia(MembresiaDTO membresiaDTO) {
         Membresia membresia = membresiaMapper.toEntity(membresiaDTO);
         
@@ -60,13 +54,13 @@ public class MembresiaService {
         // Calcular fecha fin según tipo de membresía
         switch(membresia.getTipo()) {
             case MENSUAL:
-                membresia.setFechaFin(fechaInicio.plusMonths(1).minusDays(1)); 
+                membresia.setFechaFin(fechaInicio.plusMonths(1));
                 break;
             case TRIMESTRAL:
-                membresia.setFechaFin(fechaInicio.plusMonths(3).minusDays(1)); 
+                membresia.setFechaFin(fechaInicio.plusMonths(3));
                 break;
             case ANUAL:
-                membresia.setFechaFin(fechaInicio.plusYears(1).minusDays(1)); 
+                membresia.setFechaFin(fechaInicio.plusYears(1));
                 break;
             default:
                 throw new IllegalArgumentException("Tipo de membresía no válido");
@@ -90,7 +84,13 @@ public class MembresiaService {
         return membresia.getPagos() != null && 
                !membresia.getPagos().isEmpty();
     }
-    
+
+    public void eliminarMembresia(Long id) {
+        Membresia membresia = membresiaRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
+        membresiaRepository.delete(membresia);
+    }
+
     @Scheduled(cron = "0 0 0 * * *") // Se ejecuta todos los días a las 00:00
 public void actualizarEstadoMembresias() {
     // Busca todas las membresías que están activas pero su fecha fin ya pasó

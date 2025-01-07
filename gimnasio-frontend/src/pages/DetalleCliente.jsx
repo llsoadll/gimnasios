@@ -169,19 +169,35 @@ const DetalleCliente = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Tipo</TableCell>
-                    <TableCell>Fecha Inicio</TableCell>
-                    <TableCell>Fecha Fin</TableCell>
-                    <TableCell>Estado</TableCell>
+                  <TableCell>
+  <Typography sx={{ color: 'white' }}>
+    Tipo
+  </Typography>
+</TableCell>
+<TableCell>
+  <Typography sx={{ color: 'white' }}>
+    Fecha Inicio
+  </Typography>
+</TableCell>
+<TableCell>
+  <Typography sx={{ color: 'white' }}>
+    Fecha Fin
+  </Typography>
+</TableCell>
+<TableCell>
+  <Typography sx={{ color: 'white' }}>
+    Estado
+  </Typography>
+</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {cliente.membresias.map(membresia => (
                     <TableRow key={membresia.id}>
-                    <TableCell>{membresia.tipo}</TableCell>
-                    <TableCell>{formatearFecha(membresia.fechaInicio)}</TableCell>
-                    <TableCell>{formatearFecha(membresia.fechaFin)}</TableCell>
-                    <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>{membresia.tipo}</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>{formatearFecha(membresia.fechaInicio)}</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>{formatearFecha(membresia.fechaFin)}</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>{membresia.activa ? 'Activa' : 'Inactiva'}</Typography></TableCell>
                   </TableRow>
                   ))}
                 </TableBody>
@@ -208,17 +224,17 @@ const DetalleCliente = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Fecha</TableCell>
-                    <TableCell>Monto</TableCell>
-                    <TableCell>Método</TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Fecha</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Monto</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Método</Typography></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                 {cliente.pagos.map(pago => (
               <TableRow key={pago.id}>
-                <TableCell>{formatearFecha(pago.fecha)}</TableCell>
-                <TableCell>${pago.monto}</TableCell>
-                <TableCell>{pago.metodoPago}</TableCell>
+                <TableCell><Typography sx={{ color: 'white' }}>{formatearFecha(pago.fecha)}</Typography></TableCell>
+                <TableCell><Typography sx={{ color: 'white' }}>${pago.monto}</Typography></TableCell>
+                <TableCell><Typography sx={{ color: 'white' }}>{pago.metodoPago}</Typography></TableCell>
               </TableRow>
                   ))}
                 </TableBody>
@@ -245,17 +261,17 @@ const DetalleCliente = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Nombre</TableCell>
-                    <TableCell>Descripción</TableCell>
-                    <TableCell>Entrenador</TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Nombre</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Descripción</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Entrenador</Typography></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {cliente.rutinas.map(rutina => (
                     <TableRow key={rutina.id}>
-                      <TableCell>{rutina.nombre}</TableCell>
-                      <TableCell>{rutina.descripcion}</TableCell>
-                      <TableCell>{`${rutina.entrenador.nombre} ${rutina.entrenador.apellido}`}</TableCell>
+                      <TableCell><Typography sx={{ color: 'white' }}>{rutina.nombre}</Typography></TableCell>
+                      <TableCell><Typography sx={{ color: 'white' }}>{rutina.descripcion}</Typography></TableCell>
+                      <TableCell><Typography sx={{ color: 'white' }}>{`${rutina.entrenador.nombre} ${rutina.entrenador.apellido}`}</Typography></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -282,23 +298,23 @@ const DetalleCliente = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Nombre</TableCell>
-                    <TableCell>Día</TableCell>
-                    <TableCell>Horario</TableCell>
-                    <TableCell>Entrenador</TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Nombre</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Día</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Horario</Typography></TableCell>
+                    <TableCell><Typography sx={{ color: 'white' }}>Entrenador</Typography></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {cliente.clasesInscritas.map(clase => (
                     <TableRow key={clase.id}>
-                      <TableCell>{clase.nombre}</TableCell>
-                      <TableCell>{clase.dia}</TableCell>
-                      <TableCell>{clase.horario}</TableCell>
-                      <TableCell>
+                      <TableCell><Typography sx={{ color: 'white' }}>{clase.nombre}</Typography></TableCell>
+                      <TableCell><Typography sx={{ color: 'white' }}>{clase.dia}</Typography></TableCell>
+                      <TableCell><Typography sx={{ color: 'white' }}>{clase.horario}</Typography></TableCell>
+                      <TableCell><Typography sx={{ color: 'white' }}>
                         {clase.entrenador ? 
                           `${clase.entrenador.nombre} ${clase.entrenador.apellido}` : 
                           'Sin entrenador'}
-                      </TableCell>
+                      </Typography></TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -311,11 +327,7 @@ const DetalleCliente = () => {
       </Grid>
       {/* Seguimiento */}
       <Grid item xs={12}>
-      <Paper sx={{ 
-  p: 3,
-  mb: 3,
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  color: 'white' 
+      <Paper sx={{ p: 3,
 }}>
         <Typography variant="h5" gutterBottom>Seguimiento</Typography>
         <Divider sx={{ my: 2 }} />

@@ -1,5 +1,6 @@
 package com.gimnasio.gestion.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,6 +53,15 @@ public class ClaseService {
                 
             Usuario cliente = usuarioRepository.findById(clienteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+
+            // Verificar si tiene membresía activa y paga
+        boolean tieneMembresiaActivaYPaga = cliente.getMembresias().stream()
+        .filter(m -> m.isActiva() && m.getFechaFin().isAfter(LocalDate.now()))
+        .anyMatch(m -> !m.getPagos().isEmpty());
+        
+    if (!tieneMembresiaActivaYPaga) {
+        throw new RuntimeException("Necesitas una membresía activa y paga para inscribirte");
+    }
 
             // Verificar si ya está inscrito
             boolean yaInscrito = inscripcionClaseRepository.existsByClaseAndClienteAndActivaTrue(clase, cliente);
