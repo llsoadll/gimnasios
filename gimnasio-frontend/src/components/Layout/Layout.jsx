@@ -6,15 +6,59 @@ import {
   Drawer, 
   AppBar, 
   Toolbar, 
-  Typography, 
+  Typography,
   Button,
   List,
   ListItem,
   ListItemIcon,
-  ListItemText 
+  ListItemText,
+  CssBaseline,
+  Container
 } from '@mui/material';
-import api from '../../utils/axios';
-import moment from 'moment';
+import { styled } from '@mui/material/styles';
+
+const MainContainer = styled(Container)(({ theme }) => ({
+  marginTop: theme.spacing(4),
+  marginBottom: theme.spacing(4),
+  '& .MuiPaper-root': {
+    borderRadius: '12px',
+    boxShadow: '0 2px 12px 0 rgba(0,0,0,0.1)',
+    transition: 'transform 0.2s, box-shadow 0.2s',
+    '&:hover': {
+      transform: 'translateY(-4px)',
+      boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12)'
+    }
+  },
+  '& .MuiButton-root': {
+    borderRadius: '8px',
+    textTransform: 'none',
+    fontWeight: 600,
+    transition: 'all 0.3s ease',
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+    }
+  },
+  '& .MuiTableContainer-root': {
+    '& .MuiTableHead-root': {
+      '& .MuiTableCell-head': {
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+        fontWeight: 600
+      }
+    },
+    '& .MuiTableRow-root': {
+      '&:hover': {
+        backgroundColor: 'rgba(0, 0, 0, 0.04)'
+      }
+    }
+  }
+}));
+
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  boxShadow: 'none'
+}));
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
@@ -71,7 +115,8 @@ const Layout = ({ children }) => {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar position="fixed">
+      <CssBaseline />
+      <StyledAppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Gestión de Gimnasio
@@ -99,19 +144,57 @@ const Layout = ({ children }) => {
             Cerrar Sesión
           </Button>
         </Toolbar>
-      </AppBar>
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
-        }}
-      >
+        </StyledAppBar>
+        <Drawer
+  variant="permanent"
+  sx={{
+    width: drawerWidth,
+    flexShrink: 0,
+    '& .MuiDrawer-paper': {
+      width: drawerWidth,
+      boxSizing: 'border-box',
+      background: 'linear-gradient(180deg, #1976d2 0%, #2196f3 100%)',
+      color: 'white',
+      borderRight: 'none',
+      boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
+      '& .MuiListItem-root': {
+        margin: '8px 16px',
+        borderRadius: '8px',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          transform: 'translateX(5px)'
+        }
+      },
+      '& .MuiListItemIcon-root': {
+        color: 'white',
+        minWidth: '40px'
+      },
+      '& .MuiListItemText-primary': {
+        fontSize: '0.95rem',
+        fontWeight: 500
+      },
+      '& .MuiDivider-root': {
+        backgroundColor: 'rgba(255, 255, 255, 0.12)'
+      }
+    }
+  }}
+>
         <Toolbar />
         <List sx={{ mt: 4 }}>
           {getMenuItems().map((item) => (
-            <ListItem button key={item.text} onClick={() => navigate(item.path)}>
+            <ListItem 
+              button 
+              key={item.text} 
+              onClick={() => navigate(item.path)}
+              sx={{
+                margin: '8px 16px',
+                borderRadius: '8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(33, 150, 243, 0.1)'
+                }
+              }}
+            >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItem>
@@ -120,7 +203,9 @@ const Layout = ({ children }) => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        {children}
+        <MainContainer maxWidth="xl">
+          {children}
+        </MainContainer>
       </Box>
     </Box>
   );

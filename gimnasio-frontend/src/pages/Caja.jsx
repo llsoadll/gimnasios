@@ -91,21 +91,36 @@ const fetchTotales = async () => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} md={4}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Total Diario</Typography>
-          <Typography variant="h4">${totalDiario}</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Total Diario</Typography>
+          <Typography variant="h4" gutterBottom>${totalDiario}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={12} md={4}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Total Mensual</Typography>
-          <Typography variant="h4">${totalMensual}</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Total Mensual</Typography>
+          <Typography variant="h4" gutterBottom>${totalMensual}</Typography>
         </Paper>
       </Grid>
       <Grid item xs={12} md={4}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Total Anual</Typography>
-          <Typography variant="h4">${totalAnual}</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Total Anual</Typography>
+          <Typography variant="h4" gutterBottom>${totalAnual}</Typography>
         </Paper>
       </Grid>
       
@@ -116,7 +131,7 @@ const fetchTotales = async () => {
     <CartesianGrid strokeDasharray="3 3" />
     <XAxis 
         dataKey="fecha" 
-        angle={-45}
+        angle={0}
         textAnchor="end"
         height={60}
     />

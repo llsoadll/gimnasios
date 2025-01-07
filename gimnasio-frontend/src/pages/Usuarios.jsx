@@ -135,12 +135,27 @@ const agregarUsuario = async (e) => {
       <Button 
         variant="contained" 
         onClick={() => setOpenDialog(true)} 
-        sx={{ mb: 2 }}
+        sx={{ 
+          mb: 2,
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'translateY(-3px)',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+          }
+        }}
       >
         Nuevo Usuario
       </Button>
 
-      <TableContainer component={Paper}>
+      <TableContainer 
+        component={Paper}
+        sx={{
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+          }
+        }}
+      >
         <Table>
           <TableHead>
             <TableRow>
@@ -149,6 +164,7 @@ const agregarUsuario = async (e) => {
               <TableCell>Tipo</TableCell>
               <TableCell>Estado</TableCell>
               <TableCell>Acciones</TableCell>
+              <TableCell>Detalles</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

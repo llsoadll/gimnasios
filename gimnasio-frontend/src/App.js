@@ -18,12 +18,65 @@ import Caja from './pages/Caja';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: '#2196f3',
+      light: '#64b5f6',
+      dark: '#1976d2'
     },
     secondary: {
-      main: '#dc004e',
+      main: '#ff4081',
+      light: '#ff79b0',
+      dark: '#c60055'
     },
+    background: {
+      default: '#f5f5f5',
+      paper: '#ffffff'
+    }
   },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 2px 12px 0 rgba(0,0,0,0.1)',
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: '0 4px 20px 0 rgba(0,0,0,0.12)'
+          }
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          fontWeight: 600,
+          padding: '8px 16px'
+        }
+      }
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          '& .MuiTableCell-head': {
+            fontWeight: 600,
+            backgroundColor: 'rgba(0, 0, 0, 0.04)'
+          }
+        }
+      }
+    }
+  },
+  typography: {
+    h5: {
+      fontWeight: 600,
+      color: '#1a237e'
+    },
+    h6: {
+      fontWeight: 500,
+      marginBottom: '1rem'
+    }
+  }
 });
 
 function App() {

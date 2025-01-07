@@ -132,8 +132,13 @@ const DetalleCliente = () => {
     <Grid container spacing={3}>
       {/* Información Personal */}
       <Grid item xs={12}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Información Personal</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Información Personal</Typography>
           <Divider sx={{ my: 2 }} />
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -151,8 +156,13 @@ const DetalleCliente = () => {
 
       {/* Membresía Actual */}
       <Grid item xs={12} md={6}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Membresía Actual</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Membresía Actual</Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.membresias?.length > 0 ? (
             <TableContainer>
@@ -185,8 +195,13 @@ const DetalleCliente = () => {
 
       {/* Historial de Pagos */}
       <Grid item xs={12} md={6}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Historial de Pagos</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Historial de Pagos</Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.pagos?.length > 0 ? (
             <TableContainer>
@@ -217,8 +232,13 @@ const DetalleCliente = () => {
 
       {/* Rutinas Asignadas */}
       <Grid item xs={12} md={6}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Rutinas Asignadas</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Rutinas Asignadas</Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.rutinas?.length > 0 ? (
             <TableContainer>
@@ -249,8 +269,13 @@ const DetalleCliente = () => {
 
       {/* Clases Inscritas */}
       <Grid item xs={12} md={6}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Clases Inscritas</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+          <Typography variant="h5" gutterBottom>Clases Inscritas</Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.clasesInscritas?.length > 0 ? (
             <TableContainer>
@@ -286,8 +311,13 @@ const DetalleCliente = () => {
       </Grid>
       {/* Seguimiento */}
       <Grid item xs={12}>
-      <Paper sx={{ p: 2 }}>
-        <Typography variant="h6">Seguimiento</Typography>
+      <Paper sx={{ 
+  p: 3,
+  mb: 3,
+  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  color: 'white' 
+}}>
+        <Typography variant="h5" gutterBottom>Seguimiento</Typography>
         <Divider sx={{ my: 2 }} />
         {cliente?.seguimientos?.length > 0 ? (
       <Box sx={{ height: 300, mt: 3 }}>
