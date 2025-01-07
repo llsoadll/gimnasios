@@ -3,8 +3,11 @@ package com.gimnasio.gestion.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 import com.gimnasio.gestion.dto.PagoDTO;
 import com.gimnasio.gestion.model.Pago;
@@ -32,27 +35,38 @@ public class PagoService {
     @Autowired
     private CajaIngresoRepository cajaIngresoRepository;
     
-     public PagoDTO registrarPago(PagoDTO pagoDTO) {
-        Pago pago = pagoMapper.toEntity(pagoDTO);
-        
-        Membresia membresia = membresiaRepository.findById(pagoDTO.getMembresiaId())
-            .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
+    public PagoDTO registrarPago(PagoDTO pagoDTO) {
+        try {
+            Pago pago = pagoMapper.toEntity(pagoDTO);
             
-        pago.setMembresia(membresia);
-        pago.setMonto(membresia.getPrecio()); 
-
-        Pago pagoGuardado = pagoRepository.save(pago);
-        
-        // Registrar en caja
-        CajaIngreso ingreso = new CajaIngreso();
-        ingreso.setFecha(pago.getFecha());
-        ingreso.setMonto(pago.getMonto());
-        ingreso.setConcepto("MEMBRESIA");
-        ingreso.setCliente(membresia.getCliente());
-        ingreso.setPago(pago);
-        cajaIngresoRepository.save(ingreso);
-        
-        return pagoMapper.toDTO(pagoGuardado);
+            Membresia membresia = membresiaRepository.findById(pagoDTO.getMembresiaId())
+                .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
+                
+            // Verificar si ya tiene pagos
+            if (!membresia.getPagos().isEmpty()) {
+                throw new RuntimeException("Esta membresía ya está pagada");
+            }
+            
+            pago.setMembresia(membresia);
+            pago.setMonto(membresia.getPrecio());
+            pago.setFecha(pagoDTO.getFecha() != null ? pagoDTO.getFecha() : LocalDate.now());
+    
+            Pago pagoGuardado = pagoRepository.save(pago);
+            
+            // Registrar en caja con la fecha correcta
+            CajaIngreso ingreso = new CajaIngreso();
+            ingreso.setFecha(pago.getFecha());
+            ingreso.setMonto(pago.getMonto());
+            ingreso.setConcepto("MEMBRESIA");
+            ingreso.setCliente(membresia.getCliente());
+            ingreso.setPago(pagoGuardado);
+            
+            cajaIngresoRepository.save(ingreso);
+            
+            return pagoMapper.toDTO(pagoGuardado);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al registrar pago: " + e.getMessage());
+        }
     }
     
     public List<PagoDTO> obtenerPagosPorMembresia(Long membresiaId) {

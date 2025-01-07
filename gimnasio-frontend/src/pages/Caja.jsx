@@ -13,7 +13,7 @@ const Caja = () => {
   const [totalMensual, setTotalMensual] = useState(0);
   const [totalAnual, setTotalAnual] = useState(0);
   const [ingresos, setIngresos] = useState([]);
-  const [filtroFecha, setFiltroFecha] = useState(new Date().toISOString().split('T')[0]);
+  const [filtroFecha, setFiltroFecha] = useState(moment().format('YYYY-MM-DD'));
 
   useEffect(() => {
     fetchTotales();
@@ -66,24 +66,26 @@ const Caja = () => {
 };
 
 
-  const fetchTotales = async () => {
-    try {
-        const fecha = new Date(filtroFecha);
-        const anio = fecha.getFullYear();
-        const mes = fecha.getMonth() + 1;
+const fetchTotales = async () => {
+  try {
+      const fecha = new Date(filtroFecha);
+      const anio = fecha.getFullYear();
+      const mes = fecha.getMonth() + 1;
 
-        const [respDiaria, respMensual, respAnual] = await Promise.all([
-            api.get(`/caja/diario?fecha=${filtroFecha}`),
-            api.get(`/caja/mensual?anio=${anio}&mes=${mes}`),
-            api.get(`/caja/anual?anio=${anio}`)
-        ]);
+      console.log('Fecha filtro:', filtroFecha); // Agregar este log
+      
+      const respDiaria = await api.get(`/caja/diario?fecha=${filtroFecha}`);
+      console.log('Respuesta diaria completa:', respDiaria); // Agregar este log
+      
+      const respMensual = await api.get(`/caja/mensual?anio=${anio}&mes=${mes}`);
+      const respAnual = await api.get(`/caja/anual?anio=${anio}`);
 
-        setTotalDiario(respDiaria.data || 0);
-        setTotalMensual(respMensual.data || 0);
-        setTotalAnual(respAnual.data || 0);
-    } catch (err) {
-        console.error('Error al cargar totales:', err);
-    }
+      setTotalDiario(respDiaria.data || 0);
+      setTotalMensual(respMensual.data || 0);
+      setTotalAnual(respAnual.data || 0);
+  } catch (err) {
+      console.error('Error al cargar totales:', err);
+  }
 };
 
   return (

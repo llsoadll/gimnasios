@@ -7,6 +7,12 @@ import {
   Box,
   Divider,
   CircularProgress,
+  TableContainer,
+  Table,
+  TableHead,       // Add if needed
+  TableBody,       // Add if needed
+  TableRow,        // Add if needed
+  TableCell    
   // ...existing material-ui imports...
 } from '@mui/material';
 import { Line } from 'react-chartjs-2';

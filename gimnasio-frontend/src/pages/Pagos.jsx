@@ -39,16 +39,13 @@ const Pagos = () => {
 
   const fetchMembresias = async () => {
     try {
-      const response = await api.get('/membresias');
-      const membresiasActivas = response.data.filter(membresia => 
-        membresia.activa && (!membresia.pagos || membresia.pagos.length === 0)
-      );
-      setMembresias(membresiasActivas);
+        const response = await api.get('/membresias/sin-pagar');
+        setMembresias(response.data);
     } catch (err) {
-      setError('Error al cargar membresías');
-      console.error('Error:', err);
+        setError('Error al cargar membresías');
+        console.error('Error:', err);
     }
-  };
+};
 
   const eliminarPago = async (id) => {
     if (window.confirm('¿Está seguro de eliminar este pago?')) {

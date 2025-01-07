@@ -17,7 +17,10 @@ public class CajaService {
     private CajaIngresoRepository cajaIngresoRepository;
     
     public Double obtenerTotalDiario(LocalDate fecha) {
-        return cajaIngresoRepository.obtenerTotalDiario(fecha);
+        System.out.println("Consultando total para fecha: " + fecha);
+        Double total = cajaIngresoRepository.obtenerTotalDiario(fecha);
+        System.out.println("Total obtenido: " + total);
+        return total;
     }
     
     public Double obtenerTotalMensual(int anio, int mes) {

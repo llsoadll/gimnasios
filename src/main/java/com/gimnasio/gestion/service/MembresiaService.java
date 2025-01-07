@@ -79,12 +79,17 @@ public class MembresiaService {
 
 
     public List<MembresiaDTO> obtenerMembresiasSinPagar() {
-        return membresiaRepository.findByActivaTrue().stream()
-            .filter(membresia -> membresia.getPagos() == null || membresia.getPagos().isEmpty())
+        return membresiaRepository.findMembresiasSinPagar().stream()
+            .filter(membresia -> membresia.isActiva()) // Solo membresías activas
+            .filter(membresia -> !tienePagos(membresia)) // Solo las que no tienen pagos
             .map(membresiaMapper::toDTO)
             .collect(Collectors.toList());
     }
 
+    private boolean tienePagos(Membresia membresia) {
+        return membresia.getPagos() != null && 
+               !membresia.getPagos().isEmpty();
+    }
     
     @Scheduled(cron = "0 0 0 * * *") // Se ejecuta todos los días a las 00:00
 public void actualizarEstadoMembresias() {

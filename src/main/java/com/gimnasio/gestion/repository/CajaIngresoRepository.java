@@ -15,6 +15,22 @@ import com.gimnasio.gestion.model.Pago;
 
 @Repository
 public interface CajaIngresoRepository extends JpaRepository<CajaIngreso, Long> {
+    @Query(value = "SELECT COALESCE(SUM(monto), 0) FROM caja_ingresos WHERE DATE(fecha) = DATE(:fecha)", nativeQuery = true)
+Double obtenerTotalDiario(@Param("fecha") LocalDate fecha);
+
+    // Para verificar los registros de un día específico
+    @Query(value = "SELECT * FROM caja_ingresos WHERE DATE(fecha) = ?1", nativeQuery = true)
+    List<CajaIngreso> findByFecha(LocalDate fecha);
+
+    @Query(value = "SELECT CAST(fecha AS DATE) as fecha, monto, concepto FROM caja_ingresos", nativeQuery = true)
+    List<Object[]> findAllWithDetails();
+
+    @Query("SELECT COALESCE(SUM(c.monto), 0) FROM CajaIngreso c WHERE EXTRACT(YEAR FROM c.fecha) = :anio AND EXTRACT(MONTH FROM c.fecha) = :mes")
+    Double obtenerTotalMensual(@Param("anio") int anio, @Param("mes") int mes);
+    
+    @Query("SELECT COALESCE(SUM(c.monto), 0) FROM CajaIngreso c WHERE EXTRACT(YEAR FROM c.fecha) = :anio")
+    Double obtenerTotalAnual(@Param("anio") int anio);
+
     @Query("SELECT new map(c.fecha as fecha, c.monto as monto, " +
            "c.concepto as concepto, c.cliente.nombre as clienteNombre, " +
            "c.cliente.apellido as clienteApellido) " +
@@ -25,14 +41,4 @@ public interface CajaIngresoRepository extends JpaRepository<CajaIngreso, Long> 
     );
 
     Optional<CajaIngreso> findByPago(Pago pago);
-    
-    
-    @Query("SELECT COALESCE(SUM(c.monto), 0) FROM CajaIngreso c WHERE c.fecha = :fecha")
-    Double obtenerTotalDiario(@Param("fecha") LocalDate fecha);
-    
-    @Query("SELECT COALESCE(SUM(c.monto), 0) FROM CajaIngreso c WHERE YEAR(c.fecha) = :anio AND MONTH(c.fecha) = :mes")
-    Double obtenerTotalMensual(@Param("anio") int anio, @Param("mes") int mes);
-    
-    @Query("SELECT COALESCE(SUM(c.monto), 0) FROM CajaIngreso c WHERE YEAR(c.fecha) = :anio")
-    Double obtenerTotalAnual(@Param("anio") int anio);
 }
