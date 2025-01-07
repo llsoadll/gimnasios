@@ -108,4 +108,23 @@ public ResponseEntity<ClienteDetalleDTO> obtenerDetalleCliente(@PathVariable Lon
         return ResponseEntity.notFound().build();
     }
 }
+
+@PutMapping("/{id}")
+public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
+    try {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            
+        usuario.setNombre(usuarioActualizado.getNombre());
+        usuario.setApellido(usuarioActualizado.getApellido());
+        usuario.setEmail(usuarioActualizado.getEmail());
+        usuario.setTelefono(usuarioActualizado.getTelefono());
+        usuario.setFechaNacimiento(usuarioActualizado.getFechaNacimiento());
+        
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+        return ResponseEntity.ok(usuarioGuardado);
+    } catch (Exception e) {
+        throw new RuntimeException("Error al actualizar usuario: " + e.getMessage());
+    }
+}
 }

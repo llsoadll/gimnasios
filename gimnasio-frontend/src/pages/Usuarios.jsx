@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 import { 
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
@@ -7,7 +8,7 @@ import {
   Box
 } from '@mui/material';
 import { Switch } from '@mui/material'; // Agregar este import
-import axios from 'axios';
+import api from '../utils/axios'; 
 
 
 const Usuarios = () => {
@@ -25,6 +26,16 @@ const Usuarios = () => {
     tipo: 'CLIENTE',
     activo: true
   });
+  const [editDialog, setEditDialog] = useState(false);
+const [usuarioEdit, setUsuarioEdit] = useState({
+  id: '',
+  nombre: '',
+  apellido: '',
+  email: '',
+  telefono: '',
+  fechaNacimiento: '',
+  tipo: ''
+});
 
   useEffect(() => {
     fetchUsuarios();
@@ -33,90 +44,105 @@ const Usuarios = () => {
 
   const toggleEstado = async (id, estadoActual) => {
     try {
-        console.log(`Cambiando estado de usuario ${id} a ${!estadoActual}`);
-        
-        const response = await axios.patch(
-            `http://localhost:8080/api/usuarios/${id}/estado?activo=${!estadoActual}`,
-            {},
-            {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }
+      console.log(`Cambiando estado de usuario ${id} a ${!estadoActual}`);
+      
+      // Cambiar esto:
+      const response = await api.patch(`/usuarios/${id}/estado?activo=${!estadoActual}`);
+      
+      if (response.status === 200) {
+        setUsuarios(prevUsuarios => 
+          prevUsuarios.map(usuario => 
+            usuario.id === id 
+              ? { ...usuario, activo: !estadoActual }
+              : usuario
+          )
         );
-        
-        if (response.status === 200) {
-            setUsuarios(prevUsuarios => 
-                prevUsuarios.map(usuario => 
-                    usuario.id === id 
-                        ? { ...usuario, activo: !estadoActual }
-                        : usuario
-                )
-            );
-            console.log('Estado cambiado exitosamente');
-        }
+        console.log('Estado cambiado exitosamente');
+      }
     } catch (err) {
-        console.error('Error completo:', err);
-        setError(err.response?.data || 'Error al cambiar el estado del usuario');
-    }
-};
-
-
-  const fetchUsuarios = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get('http://localhost:8080/api/usuarios');
-      // Asegurarse de que response.data es un array
-      const data = Array.isArray(response.data) ? response.data : [];
-      setUsuarios(data);
-    } catch (err) {
-      setError('Error al cargar usuarios');
-      setUsuarios([]); // En caso de error, establecer array vacío
-    } finally {
-      setLoading(false);
+      console.error('Error completo:', err);
+      setError(err.response?.data || 'Error al cambiar el estado del usuario');
     }
   };
 
-  const eliminarUsuario = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este usuario?')) {
-        setLoading(true);
-        try {
-            await axios.delete(`http://localhost:8080/api/usuarios/${id}`);
-            setUsuarios(usuarios.filter(usuario => usuario.id !== id));
-        } catch (err) {
-            setError(`Error al eliminar usuario: ${err.response?.data?.message || err.message}`);
-            console.error('Error:', err);
-        } finally {
-            setLoading(false);
-        }
+const actualizarUsuario = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    await api.put(`/usuarios/${usuarioEdit.id}`, {
+      nombre: usuarioEdit.nombre,
+      apellido: usuarioEdit.apellido,
+      email: usuarioEdit.email,
+      telefono: usuarioEdit.telefono,
+      fechaNacimiento: usuarioEdit.fechaNacimiento
+    });
+    
+    await fetchUsuarios(); // Recargar lista de usuarios
+    setEditDialog(false); // Cerrar diálogo
+    setError(null); // Limpiar errores
+  } catch (err) {
+    setError('Error al actualizar usuario: ' + (err.response?.data?.message || err.message));
+    console.error('Error:', err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const fetchUsuarios = async () => {
+  setLoading(true);
+  setError(null);
+  try {
+    const response = await api.get('/usuarios');
+    const data = Array.isArray(response.data) ? response.data : [];
+    setUsuarios(data);
+  } catch (err) {
+    setError('Error al cargar usuarios');
+    setUsuarios([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const eliminarUsuario = async (id) => {
+  if (window.confirm('¿Está seguro de eliminar este usuario?')) {
+    setLoading(true);
+    try {
+      await api.delete(`/usuarios/${id}`);
+      setUsuarios(usuarios.filter(usuario => usuario.id !== id));
+    } catch (err) {
+      setError(`Error al eliminar usuario: ${err.response?.data?.message || err.message}`);
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
     }
+  }
 };
 
 const agregarUsuario = async (e) => {
   e.preventDefault();
   setLoading(true);
   try {
-      const response = await axios.post('http://localhost:8080/api/usuarios', nuevoUsuario);
-      setUsuarios([...usuarios, response.data]);
-      alert(`Usuario creado exitosamente!\n
-             Email: ${response.data.email}\n
-             Contraseña: ${response.data.password}`);
-      setOpenDialog(false);
-      setNuevoUsuario({
-          nombre: '',
-          apellido: '',
-          email: '',
-          telefono: '',
-          fechaNacimiento: '',
-          tipo: 'CLIENTE',
-          activo: true
-      });
+    // Cambiar axios.post por api.post
+    const response = await api.post('/usuarios', nuevoUsuario);
+    setUsuarios([...usuarios, response.data]);
+    alert(`Usuario creado exitosamente!\n
+           Email: ${response.data.email}\n
+           Contraseña: ${response.data.password}`);
+    setOpenDialog(false);
+    setNuevoUsuario({
+      nombre: '',
+      apellido: '',
+      email: '',
+      telefono: '',
+      fechaNacimiento: '',
+      tipo: 'CLIENTE',
+      activo: true
+    });
   } catch (err) {
-      setError(`Error al crear usuario: ${err.response?.data?.message || err.message}`);
-      console.error('Error:', err);
+    setError(`Error al crear usuario: ${err.response?.data?.message || err.message}`);
+    console.error('Error:', err);
   } finally {
-      setLoading(false);
+    setLoading(false);
   }
 };
 
@@ -190,6 +216,24 @@ const agregarUsuario = async (e) => {
                   >
                     Eliminar
                   </Button>
+                  <Button 
+  variant="contained"
+  color="primary"
+  size="small"
+  onClick={() => {
+    const fecha = moment.utc(usuario.fechaNacimiento);
+    const fechaAjustada = fecha.subtract(1, 'months');
+    const usuarioConFechaFormateada = {
+      ...usuario,
+      fechaNacimiento: fechaAjustada.format('YYYY-MM-DD')
+    };
+    setUsuarioEdit(usuarioConFechaFormateada);
+    setEditDialog(true);
+  }}
+  sx={{ ml: 1 }}
+>
+  Modificar
+</Button>
                 </TableCell>
                 <TableCell>
                 <Button 
@@ -265,6 +309,57 @@ const agregarUsuario = async (e) => {
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog open={editDialog} onClose={() => setEditDialog(false)}>
+  <DialogTitle>Modificar Usuario</DialogTitle>
+  <DialogContent>
+    <form onSubmit={actualizarUsuario}>
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Nombre" 
+        value={usuarioEdit.nombre}
+        onChange={e => setUsuarioEdit({...usuarioEdit, nombre: e.target.value})}
+      />
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Apellido" 
+        value={usuarioEdit.apellido}
+        onChange={e => setUsuarioEdit({...usuarioEdit, apellido: e.target.value})}
+      />
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Email" 
+        value={usuarioEdit.email}
+        onChange={e => setUsuarioEdit({...usuarioEdit, email: e.target.value})}
+      />
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Teléfono"
+        value={usuarioEdit.telefono}
+        onChange={e => setUsuarioEdit({...usuarioEdit, telefono: e.target.value})}
+      />
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Fecha de Nacimiento"
+        type="date"
+        value={usuarioEdit.fechaNacimiento}
+        onChange={e => setUsuarioEdit({...usuarioEdit, fechaNacimiento: e.target.value})}
+        InputLabelProps={{ shrink: true }}
+      />
+      <Button type="submit" variant="contained" color="primary">
+        Guardar Cambios
+      </Button>
+    </form>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setEditDialog(false)}>Cancelar</Button>
+  </DialogActions>
+</Dialog>
     </>
   );
 };

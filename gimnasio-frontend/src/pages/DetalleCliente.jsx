@@ -148,7 +148,9 @@ const DetalleCliente = () => {
             </Grid>
             <Grid item xs={6}>
               <Typography>Estado: {cliente.activo ? 'Activo' : 'Inactivo'}</Typography>
-              <Typography>Fecha de Nacimiento: {moment(cliente.fechaNacimiento).format('DD/MM/YYYY')}</Typography>
+              <Typography>
+  Fecha de Nacimiento: {formatearFecha(cliente.fechaNacimiento)}
+</Typography>
             </Grid>
           </Grid>
         </Paper>
