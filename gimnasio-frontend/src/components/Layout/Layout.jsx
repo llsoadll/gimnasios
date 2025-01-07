@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import MenuIcon from '@mui/icons-material/Menu';
 import {
   Box,
   AppBar,
@@ -13,6 +15,7 @@ import {
   ListItemText,
   Button,
   Container,
+  IconButton,
   Paper
 } from '@mui/material';
 import api from '../../utils/axios';
@@ -64,11 +67,16 @@ const MainContainer = styled(Container)(({ theme }) => ({
 
 const Layout = ({ children }) => {
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const [membresia, setMembresia] = useState(null);
   const [usuario, setUsuario] = useState(null);
   const userRole = localStorage.getItem('userRole');
   const userId = localStorage.getItem('userId');
 
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
   
  // Función para cargar el usuario
  const fetchUsuario = async () => {
@@ -147,66 +155,86 @@ useEffect(() => {
   return (
     <Box sx={{ display: 'flex' }}>
       <StyledAppBar position="fixed">
-  <Toolbar>
-    <Typography 
-      variant="h5" 
-      sx={{ 
-        flexGrow: 1,
-        marginLeft: `${drawerWidth}px` // Add margin to account for drawer width
-      }}
-    >
-      Gestión de Gimnasio
-    </Typography>
-          {userRole === 'CLIENTE' && membresia && membresia.tipo && membresia.fechaFin && (
-  <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
-    <Typography variant="body2" sx={{ mr: 1 }}>
-      Membresía {membresia.tipo}
-    </Typography>
-    <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
-      (Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')})
-    </Typography>
-  </Box>
-)}
-{usuario && (
-  <Typography variant="body2" sx={{ mr: 2, color: 'white' }}>
-    {usuario.nombre} {usuario.apellido}
-  </Typography>
-)}
-<StyledButton color="inherit" onClick={handleLogout}>
+        <Toolbar>
+          {isMobile && (
+            <IconButton
+              color="inherit"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
+         
+<Typography 
+  variant="h5" 
+  sx={{ 
+    flexGrow: 1,
+    fontSize: { 
+      xs: '1.2rem',
+      sm: '1.5rem',
+      md: '1.8rem' 
+    }
+  }}
+>
+  Gestión de Gimnasio
+</Typography>
+          {userRole === 'CLIENTE' && membresia && (
+            <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ mr: 1 }}>
+                Membresía {membresia.tipo}
+              </Typography>
+              <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
+                (Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')})
+              </Typography>
+            </Box>
+          )}
+          {usuario && (
+            <Typography variant="body2" sx={{ mr: 2 }}>
+              {usuario.nombre} {usuario.apellido}
+            </Typography>
+          )}
+          <Button color="inherit" onClick={handleLogout}>
             Cerrar Sesión
-          </StyledButton>
+          </Button>
         </Toolbar>
       </StyledAppBar>
       
-      {userRole && (
-        <StyledDrawer variant="permanent">
-          <Toolbar />
-          <List>
-            {getMenuItems().map((item) => (
-              <ListItem 
-                button 
-                key={item.text} 
-                onClick={() => navigate(item.path)}
-              >
-                <ListItemIcon sx={{ color: 'white' }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItem>
-            ))}
-          </List>
-        </StyledDrawer>
-      )}
+      <StyledDrawer
+        variant={isMobile ? 'temporary' : 'permanent'}
+        open={isMobile ? mobileOpen : true}
+        onClose={handleDrawerToggle}
+      >
+        <Toolbar />
+        <List>
+          {getMenuItems().map((item) => (
+            <ListItem 
+              button 
+              key={item.text} 
+              onClick={() => {
+                navigate(item.path);
+                if (isMobile) setMobileOpen(false);
+              }}
+            >
+              <ListItemIcon sx={{ color: 'white' }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItem>
+          ))}
+        </List>
+      </StyledDrawer>
 
-<Box component="main" sx={{ 
-  flexGrow: 1, 
-  p: 3,
-  width: `calc(100% - ${drawerWidth}px)`,
-  marginLeft: `${drawerWidth}px`
-}}>
-  <Toolbar /> {/* This creates space for AppBar */}
-  {children}
-</Box>
+      <Box component="main" sx={{ 
+        flexGrow: 1, 
+        p: { xs: 2, sm: 3 },
+        width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` },
+        marginLeft: { xs: 0, sm: `${drawerWidth}px` }
+      }}>
+        <Toolbar />
+        {children}
+      </Box>
     </Box>
   );
 };
