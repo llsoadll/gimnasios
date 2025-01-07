@@ -12,33 +12,54 @@ import {
   ListItemIcon,
   ListItemText,
   Button,
-  Container
+  Container,
+  Paper
 } from '@mui/material';
 import api from '../../utils/axios';
 import moment from 'moment';
 
 const drawerWidth = 240;
 
+const StyledButton = styled(Button)({
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+  }
+});
+
+const StyledCard = styled(Paper)({
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-4px)',
+    boxShadow: '0 8px 16px rgba(0,0,0,0.1)'
+  }
+});
+
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
+  background: 'linear-gradient(90deg, #1976d2 0%, #1565c0 100%)',
   boxShadow: 'none',
-  zIndex: theme.zIndex.drawer + 1
+  zIndex: theme.zIndex.drawer + 1  // Add this line to make AppBar appear above drawer
 }));
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
   '& .MuiDrawer-paper': {
-    width: drawerWidth,
-    boxSizing: 'border-box',
-    background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-    color: 'white'
+    background: 'linear-gradient(180deg, #1976d2 0%, #1565c0 100%)',
+    color: 'white',
+    '& .MuiListItem-root': {
+      margin: '8px 16px',
+      borderRadius: '8px',
+      '&:hover': {
+        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+      }
+    }
   }
 }));
 
 const MainContainer = styled(Container)(({ theme }) => ({
   marginTop: theme.spacing(4),
-  marginBottom: theme.spacing(4)
+  marginLeft: `${drawerWidth}px`, // Add margin for drawer
+  width: `calc(100% - ${drawerWidth}px)` // Adjust width
 }));
 
 const Layout = ({ children }) => {
@@ -126,10 +147,16 @@ useEffect(() => {
   return (
     <Box sx={{ display: 'flex' }}>
       <StyledAppBar position="fixed">
-        <Toolbar>
-          <Typography variant="h5" sx={{ flexGrow: 1 }}>
-            Gestión de Gimnasio
-          </Typography>
+  <Toolbar>
+    <Typography 
+      variant="h5" 
+      sx={{ 
+        flexGrow: 1,
+        marginLeft: `${drawerWidth}px` // Add margin to account for drawer width
+      }}
+    >
+      Gestión de Gimnasio
+    </Typography>
           {userRole === 'CLIENTE' && membresia && membresia.tipo && membresia.fechaFin && (
   <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
     <Typography variant="body2" sx={{ mr: 1 }}>
@@ -145,9 +172,9 @@ useEffect(() => {
     {usuario.nombre} {usuario.apellido}
   </Typography>
 )}
-<Button color="inherit" onClick={handleLogout}>
-  Cerrar Sesión
-</Button>
+<StyledButton color="inherit" onClick={handleLogout}>
+            Cerrar Sesión
+          </StyledButton>
         </Toolbar>
       </StyledAppBar>
       
@@ -171,10 +198,15 @@ useEffect(() => {
         </StyledDrawer>
       )}
 
-<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
-        {children}
-      </Box>
+<Box component="main" sx={{ 
+  flexGrow: 1, 
+  p: 3,
+  width: `calc(100% - ${drawerWidth}px)`,
+  marginLeft: `${drawerWidth}px`
+}}>
+  <Toolbar /> {/* This creates space for AppBar */}
+  {children}
+</Box>
     </Box>
   );
 };

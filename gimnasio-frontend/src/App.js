@@ -18,14 +18,14 @@ import Caja from './pages/Caja';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2196f3',
-      light: '#64b5f6',
-      dark: '#1976d2'
+      main: '#1976d2',
+      light: '#42a5f5',
+      dark: '#1565c0'
     },
     secondary: {
-      main: '#ff4081',
-      light: '#ff79b0',
-      dark: '#c60055'
+      main: '#9c27b0',
+      light: '#ba68c8',
+      dark: '#7b1fa2'
     },
     background: {
       default: '#f5f5f5',
@@ -68,13 +68,10 @@ const theme = createTheme({
     }
   },
   typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     h5: {
       fontWeight: 600,
-      color: '#1a237e'
-    },
-    h6: {
-      fontWeight: 500,
-      marginBottom: '1rem'
+      letterSpacing: '0.5px'
     }
   }
 });
