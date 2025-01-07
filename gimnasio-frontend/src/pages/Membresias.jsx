@@ -145,12 +145,14 @@ const agregarMembresia = async (e) => {
               <TableCell>{membresia.precio}</TableCell>
               <TableCell>{membresia.activa ? 'Activa' : 'Inactiva'}</TableCell>
               <TableCell>
-                <Button 
-                  color="error"
-                  onClick={() => eliminarMembresia(membresia.id)}
-                >
-                  Eliminar
-                </Button>
+              <Button 
+  variant="contained"
+  color="error"
+  size="small"
+  onClick={() => eliminarMembresia(membresia.id)}
+>
+  Eliminar
+</Button>
               </TableCell>
             </TableRow>
             ))}

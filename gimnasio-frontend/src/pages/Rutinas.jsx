@@ -156,8 +156,10 @@ const Rutinas = () => {
                 {userRole === 'ADMIN' && (
                 <TableCell>
                   <Button 
-                    color="error"
-                    onClick={() => eliminarRutina(rutina.id)}
+  variant="contained"
+  color="error"
+  size="small"
+  onClick={() => eliminarRutina(rutina.id)}
                   >
                     Eliminar
                   </Button>

@@ -182,9 +182,11 @@ const agregarUsuario = async (e) => {
                   {usuario.activo ? 'Activo' : 'Inactivo'}
                 </TableCell>
                 <TableCell>
-                  <Button 
-                    color="error"
-                    onClick={() => eliminarUsuario(usuario.id)}
+                <Button 
+  variant="contained"
+  color="error"
+  size="small"
+  onClick={() => eliminarUsuario(usuario.id)}
                   >
                     Eliminar
                   </Button>
