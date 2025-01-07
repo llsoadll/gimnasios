@@ -44,14 +44,36 @@ const MainContainer = styled(Container)(({ theme }) => ({
 const Layout = ({ children }) => {
   const navigate = useNavigate();
   const [membresia, setMembresia] = useState(null);
+  const [usuario, setUsuario] = useState(null);
   const userRole = localStorage.getItem('userRole');
   const userId = localStorage.getItem('userId');
 
-  useEffect(() => {
+  
+ // Función para cargar el usuario
+ const fetchUsuario = async () => {
+  try {
     if (userId) {
-      fetchMembresia();
+      const response = await api.get(`/usuarios/${userId}/detalle`); // Cambiar a /detalle
+      console.log('Usuario cargado:', response.data);
+      setUsuario(response.data);
     }
-  }, [userId]);
+  } catch (err) {
+    console.error('Error al cargar usuario:', err);
+  }
+};
+
+useEffect(() => {
+  const cargarDatos = async () => {
+    if (userId) {
+      await fetchUsuario();
+    }
+    if (userRole === 'CLIENTE') {
+      await fetchMembresia();
+    }
+  };
+  
+  cargarDatos();
+}, [userId, userRole]);
 
   const fetchMembresia = async () => {
     try {
@@ -118,35 +140,40 @@ const Layout = ({ children }) => {
     </Typography>
   </Box>
 )}
-          <Button color="inherit" onClick={handleLogout}>
-            Cerrar Sesión
-          </Button>
+{usuario && (
+  <Typography variant="body2" sx={{ mr: 2, color: 'white' }}>
+    {usuario.nombre} {usuario.apellido}
+  </Typography>
+)}
+<Button color="inherit" onClick={handleLogout}>
+  Cerrar Sesión
+</Button>
         </Toolbar>
       </StyledAppBar>
       
-      <StyledDrawer variant="permanent">
-        <Toolbar />
-        <List>
-          {getMenuItems().map((item) => (
-            <ListItem 
-              button 
-              key={item.text} 
-              onClick={() => navigate(item.path)}
-            >
-              <ListItemIcon sx={{ color: 'white' }}>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItem>
-          ))}
-        </List>
-      </StyledDrawer>
+      {userRole && (
+        <StyledDrawer variant="permanent">
+          <Toolbar />
+          <List>
+            {getMenuItems().map((item) => (
+              <ListItem 
+                button 
+                key={item.text} 
+                onClick={() => navigate(item.path)}
+              >
+                <ListItemIcon sx={{ color: 'white' }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItem>
+            ))}
+          </List>
+        </StyledDrawer>
+      )}
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
-        <MainContainer maxWidth="xl">
-          {children}
-        </MainContainer>
+        {children}
       </Box>
     </Box>
   );
