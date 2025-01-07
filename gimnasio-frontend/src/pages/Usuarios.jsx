@@ -17,6 +17,7 @@ const Usuarios = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [nuevoUsuario, setNuevoUsuario] = useState({
     nombre: '',
     apellido: '',
@@ -64,6 +65,13 @@ const [usuarioEdit, setUsuarioEdit] = useState({
       setError(err.response?.data || 'Error al cambiar el estado del usuario');
     }
   };
+
+  const usuariosFiltrados = usuarios.filter(usuario => 
+    usuario.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    usuario.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    usuario.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    usuario.tipo.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
 const actualizarUsuario = async (e) => {
   e.preventDefault();
@@ -157,21 +165,26 @@ const agregarUsuario = async (e) => {
   return (
     <>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+     
       
-      <Button 
-        variant="contained" 
-        onClick={() => setOpenDialog(true)} 
-        sx={{ 
-          mb: 2,
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            transform: 'translateY(-3px)',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-          }
-        }}
-      >
-        Nuevo Usuario
-      </Button>
+      <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
+  <TextField
+    label="Buscar usuario"
+    variant="outlined"
+    size="small"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    sx={{ width: 300 }}
+    placeholder="Buscar por nombre, email..."
+  />
+  <Button 
+    variant="contained" 
+    onClick={() => setOpenDialog(true)}
+    sx={{ ml: 'auto' }}
+  >
+    Nuevo Usuario
+  </Button>
+</Box>
 
       <TableContainer 
         component={Paper}
@@ -194,7 +207,7 @@ const agregarUsuario = async (e) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Array.isArray(usuarios) && usuarios.map((usuario) => (
+          {Array.isArray(usuariosFiltrados) && usuariosFiltrados.map((usuario) => (
               <TableRow key={usuario.id}>
                 <TableCell>{`${usuario.nombre} ${usuario.apellido}`}</TableCell>
                 <TableCell>{usuario.email}</TableCell>
