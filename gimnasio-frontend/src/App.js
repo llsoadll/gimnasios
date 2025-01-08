@@ -14,6 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import Caja from './pages/Caja';
 import Clientes from './pages/Clientes';
+import Profesores from './pages/Profesores';
 
 
 const theme = createTheme({
@@ -84,65 +85,78 @@ function App() {
       <BrowserRouter>
         <Layout>
           <Routes>
-          <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
-                <Usuarios />
-              </ProtectedRoute>
-            } />
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Las rutas más específicas primero */}
             <Route path="/usuarios/clientes" element={
-    <ProtectedRoute allowedRoles={['ADMIN']}>
-      <Clientes />
-    </ProtectedRoute>
-  } />
-            <Route path="/usuarios" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
-                <Usuarios />
+                <Clientes />
               </ProtectedRoute>
             } />
-            <Route path="/membresias" element={
+            
+            <Route path="/usuarios/profesores" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
-                <Membresias />
+                <Profesores />
               </ProtectedRoute>
             } />
+            
             <Route path="/usuarios/:id/detalle" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <DetalleCliente />
               </ProtectedRoute>
             } />
+            
+            {/* Rutas generales después */}
+            <Route path="/usuarios" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <Usuarios />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/membresias" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <Membresias />
+              </ProtectedRoute>
+            } />
+            
             <Route path="/rutinas" element={
               <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
                 <Rutinas />
               </ProtectedRoute>
             } />
-            <Route path="/clases" element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
-                <Clases />
-              </ProtectedRoute>
-            } />
-            <Route 
-  path="/seguimientos" 
-  element={
-    <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
-      <Seguimientos />
-    </ProtectedRoute>
-  } 
-/>
+
+<Route path="/clases" element={
+  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+    <Clases />
+  </ProtectedRoute>
+} />
+            
+            <Route path="/seguimientos" element={
+  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+    <Seguimientos />
+  </ProtectedRoute>
+} />
+            
             <Route path="/pagos" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <Pagos />
               </ProtectedRoute>
             } />
-
-<Route path="/caja" element={
-  <ProtectedRoute allowedRoles={['ADMIN']}>  {/* Cambiar roles por allowedRoles */}
-    <Caja />
-  </ProtectedRoute>
-} />
-
-            <Route path="/usuario/:id" element={
+            
+            <Route path="/caja" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
-                <DetalleCliente />
+                <Caja />
+              </ProtectedRoute>
+            } />
+            
+            {/* Ruta por defecto */}
+            {/* Cambiar ruta por defecto según el rol */}
+            <Route path="/" element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+                {localStorage.getItem('userRole') === 'ADMIN' ? 
+                  <Clientes /> : 
+                  <Clases />
+                }
               </ProtectedRoute>
             } />
           </Routes>

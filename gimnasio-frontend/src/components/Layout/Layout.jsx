@@ -137,7 +137,7 @@ useEffect(() => {
       { text: 'Clases', path: '/clases' },
       { text: 'Seguimientos', path: '/seguimientos' }
     ];
-
+  
     const adminItems = [
       { 
         text: 'Usuarios',
@@ -149,9 +149,9 @@ useEffect(() => {
       { text: 'Membresías', path: '/membresias' },
       { text: 'Pagos', path: '/pagos' },
       { text: 'Caja', path: '/caja' },
-      ...commonItems
+      ...commonItems  // Agregar los items comunes al final
     ];
-
+  
     return userRole === 'ADMIN' ? adminItems : commonItems;
   };
 
