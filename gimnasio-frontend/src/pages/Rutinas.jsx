@@ -3,9 +3,12 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
-  Box
+  Box, Typography
 } from '@mui/material';
 import api from '../utils/axios';
+import { SportsGymnastics } from '@mui/icons-material';
+
+
 
 const Rutinas = () => {
   const [rutinas, setRutinas] = useState([]);
@@ -128,6 +131,40 @@ const Rutinas = () => {
         Nueva Rutina
       </Button>
       )}
+
+<Box>
+{error && <Alert severity="error">{error}</Alert>}
+<Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
+  <SportsGymnastics 
+    sx={{ 
+      fontSize: 35, 
+      mr: 2, 
+      color: 'primary.main',
+      transform: 'rotate(-15deg)',
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        transform: 'rotate(0deg) scale(1.1)'
+      }
+    }} 
+  />
+        <Typography 
+          variant="h5" 
+          sx={{
+            fontWeight: 600,
+            background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+          }}
+        >
+          Listado de Rutinas
+        </Typography>
+      </Box>
+
+      <TableContainer component={Paper}>
+        
+      </TableContainer>
+    </Box>
 
       <TableContainer component={Paper}>
         <Table>

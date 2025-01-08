@@ -3,9 +3,10 @@ import {
   Button, Table, TableBody, TableCell, TableContainer, 
   TableHead, TableRow, Paper, TextField, FormControl, 
   Select, MenuItem, Dialog, DialogTitle, DialogContent,
-  DialogActions, Alert, Box, CircularProgress
+  DialogActions, Alert, Box, CircularProgress, Typography
 } from '@mui/material';
 import api from '../utils/axios';
+import { Payment } from '@mui/icons-material';
 
 const Pagos = () => {
   const [pagos, setPagos] = useState([]);
@@ -98,6 +99,33 @@ const Pagos = () => {
       <Button variant="contained" onClick={() => setOpenDialog(true)} sx={{ mb: 2 }}>
         Registrar Pago
       </Button>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
+        <Payment 
+          sx={{ 
+            fontSize: 35, 
+            mr: 2, 
+            color: 'primary.main',
+            transform: 'rotate(-15deg)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'rotate(0deg) scale(1.1)'
+            }
+          }} 
+        />
+        <Typography 
+          variant="h5" 
+          sx={{
+            fontWeight: 600,
+            background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+          }}
+        >
+          Listado de Pagos
+        </Typography>
+      </Box>
 
       <TableContainer component={Paper}>
         <Table>

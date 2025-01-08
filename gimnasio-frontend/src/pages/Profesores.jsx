@@ -177,7 +177,7 @@ const totalPaginas = Math.ceil(profesores.length / itemsPorPagina);
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
   <FitnessCenterRounded 
     sx={{ 
-      fontSize: 45, 
+      fontSize: 35, 
       mr: 2, 
       color: 'primary.main',
       transform: 'rotate(-15deg)',
@@ -188,7 +188,7 @@ const totalPaginas = Math.ceil(profesores.length / itemsPorPagina);
     }} 
   />
       <Typography 
-        variant="h4" 
+        variant="h5" 
         sx={{
           fontWeight: 600,
           background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',

@@ -7,6 +7,8 @@ import {
 } from '@mui/material';
 import moment from 'moment';
 import axios from 'axios';
+import { CardMembership } from '@mui/icons-material';
+import { Typography } from '@mui/material';
 
 const Membresias = () => {
   const [membresias, setMembresias] = useState([]);
@@ -121,6 +123,33 @@ const agregarMembresia = async (e) => {
       >
         Nueva Membresía
       </Button>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
+        <CardMembership 
+          sx={{ 
+            fontSize: 35, 
+            mr: 2, 
+            color: 'primary.main',
+            transform: 'rotate(-15deg)',
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'rotate(0deg) scale(1.1)'
+            }
+          }} 
+        />
+        <Typography 
+          variant="h5" 
+          sx={{
+            fontWeight: 600,
+            background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+          }}
+        >
+          Listado de Membresías
+        </Typography>
+      </Box>
 
       <TableContainer component={Paper}>
         <Table>

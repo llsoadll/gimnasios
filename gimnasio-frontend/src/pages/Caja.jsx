@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
   Grid, Paper, Typography, Box,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  FormControl, Select, MenuItem, TextField
+  FormControl, Select, MenuItem, TextField, Alert, CircularProgress 
 } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import api from '../utils/axios';
 import moment from 'moment'; 
+import { AccountBalance } from '@mui/icons-material';
 
 const Caja = () => {
   const [totalDiario, setTotalDiario] = useState(0);
@@ -14,6 +15,8 @@ const Caja = () => {
   const [totalAnual, setTotalAnual] = useState(0);
   const [ingresos, setIngresos] = useState([]);
   const [filtroFecha, setFiltroFecha] = useState(moment().format('YYYY-MM-DD'));
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchTotales();
@@ -88,7 +91,39 @@ const fetchTotales = async () => {
   }
 };
 
-  return (
+return (
+  <Box>
+    {error && <Alert severity="error">{error}</Alert>}
+
+    <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
+      <AccountBalance 
+        sx={{ 
+          fontSize: 35, 
+          mr: 2, 
+          color: 'primary.main',
+          transform: 'rotate(-15deg)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'rotate(0deg) scale(1.1)'
+          }
+        }} 
+      />
+      <Typography 
+        variant="h5" 
+        sx={{
+          fontWeight: 600,
+          background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+        }}
+      >
+        Gestión de Caja
+      </Typography>
+    </Box>
+
+
+
     <Grid container spacing={3}>
       <Grid item xs={12} md={4}>
       <Paper sx={{ 
@@ -151,7 +186,8 @@ const fetchTotales = async () => {
 </LineChart>
         </Paper>
       </Grid>
-    </Grid>
+      </Grid>
+    </Box>
   );
 };
 

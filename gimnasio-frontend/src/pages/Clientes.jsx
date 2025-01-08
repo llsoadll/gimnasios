@@ -185,24 +185,21 @@ const [usuarioEdit, setUsuarioEdit] = useState({
       </Button>
     </Box>
 
-    <Box 
-  sx={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    mb: 4,
-    borderBottom: '2px solid #1976d2',
-    pb: 2
-  }}
->
+    <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
   <PeopleAlt 
     sx={{ 
-      fontSize: 40, 
+      fontSize: 35, // Reduced from 45
       mr: 2, 
-      color: 'primary.main' 
+      color: 'primary.main',
+      transform: 'rotate(-15deg)', // Added initial rotation
+      transition: 'all 0.3s ease', // Added transition
+      '&:hover': {
+        transform: 'rotate(0deg) scale(1.1)' // Added hover effect
+      }
     }} 
   />
   <Typography 
-    variant="h4" 
+    variant="h5"
     sx={{
       fontWeight: 600,
       background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
