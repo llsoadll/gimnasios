@@ -13,6 +13,7 @@ import DetalleCliente from './pages/DetalleCliente';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import Caja from './pages/Caja';
+import Clientes from './pages/Clientes';
 
 
 const theme = createTheme({
@@ -89,6 +90,11 @@ function App() {
                 <Usuarios />
               </ProtectedRoute>
             } />
+            <Route path="/usuarios/clientes" element={
+    <ProtectedRoute allowedRoles={['ADMIN']}>
+      <Clientes />
+    </ProtectedRoute>
+  } />
             <Route path="/usuarios" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <Usuarios />
@@ -97,6 +103,11 @@ function App() {
             <Route path="/membresias" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <Membresias />
+              </ProtectedRoute>
+            } />
+            <Route path="/usuarios/:id/detalle" element={
+              <ProtectedRoute allowedRoles={['ADMIN']}>
+                <DetalleCliente />
               </ProtectedRoute>
             } />
             <Route path="/rutinas" element={

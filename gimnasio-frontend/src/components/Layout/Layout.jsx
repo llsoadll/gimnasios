@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
+import { Collapse } from '@mui/material';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
 import {
   Box,
@@ -71,11 +74,16 @@ const Layout = ({ children }) => {
   const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
   const [membresia, setMembresia] = useState(null);
   const [usuario, setUsuario] = useState(null);
+  const [expandedMenu, setExpandedMenu] = useState('');
   const userRole = localStorage.getItem('userRole');
   const userId = localStorage.getItem('userId');
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
+  };
+
+  const handleMenuClick = (text) => {
+    setExpandedMenu(expandedMenu === text ? '' : text);
   };
   
  // Función para cargar el usuario
@@ -131,10 +139,16 @@ useEffect(() => {
     ];
 
     const adminItems = [
-      { text: 'Usuarios', path: '/usuarios' },
+      { 
+        text: 'Usuarios',
+        subItems: [
+          { text: 'Clientes', path: '/usuarios/clientes' },
+          { text: 'Profesores', path: '/usuarios/profesores' }
+        ]
+      },
       { text: 'Membresías', path: '/membresias' },
       { text: 'Pagos', path: '/pagos' },
-      { text: 'Caja', path: '/caja' }, 
+      { text: 'Caja', path: '/caja' },
       ...commonItems
     ];
 
@@ -208,22 +222,48 @@ useEffect(() => {
       >
         <Toolbar />
         <List>
-          {getMenuItems().map((item) => (
+      {getMenuItems().map((item) => (
+        item.subItems ? (
+          <div key={item.text}>
             <ListItem 
               button 
-              key={item.text} 
-              onClick={() => {
-                navigate(item.path);
-                if (isMobile) setMobileOpen(false);
-              }}
+              onClick={() => handleMenuClick(item.text)}
             >
-              <ListItemIcon sx={{ color: 'white' }}>
-                {item.icon}
-              </ListItemIcon>
               <ListItemText primary={item.text} />
+              {expandedMenu === item.text ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </ListItem>
-          ))}
-        </List>
+            <Collapse in={expandedMenu === item.text} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {item.subItems.map(subItem => (
+                  <ListItem
+                    button
+                    key={subItem.text}
+                    onClick={() => {
+                      navigate(subItem.path);
+                      if (isMobile) setMobileOpen(false);
+                    }}
+                    sx={{ pl: 4 }}
+                  >
+                    <ListItemText primary={subItem.text} />
+                  </ListItem>
+                ))}
+              </List>
+            </Collapse>
+      </div>
+    ) : (
+      <ListItem
+        button
+        key={item.text}
+        onClick={() => {
+          navigate(item.path);
+          if (isMobile) setMobileOpen(false);
+        }}
+      >
+        <ListItemText primary={item.text} />
+      </ListItem>
+    )
+  ))}
+</List>
       </StyledDrawer>
 
       <Box component="main" sx={{ 
