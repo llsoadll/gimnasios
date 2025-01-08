@@ -15,6 +15,7 @@ import LoginPage from './pages/LoginPage';
 import Caja from './pages/Caja';
 import Clientes from './pages/Clientes';
 import Profesores from './pages/Profesores';
+import { Navigate } from 'react-router-dom';
 
 
 const theme = createTheme({
@@ -79,6 +80,10 @@ const theme = createTheme({
 });
 
 function App() {
+  // Añadir verificación del rol
+  const userRole = localStorage.getItem('userRole');
+  console.log('Current user role:', userRole); // Para debug
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -87,7 +92,17 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             
-            {/* Las rutas más específicas primero */}
+            {/* Ruta raíz con redirección basada en rol */}
+            <Route path="/" element={
+              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+                <Navigate 
+                  to={userRole === 'ADMIN' ? '/usuarios/clientes' : '/clases'} 
+                  replace 
+                />
+              </ProtectedRoute>
+            } />
+
+            {/* Rutas protegidas */}
             <Route path="/usuarios/clientes" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <Clientes />
@@ -103,13 +118,6 @@ function App() {
             <Route path="/usuarios/:id/detalle" element={
               <ProtectedRoute allowedRoles={['ADMIN']}>
                 <DetalleCliente />
-              </ProtectedRoute>
-            } />
-            
-            {/* Rutas generales después */}
-            <Route path="/usuarios" element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <Usuarios />
               </ProtectedRoute>
             } />
             
@@ -149,16 +157,6 @@ function App() {
               </ProtectedRoute>
             } />
             
-            {/* Ruta por defecto */}
-            {/* Cambiar ruta por defecto según el rol */}
-            <Route path="/" element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
-                {localStorage.getItem('userRole') === 'ADMIN' ? 
-                  <Clientes /> : 
-                  <Clases />
-                }
-              </ProtectedRoute>
-            } />
           </Routes>
         </Layout>
       </BrowserRouter>
