@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import api from '../utils/axios';
 import moment from 'moment';
+import { PeopleAlt } from '@mui/icons-material';
 
 
 const Clientes = () => {
@@ -184,9 +185,35 @@ const [usuarioEdit, setUsuarioEdit] = useState({
       </Button>
     </Box>
 
-    <Typography variant="h4" gutterBottom>
-      Listado de Clientes
-    </Typography>
+    <Box 
+  sx={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    mb: 4,
+    borderBottom: '2px solid #1976d2',
+    pb: 2
+  }}
+>
+  <PeopleAlt 
+    sx={{ 
+      fontSize: 40, 
+      mr: 2, 
+      color: 'primary.main' 
+    }} 
+  />
+  <Typography 
+    variant="h4" 
+    sx={{
+      fontWeight: 600,
+      background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+    }}
+  >
+    Listado de Clientes
+  </Typography>
+</Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
