@@ -223,6 +223,23 @@ const totalPaginas = Math.ceil(profesores.length / itemsPorPagina);
     </TableBody>
   </Table>
 </TableContainer>
+<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+        <Button 
+          disabled={paginaActual === 1} 
+          onClick={() => setPaginaActual(prev => prev - 1)}
+        >
+          Anterior
+        </Button>
+        <Typography sx={{ alignSelf: 'center' }}>
+          Página {paginaActual} de {totalPaginas}
+        </Typography>
+        <Button 
+          disabled={paginaActual === totalPaginas} 
+          onClick={() => setPaginaActual(prev => prev + 1)}
+        >
+          Siguiente
+        </Button>
+      </Box>
 <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
       <DialogTitle>Nuevo Profesor</DialogTitle>
       <DialogContent>
