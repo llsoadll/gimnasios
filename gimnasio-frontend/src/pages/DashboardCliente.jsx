@@ -29,57 +29,84 @@ ChartJS.register(
 );
 
 const DashboardCliente = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [data, setData] = useState(null);
-  const userId = localStorage.getItem('userId');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [data, setData] = useState(null);
+    const userId = localStorage.getItem('userId');
+  
+    useEffect(() => {
+      fetchDashboardData();
+    }, []);
+  
+    const fetchDashboardData = async () => {
+      try {
+        const response = await api.get(`/usuarios/${userId}/detalle`);
+        console.log('Datos recibidos del servidor:', response.data);
+        setData(response.data);
+      } catch (err) {
+        setError('Error al cargar datos');
+        console.error('Error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const membresiaActiva = useMemo(() => {
+      if (!data?.membresias?.length) {
+        console.log('Estado actual de data:', data);
+        return null;
+      }
+      
+      const membresiasActivas = data.membresias
+        .filter(m => {
+          console.log('Evaluando membresía:', m);
+          const fechaFin = Array.isArray(m.fechaFin) ? 
+            moment([m.fechaFin[0], m.fechaFin[1] - 1, m.fechaFin[2]]) : 
+            moment(m.fechaFin);
+          return m.activa && fechaFin.isAfter(moment());
+        })
+        .sort((a, b) => {
+          const fechaFinA = Array.isArray(a.fechaFin) ? 
+            moment([a.fechaFin[0], a.fechaFin[1] - 1, a.fechaFin[2]]) : 
+            moment(a.fechaFin);
+          const fechaFinB = Array.isArray(b.fechaFin) ? 
+            moment([b.fechaFin[0], b.fechaFin[1] - 1, b.fechaFin[2]]) : 
+            moment(b.fechaFin);
+          return fechaFinB.diff(fechaFinA);
+        });
+  
+      console.log('Membresías activas encontradas:', membresiasActivas);
+      return membresiasActivas[0] || null;
+    }, [data]);
 
-   // Move useMemo hook here, outside any conditional logic
-   const membresiaActiva = useMemo(() => {
-    if (!data?.membresias?.length) return null;
+  // Agregar este useMemo para calcular los días para vencer
+const diasParaVencer = useMemo(() => {
+    if (!membresiaActiva) return 0;
     
-    const membresiasActivas = data.membresias
-      .filter(m => m.activa && moment(m.fechaFin).isAfter(moment()))
-      .sort((a, b) => moment(b.fechaFin).diff(moment(a.fechaFin)));
-    
-    return membresiasActivas[0] || null;
-  }, [data]);
-
-
-// Calculate diasParaVencer based on membresiaActiva
-  const diasParaVencer = membresiaActiva ? 
-    moment(membresiaActiva.fechaFin).diff(moment(), 'days') : 0;
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
+    const fechaFin = Array.isArray(membresiaActiva.fechaFin) ? 
+      moment([membresiaActiva.fechaFin[0], membresiaActiva.fechaFin[1] - 1, membresiaActiva.fechaFin[2]]) : 
+      moment(membresiaActiva.fechaFin);
+      
+    return fechaFin.diff(moment(), 'days');
+  }, [membresiaActiva]);
 
   const tienePagosPendientes = useMemo(() => {
-    if (!membresiaActiva || !data?.membresias) return false;
+    if (!membresiaActiva || !data?.membresias) {
+      console.log('No hay membresía activa o datos:', { membresiaActiva, membresias: data?.membresias });
+      return false;
+    }
     
     const membresiaCompleta = data.membresias.find(m => m.id === membresiaActiva.id);
     console.log('Membresía completa:', membresiaCompleta);
     console.log('Pagos de la membresía:', membresiaCompleta?.pagos);
     
-    // Verificar si la membresía tiene pagos
     const tienePagos = membresiaCompleta?.pagos && membresiaCompleta.pagos.length > 0;
     console.log('¿Tiene pagos?:', tienePagos);
     
     return !tienePagos;
   }, [membresiaActiva, data]);
 
-
-  const fetchDashboardData = async () => {
-    try {
-      const response = await api.get(`/usuarios/${userId}/detalle`);
-      setData(response.data);
-    } catch (err) {
-      setError('Error al cargar datos');
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   if (loading) return <CircularProgress />;
   if (error) return <Alert severity="error">{error}</Alert>;

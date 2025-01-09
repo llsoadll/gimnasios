@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
+import com.gimnasio.gestion.dto.MembresiaDTO;
 import com.gimnasio.gestion.dto.SeguimientoDTO;
 import com.gimnasio.gestion.model.InscripcionClase;
 import com.gimnasio.gestion.model.Usuario;
@@ -46,10 +47,20 @@ public class ClienteDetalleMapper {
         dto.setTelefono(usuario.getTelefono());
         dto.setActivo(usuario.isActivo());
         
-        // Mapear membresias
+
+        // Mapear membresias con sus pagos
         dto.setMembresias(usuario.getMembresias().stream()
-            .map(membresiaMapper::toDTO)
-            .toList());
+            .map(membresia -> {
+                MembresiaDTO membresiaDTO = membresiaMapper.toDTO(membresia);
+                // Forzar la inicialización de los pagos
+                membresia.getPagos().size();
+                membresiaDTO.setPagos(membresia.getPagos().stream()
+                    .map(pagoMapper::toDTO)
+                    .collect(Collectors.toList()));
+                return membresiaDTO;
+            })
+            .collect(Collectors.toList()));
+
             
         // Mapear rutinas
         dto.setRutinas(usuario.getRutinas().stream()
