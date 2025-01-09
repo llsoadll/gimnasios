@@ -141,10 +141,16 @@ const diasParaVencer = useMemo(() => {
               </Alert>
             )}
             {/* Verificación de pagos pendientes más precisa */}
-            {membresiaActiva && tienePagosPendientes && (
-  <Alert severity="info" sx={{ mt: 2 }}>
-    Tienes pagos pendientes
-  </Alert>
+            {membresiaActiva && (
+  tienePagosPendientes ? (
+    <Alert severity="info" sx={{ mt: 2 }}>
+      Tienes pagos pendientes
+    </Alert>
+  ) : (
+    <Alert severity="success" sx={{ mt: 2 }}>
+      Tus pagos están al día
+    </Alert>
+  )
 )}
           </Grid>
 
