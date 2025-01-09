@@ -15,6 +15,7 @@ import LoginPage from './pages/LoginPage';
 import Caja from './pages/Caja';
 import Clientes from './pages/Clientes';
 import Profesores from './pages/Profesores';
+import DashboardCliente from './pages/DashboardCliente'; 
 import { Navigate } from 'react-router-dom';
 
 
@@ -94,13 +95,13 @@ function App() {
             
             {/* Ruta raíz con redirección basada en rol */}
             <Route path="/" element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
-                <Navigate 
-                  to={userRole === 'ADMIN' ? '/usuarios/clientes' : '/clases'} 
-                  replace 
-                />
-              </ProtectedRoute>
-            } />
+  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+    <Navigate 
+      to={userRole === 'ADMIN' ? '/usuarios/clientes' : '/dashboard'} // Cambiar '/clases' por '/dashboard'
+      replace 
+    />
+  </ProtectedRoute>
+} />
 
             {/* Rutas protegidas */}
             <Route path="/usuarios/clientes" element={
@@ -126,6 +127,12 @@ function App() {
                 <Membresias />
               </ProtectedRoute>
             } />
+
+<Route path="/dashboard" element={
+  <ProtectedRoute allowedRoles={['CLIENTE']}>
+    <DashboardCliente />
+  </ProtectedRoute>
+} />
             
             <Route path="/rutinas" element={
               <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>

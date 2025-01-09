@@ -25,7 +25,7 @@ const LoginPage = () => {
           if (response.data.role === 'ADMIN') {
             navigate('/usuarios/clientes'); 
           } else if (response.data.role === 'CLIENTE') {
-            navigate('/clases');
+            navigate('/dashboard');
           } else {
             navigate('/rutinas');
           }

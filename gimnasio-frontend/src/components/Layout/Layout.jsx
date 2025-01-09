@@ -116,14 +116,26 @@ const fetchMembresia = async () => {
   try {
     if (userRole === 'CLIENTE' && userId) {
       console.log('Buscando membresía para cliente:', userId);
-      // Remove duplicate /api/
       const response = await api.get(`/usuarios/${userId}/detalle`);
       console.log('Respuesta detalle:', response.data);
       
       if (response.data.membresias && response.data.membresias.length > 0) {
         const membresiaActiva = response.data.membresias
-          .filter(m => m.activa && new Date(m.fechaFin) > new Date())
-          .sort((a, b) => new Date(b.fechaFin) - new Date(a.fechaFin))[0];
+          .filter(m => {
+            const fechaFin = Array.isArray(m.fechaFin) ? 
+              moment([m.fechaFin[0], m.fechaFin[1], m.fechaFin[2]]) : 
+              moment(m.fechaFin);
+            return m.activa && fechaFin.isAfter(moment());
+          })
+          .sort((a, b) => {
+            const fechaFinA = Array.isArray(a.fechaFin) ? 
+              moment([a.fechaFin[0], a.fechaFin[1], a.fechaFin[2]]) : 
+              moment(a.fechaFin);
+            const fechaFinB = Array.isArray(b.fechaFin) ? 
+              moment([b.fechaFin[0], b.fechaFin[1], b.fechaFin[2]]) : 
+              moment(b.fechaFin);
+            return fechaFinB.diff(fechaFinA);
+          })[0];
         
         console.log('Membresía activa encontrada:', membresiaActiva);
         if (membresiaActiva) {
@@ -143,6 +155,7 @@ const fetchMembresia = async () => {
 
   const getMenuItems = () => {
     const commonItems = [
+      { text: 'Dashboard', path: '/dashboard' },
       { text: 'Rutinas', path: '/rutinas' },
       { text: 'Clases', path: '/clases' },
       { text: 'Seguimientos', path: '/seguimientos' }
