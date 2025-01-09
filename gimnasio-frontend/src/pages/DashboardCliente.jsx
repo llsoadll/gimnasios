@@ -118,14 +118,32 @@ const diasParaVencer = useMemo(() => {
       {
         label: 'Peso (kg)',
         data: data.seguimientos?.map(s => s.peso),
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
+        borderColor: '#2196f3',
+        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#2196f3',
+        pointHoverBackgroundColor: '#2196f3',
+        pointHoverBorderColor: '#fff',
+        order: 2
       },
       {
         label: 'IMC',
         data: data.seguimientos?.map(s => s.imc),
-        borderColor: 'rgb(255, 99, 132)',
-        tension: 0.1
+        borderColor: '#f50057',
+        backgroundColor: 'rgba(245, 0, 87, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#f50057',
+        pointHoverBackgroundColor: '#f50057',
+        pointHoverBorderColor: '#fff',
+        order: 1
       }
     ]
   };
@@ -228,16 +246,69 @@ const diasParaVencer = useMemo(() => {
 
       {/* Gráfico de Evolución */}
       <Grid item xs={12}>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6">Mi Evolución</Typography>
-          <Box sx={{ height: 400 }}>
-            <Line data={chartData} options={{
-              responsive: true,
-              maintainAspectRatio: false
-            }} />
-          </Box>
-        </Paper>
-      </Grid>
+  <Paper sx={{ p: 3 }}>
+    <Typography variant="h6">Mi Evolución</Typography>
+    <Box sx={{ height: '500px', width: '100%', p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
+      <Line data={chartData} options={{
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          intersect: false,
+          mode: 'index'
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              padding: 20,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            titleColor: '#000',
+            bodyColor: '#000',
+            borderColor: '#ddd',
+            borderWidth: 1,
+            padding: 12,
+            displayColors: true
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: true,
+              color: 'rgba(0,0,0,0.05)'
+            },
+            ticks: {
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            }
+          },
+          y: {
+            grid: {
+              display: true,
+              color: 'rgba(0,0,0,0.05)'
+            },
+            ticks: {
+              font: {
+                size: 14,
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      }} />
+    </Box>
+  </Paper>
+</Grid>
     </Grid>
   );
 };

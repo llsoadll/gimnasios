@@ -71,54 +71,102 @@ const DetalleCliente = () => {
 
 
   const chartData = {
-    labels: cliente?.seguimientos?.map(s => {
-      const fecha = new Date(s.fecha);
-      return fecha.toLocaleDateString('es-AR');
-    }) || [],
+    labels: cliente?.seguimientos?.map(s => moment(s.fecha).format('DD/MM/YYYY')),
     datasets: [
       {
         label: 'Peso (kg)',
-        data: cliente?.seguimientos?.map(s => s.peso) || [],
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
+        data: cliente?.seguimientos?.map(s => s.peso),
+        borderColor: '#2196f3',
+        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#2196f3',
+        pointHoverBackgroundColor: '#2196f3',
+        pointHoverBorderColor: '#fff',
+        order: 2
       },
       {
         label: 'IMC',
-        data: cliente?.seguimientos?.map(s => s.imc) || [],
-        borderColor: 'rgb(255, 99, 132)',
-        tension: 0.1
+        data: cliente?.seguimientos?.map(s => s.imc),
+        borderColor: '#f50057',
+        backgroundColor: 'rgba(245, 0, 87, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#f50057',
+        pointHoverBackgroundColor: '#f50057',
+        pointHoverBorderColor: '#fff',
+        order: 1
       }
     ]
   };
   
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    },
     plugins: {
-      tooltip: {
-        callbacks: {
-          title: function(tooltipItems) {
-            return tooltipItems[0].label;
-          },
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.y}`;
+      legend: {
+        position: 'top',
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 14,
+            weight: 'bold'
           }
         }
       },
-      legend: {
-        position: 'top',
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#000',
+        bodyColor: '#000',
+        borderColor: '#ddd',
+        borderWidth: 1,
+        padding: 12,
+        displayColors: true,
+        callbacks: {
+          title: (tooltipItems) => {
+            return `Fecha: ${tooltipItems[0].label}`;
+          },
+          label: (context) => {
+            return ` ${context.dataset.label}: ${context.parsed.y}`;
+          }
+        }
       }
     },
     scales: {
       x: {
-        title: {
+        grid: {
           display: true,
-          text: 'Fecha'
+          color: 'rgba(0,0,0,0.05)'
+        },
+        ticks: {
+          font: {
+            size: 14,
+            weight: 'bold'
+          }
         }
       },
       y: {
-        title: {
+        grid: {
           display: true,
-          text: 'Valor'
+          color: 'rgba(0,0,0,0.05)'
+        },
+        ticks: {
+          font: {
+            size: 14,
+            weight: 'bold'
+          }
         }
       }
     }
@@ -334,13 +382,12 @@ const DetalleCliente = () => {
         <Typography variant="h5" gutterBottom>Seguimiento</Typography>
         <Divider sx={{ my: 2 }} />
         {cliente?.seguimientos?.length > 0 ? (
-      <Box sx={{ height: 300, mt: 3 }}>
-        <Typography variant="h6">Progreso</Typography>
-        <Line data={chartData} options={chartOptions} />
-      </Box>
-    ) : (
-      <Typography>No hay seguimientos registrados</Typography>
-    )}
+  <Box sx={{ height: '500px', width: '100%', p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
+    <Line data={chartData} options={chartOptions} />
+  </Box>
+) : (
+  <Typography>No hay seguimientos registrados</Typography>
+)}
       </Paper>
     </Grid>
     </Grid>

@@ -18,6 +18,7 @@ import {
 } from 'chart.js';
 import api from '../utils/axios';
 import { Assessment } from '@mui/icons-material';
+import moment from 'moment';
 
 const Seguimientos = () => {
   const [seguimientos, setSeguimientos] = useState([]);
@@ -156,64 +157,107 @@ const Seguimientos = () => {
   }
 
   const chartData = {
-    labels: seguimientos.map(s => {
-      const fecha = new Date(s.fecha);
-      return fecha.toLocaleDateString('es-AR');
-    }),
+    labels: seguimientos.map(s => moment(s.fecha).format('DD/MM/YYYY')),
     datasets: [
       {
         label: 'Peso (kg)',
-        data: seguimientos.map(s => ({
-          x: new Date(s.fecha).toLocaleDateString('es-AR'),
-          y: s.peso
-        })),
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
+        data: seguimientos.map(s => s.peso),
+        borderColor: '#2196f3',
+        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#2196f3',
+        pointHoverBackgroundColor: '#2196f3',
+        pointHoverBorderColor: '#fff',
+        order: 2
       },
       {
         label: 'IMC',
-        data: seguimientos.map(s => ({
-          x: new Date(s.fecha).toLocaleDateString('es-AR'),
-          y: s.imc
-        })),
-        borderColor: 'rgb(255, 99, 132)',
-        tension: 0.1
+        data: seguimientos.map(s => s.imc),
+        borderColor: '#f50057',
+        backgroundColor: 'rgba(245, 0, 87, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#f50057',
+        pointHoverBackgroundColor: '#f50057',
+        pointHoverBorderColor: '#fff',
+        order: 1
       }
     ]
   };
-
+  
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    },
     plugins: {
-      tooltip: {
-        callbacks: {
-          title: function(tooltipItems) {
-            return tooltipItems[0].label;
-          },
-          label: function(context) {
-            return `${context.dataset.label}: ${context.parsed.y}`;
+      legend: {
+        position: 'top',
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 14,
+            weight: 'bold'
           }
         }
       },
-      legend: {
-        position: 'top',
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#000',
+        bodyColor: '#000',
+        borderColor: '#ddd',
+        borderWidth: 1,
+        padding: 12,
+        displayColors: true,
+        callbacks: {
+          title: (tooltipItems) => {
+            return `Fecha: ${tooltipItems[0].label}`;
+          },
+          label: (context) => {
+            return ` ${context.dataset.label}: ${context.parsed.y}`;
+          }
+        }
       }
     },
     scales: {
       x: {
-        title: {
+        grid: {
           display: true,
-          text: 'Fecha'
+          color: 'rgba(0,0,0,0.05)'
+        },
+        ticks: {
+          font: {
+            size: 12,
+            weight: 'bold'
+          }
         }
       },
       y: {
-        title: {
+        grid: {
           display: true,
-          text: 'Valor'
+          color: 'rgba(0,0,0,0.05)'
+        },
+        ticks: {
+          font: {
+            size: 12,
+            weight: 'bold'
+          }
         }
       }
     }
   };
+
 
   return (
     <>
@@ -319,8 +363,47 @@ const Seguimientos = () => {
             </TableContainer>
           </Grid>
           <Grid item xs={12}>
-            <Line data={chartData} options={chartOptions} />
-          </Grid>
+      <Box sx={{ height: '500px', width: '100%', p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
+        <Line 
+          data={chartData} 
+          options={{
+            ...chartOptions,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                ...chartOptions.scales.x,
+                ticks: {
+                  font: {
+                    size: 14,
+                    weight: 'bold'
+                  }
+                }
+              },
+              y: {
+                ...chartOptions.scales.y,
+                beginAtZero: true,
+                ticks: {
+                  font: {
+                    size: 14,
+                    weight: 'bold'
+                  }
+                }
+              }
+            },
+            elements: {
+              line: {
+                tension: 0.3,
+                borderWidth: 3
+              },
+              point: {
+                radius: 6,
+                hoverRadius: 8
+              }
+            }
+          }}
+        />
+      </Box>
+    </Grid>
         </Grid>
       )}
 
