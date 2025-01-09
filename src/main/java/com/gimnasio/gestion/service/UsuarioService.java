@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gimnasio.gestion.dto.ClienteDetalleDTO;
+import com.gimnasio.gestion.dto.UsuarioDTO;
 import com.gimnasio.gestion.enums.TipoUsuario;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.mapper.ClienteDetalleMapper;
+import com.gimnasio.gestion.mapper.UsuarioMapper;
 import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.repository.UsuarioRepository;
 
@@ -21,7 +23,10 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-private ClienteDetalleMapper clienteDetalleMapper;
+    private UsuarioMapper usuarioMapper;
+
+    @Autowired
+    private ClienteDetalleMapper clienteDetalleMapper;  
 
 public ClienteDetalleDTO obtenerDetalleCliente(Long id) {
     Usuario usuario = usuarioRepository.findById(id)
@@ -47,21 +52,21 @@ public Usuario guardarUsuario(Usuario usuario) {
     }
 
     @Transactional
-public Usuario cambiarEstado(Long id, boolean activo) {
-    try {
-        Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        
-        usuario.setActivo(activo);
-        Usuario usuarioActualizado = usuarioRepository.save(usuario);
-        usuarioRepository.flush(); // Forzar la actualización en la base de datos
-        
-        return usuarioActualizado;
-    } catch (Exception e) {
-        e.printStackTrace(); // Para ver el error en los logs
-        throw new RuntimeException("Error al cambiar estado: " + e.getMessage());
+    public UsuarioDTO cambiarEstado(Long id, boolean activo) {
+        try {
+            Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+            
+            usuario.setActivo(activo);
+            Usuario usuarioActualizado = usuarioRepository.save(usuario);
+            usuarioRepository.flush();
+            
+            // Convertir a DTO antes de devolver
+            return usuarioMapper.toDTO(usuarioActualizado);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al cambiar estado: " + e.getMessage());
+        }
     }
-}
 
     public void eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)

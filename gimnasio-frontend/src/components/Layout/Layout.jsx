@@ -112,19 +112,29 @@ useEffect(() => {
   cargarDatos();
 }, [userId, userRole]);
 
-  const fetchMembresia = async () => {
-    try {
-      // Solo buscar membresía si es CLIENTE
-      if (userRole === 'CLIENTE') {
-        const response = await api.get(`/usuarios/${userId}/membresia-activa`);
-        if (response.data) {
-          setMembresia(response.data);
+const fetchMembresia = async () => {
+  try {
+    if (userRole === 'CLIENTE' && userId) {
+      console.log('Buscando membresía para cliente:', userId);
+      // Remove duplicate /api/
+      const response = await api.get(`/usuarios/${userId}/detalle`);
+      console.log('Respuesta detalle:', response.data);
+      
+      if (response.data.membresias && response.data.membresias.length > 0) {
+        const membresiaActiva = response.data.membresias
+          .filter(m => m.activa && new Date(m.fechaFin) > new Date())
+          .sort((a, b) => new Date(b.fechaFin) - new Date(a.fechaFin))[0];
+        
+        console.log('Membresía activa encontrada:', membresiaActiva);
+        if (membresiaActiva) {
+          setMembresia(membresiaActiva);
         }
       }
-    } catch (err) {
-      console.error('Error al cargar membresía:', err);
     }
-  };
+  } catch (err) {
+    console.error('Error al cargar membresía:', err);
+  }
+};
 
   const handleLogout = () => {
     localStorage.clear();

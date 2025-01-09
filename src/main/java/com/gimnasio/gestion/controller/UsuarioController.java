@@ -16,6 +16,8 @@ import com.gimnasio.gestion.mapper.UsuarioMapper;
 import com.gimnasio.gestion.model.Membresia;
 import com.gimnasio.gestion.mapper.MembresiaMapper;
 import com.gimnasio.gestion.repository.UsuarioRepository;
+
+import java.time.LocalDate;
 import java.util.Comparator;
 
 @RestController
@@ -36,8 +38,12 @@ public class UsuarioController {
     private MembresiaMapper membresiaMapper;
 
     @GetMapping
-public ResponseEntity<List<Usuario>> obtenerUsuarios() {
-    return ResponseEntity.ok(usuarioService.obtenerTodos());
+public ResponseEntity<List<UsuarioDTO>> obtenerUsuarios() {
+    List<Usuario> usuarios = usuarioService.obtenerTodos();
+    List<UsuarioDTO> usuariosDTO = usuarios.stream()
+        .map(usuarioMapper::toDTO)
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(usuariosDTO);
 }
 
 @GetMapping("/{id}/membresia-activa")
@@ -46,18 +52,20 @@ public ResponseEntity<?> getMembresiaActiva(@PathVariable Long id) {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
                 
-        // Obtener la última membresía, esté activa o no
-        Membresia ultimaMembresia = usuario.getMembresias().stream()
-            .max(Comparator.comparing(Membresia::getFechaFin))
+        // Obtener la membresía activa y no vencida
+        Membresia membresiaActiva = usuario.getMembresias().stream()
+            .filter(m -> m.isActiva() && m.getFechaFin().isAfter(LocalDate.now()))
+            .max(Comparator.comparing(Membresia::getFechaFin)) // Importante: obtener la que vence más tarde
             .orElse(null);
                 
-        if (ultimaMembresia == null) {
+        if (membresiaActiva == null) {
             return ResponseEntity.ok(null);
         }
             
-        return ResponseEntity.ok(membresiaMapper.toDTO(ultimaMembresia));
+        return ResponseEntity.ok(membresiaMapper.toDTO(membresiaActiva));
     } catch (Exception e) {
-        return ResponseEntity.status(500).body("Error al obtener membresía");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error al obtener membresía");
     }
 }
 
@@ -81,10 +89,9 @@ public ResponseEntity<?> getMembresiaActiva(@PathVariable Long id) {
 @CrossOrigin(origins = "http://localhost:3000")
 public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestParam boolean activo) {
     try {
-        Usuario usuario = usuarioService.cambiarEstado(id, activo);
+        UsuarioDTO usuario = usuarioService.cambiarEstado(id, activo);
         return ResponseEntity.ok(usuario);
     } catch (Exception e) {
-        e.printStackTrace(); // Para ver el error en los logs
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error al cambiar estado: " + e.getMessage());
     }
@@ -110,7 +117,7 @@ public ResponseEntity<ClienteDetalleDTO> obtenerDetalleCliente(@PathVariable Lon
 }
 
 @PutMapping("/{id}")
-public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
+public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuarioActualizado) {
     try {
         Usuario usuario = usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -122,9 +129,13 @@ public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @Request
         usuario.setFechaNacimiento(usuarioActualizado.getFechaNacimiento());
         
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
-        return ResponseEntity.ok(usuarioGuardado);
+        
+        // Convertir a DTO antes de devolver la respuesta
+        UsuarioDTO usuarioDTO = usuarioMapper.toDTO(usuarioGuardado);
+        return ResponseEntity.ok(usuarioDTO);
     } catch (Exception e) {
-        throw new RuntimeException("Error al actualizar usuario: " + e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body("Error al actualizar usuario: " + e.getMessage());
     }
 }
 }

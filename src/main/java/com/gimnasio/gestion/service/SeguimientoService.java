@@ -25,9 +25,13 @@ public class SeguimientoService {
     }
 
     public List<Seguimiento> obtenerHistorialCliente(Long clienteId) {
-        Usuario cliente = usuarioRepository.findById(clienteId)
-            .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
-        return seguimientoRepository.findByClienteOrderByFechaDesc(cliente);
+        try {
+            Usuario cliente = usuarioRepository.findById(clienteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+            return seguimientoRepository.findByClienteOrderByFechaDesc(cliente);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al obtener seguimientos: " + e.getMessage());
+        }
     }
 
     public void eliminarSeguimiento(Long id) {
