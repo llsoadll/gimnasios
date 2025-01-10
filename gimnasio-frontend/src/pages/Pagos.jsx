@@ -3,10 +3,17 @@ import {
   Button, Table, TableBody, TableCell, TableContainer, 
   TableHead, TableRow, Paper, TextField, FormControl, 
   Select, MenuItem, Dialog, DialogTitle, DialogContent,
-  DialogActions, Alert, Box, CircularProgress, Typography
+  DialogActions, Alert, Box, CircularProgress, Typography, Grid, Card, CardContent, Chip, InputLabel
 } from '@mui/material';
 import api from '../utils/axios';
-import { Payment } from '@mui/icons-material';
+import {
+  Payment,
+  Person,
+  CalendarToday,
+  AttachMoney,
+  Warning,
+  Delete as DeleteIcon
+} from '@mui/icons-material';
 
 const Pagos = () => {
   const [pagos, setPagos] = useState([]);
@@ -19,6 +26,8 @@ const Pagos = () => {
     fecha: '',
     metodoPago: ''
   });
+  const [searchTerm, setSearchTerm] = useState('');
+const [filterMetodoPago, setFilterMetodoPago] = useState('');
 
   useEffect(() => {
     fetchPagos();
@@ -60,6 +69,18 @@ const Pagos = () => {
     }
 };
 
+const pagosFiltrados = pagos.filter(pago => {
+  const matchSearch = searchTerm === '' || 
+    `${pago.clienteNombre} ${pago.clienteApellido}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+      
+  const matchMetodoPago = filterMetodoPago === '' || 
+    pago.metodoPago === filterMetodoPago;
+      
+  return matchSearch && matchMetodoPago;
+});
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -97,70 +118,91 @@ const Pagos = () => {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
 
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
-        <Payment 
-          sx={{ 
-            fontSize: 35, 
-            mr: 2, 
-            color: 'primary.main',
-            transform: 'rotate(-15deg)',
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              transform: 'rotate(0deg) scale(1.1)'
-            }
-          }} 
-        />
-        <Typography 
-          variant="h5" 
-          sx={{
-            fontWeight: 600,
-            background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
-          }}
-        >
-          Listado de Pagos
-        </Typography>
-      </Box>
+      <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+  <TextField
+    label="Buscar pago"
+    variant="outlined"
+    size="small"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    sx={{ width: 300 }}
+    placeholder="Buscar por nombre de cliente..."
+  />
+  <FormControl size="small" sx={{ minWidth: 200 }}>
+    <InputLabel>Método de Pago</InputLabel>
+    <Select
+      value={filterMetodoPago}
+      onChange={(e) => setFilterMetodoPago(e.target.value)}
+      label="Método de Pago"
+    >
+      <MenuItem value="">Todos</MenuItem>
+      <MenuItem value="EFECTIVO">Efectivo</MenuItem>
+      <MenuItem value="TARJETA">Tarjeta</MenuItem>
+      <MenuItem value="TRANSFERENCIA">Transferencia</MenuItem>
+    </Select>
+  </FormControl>
+  <Button 
+    variant="contained" 
+    onClick={() => setOpenDialog(true)}
+    sx={{ ml: 'auto' }}
+  >
+    Registrar Pago
+  </Button>
+</Box>
 
-      <Button variant="contained" onClick={() => setOpenDialog(true)} sx={{ mb: 2 }}>
-        Registrar Pago
-      </Button>
+      <Grid container spacing={3}>
+      {pagosFiltrados.map((pago) => (
+    <Grid item xs={12} sm={6} md={4} key={pago.id}>
+      <Card sx={{ 
+        height: '100%',
+        transition: 'transform 0.2s',
+        '&:hover': {
+          transform: 'scale(1.02)',
+          boxShadow: 3
+        }
+      }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <Typography variant="h6" color="primary">
+              ${pago.monto}
+            </Typography>
+            <Chip 
+              label={pago.metodoPago}
+              color="info"
+              size="small"
+            />
+          </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Cliente</TableCell>
-              <TableCell>Fecha</TableCell>
-              <TableCell>Monto</TableCell>
-              <TableCell>Método de Pago</TableCell>
-              <TableCell>Acciones</TableCell> 
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {pagos.map((pago) => (
-              <TableRow key={pago.id}>
-                <TableCell>{`${pago.clienteNombre} ${pago.clienteApellido}`}</TableCell>
-                <TableCell>{pago.fecha}</TableCell>
-                <TableCell>{pago.monto}</TableCell>
-                <TableCell>{pago.metodoPago}</TableCell>
-                <TableCell>
-                  <Button 
-                    variant="contained"
-                    color="error"
-                    size="small"
-                    onClick={() => eliminarPago(pago.id)}
-                  >
-                    Eliminar
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+            <Person sx={{ mr: 1, color: 'text.secondary' }} />
+            <Typography variant="body1">
+              {`${pago.clienteNombre} ${pago.clienteApellido}`}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <CalendarToday sx={{ mr: 1, color: 'text.secondary' }} />
+            <Typography variant="body2" color="text.secondary">
+              {new Date(pago.fecha).toLocaleDateString()}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="error"
+              onClick={() => eliminarPago(pago.id)}
+              startIcon={<DeleteIcon />}
+            >
+              Eliminar
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+    </Grid>
+  ))}
+</Grid>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Registrar Pago</DialogTitle>
