@@ -29,6 +29,15 @@ const [filterEstado, setFilterEstado] = useState('');
     tipo: 'MENSUAL',
     activa: true
   });
+  const [editDialog, setEditDialog] = useState(false);
+const [membresiaEdit, setMembresiaEdit] = useState({
+  id: '',
+  clienteId: '',
+  fechaInicio: '',
+  precio: '',
+  tipo: '',
+  activa: true
+});
 
   useEffect(() => {
     fetchMembresias();
@@ -84,6 +93,45 @@ const [filterEstado, setFilterEstado] = useState('');
     }
   };
 
+
+  const handleEditClick = (membresia) => {
+    setMembresiaEdit({
+      id: membresia.id,
+      clienteId: membresia.cliente.id,
+      fechaInicio: moment(membresia.fechaInicio).format('YYYY-MM-DD'),
+      precio: membresia.precio,
+      tipo: membresia.tipo,
+      activa: membresia.activa
+    });
+    setEditDialog(true);
+  };
+
+
+  const actualizarMembresia = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const membresiaData = {
+        cliente: {
+          id: parseInt(membresiaEdit.clienteId)
+        },
+        fechaInicio: membresiaEdit.fechaInicio,
+        precio: parseFloat(membresiaEdit.precio),
+        tipo: membresiaEdit.tipo,
+        activa: membresiaEdit.activa
+      };
+      
+      await api.put(`/membresias/${membresiaEdit.id}`, membresiaData);
+      await fetchMembresias();
+      setEditDialog(false);
+      setMensaje("Membresía actualizada exitosamente");
+      setTimeout(() => setMensaje(null), 3000);
+    } catch (err) {
+      setError('Error al actualizar membresía');
+    } finally {
+      setLoading(false);
+    }
+  };
 
 const eliminarMembresia = async (id) => {
   if (window.confirm('¿Está seguro de eliminar esta membresía?')) {
@@ -370,6 +418,68 @@ const agregarMembresia = async (e) => {
   <DialogActions>
     <Button onClick={() => setDeleteDialogOpen(false)}>Cancelar</Button>
     <Button onClick={handleDeleteConfirm} color="error">Eliminar</Button>
+  </DialogActions>
+</Dialog>
+
+<Dialog open={editDialog} onClose={() => setEditDialog(false)}>
+  <DialogTitle>Editar Membresía</DialogTitle>
+  <DialogContent>
+    <form onSubmit={actualizarMembresia}>
+      <FormControl fullWidth margin="normal">
+        <Select
+          value={membresiaEdit.clienteId}
+          onChange={e => setMembresiaEdit({...membresiaEdit, clienteId: e.target.value})}
+        >
+          {clientes.map(cliente => (
+            <MenuItem key={cliente.id} value={cliente.id}>
+              {`${cliente.nombre} ${cliente.apellido}`}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Fecha Inicio" 
+        type="date"
+        InputLabelProps={{ shrink: true }}
+        value={membresiaEdit.fechaInicio}
+        onChange={e => setMembresiaEdit({...membresiaEdit, fechaInicio: e.target.value})}
+      />
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Precio" 
+        type="number"
+        value={membresiaEdit.precio}
+        onChange={e => setMembresiaEdit({...membresiaEdit, precio: e.target.value})}
+      />
+      <FormControl fullWidth margin="normal">
+        <Select
+          value={membresiaEdit.tipo}
+          onChange={e => setMembresiaEdit({...membresiaEdit, tipo: e.target.value})}
+        >
+          <MenuItem value="MENSUAL">Mensual</MenuItem>
+          <MenuItem value="TRIMESTRAL">Trimestral</MenuItem>
+          <MenuItem value="ANUAL">Anual</MenuItem>
+        </Select>
+      </FormControl>
+      <FormControl fullWidth margin="normal">
+        <Select
+          value={membresiaEdit.activa}
+          onChange={e => setMembresiaEdit({...membresiaEdit, activa: e.target.value})}
+        >
+          <MenuItem value={true}>Activa</MenuItem>
+          <MenuItem value={false}>Inactiva</MenuItem>
+        </Select>
+      </FormControl>
+    </form>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setEditDialog(false)}>Cancelar</Button>
+    <Button onClick={actualizarMembresia} variant="contained">
+      Guardar Cambios
+    </Button>
   </DialogActions>
 </Dialog>
     </>

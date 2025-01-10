@@ -71,6 +71,37 @@ public class MembresiaService {
         return membresiaMapper.toDTO(nuevaMembresia);
     }
 
+    public MembresiaDTO actualizarMembresia(MembresiaDTO membresiaDTO) {
+        Membresia membresia = membresiaRepository.findById(membresiaDTO.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Membresía no encontrada"));
+        
+        Usuario cliente = usuarioRepository.findById(membresiaDTO.getCliente().getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Cliente no encontrado"));
+            
+        membresia.setCliente(cliente);
+        membresia.setFechaInicio(membresiaDTO.getFechaInicio());
+        membresia.setPrecio(membresiaDTO.getPrecio());
+        membresia.setTipo(membresiaDTO.getTipo());
+        membresia.setActiva(membresiaDTO.isActiva());
+        
+        // Recalcular fecha fin según tipo
+        LocalDate fechaInicio = membresia.getFechaInicio();
+        switch(membresia.getTipo()) {
+            case MENSUAL:
+                membresia.setFechaFin(fechaInicio.plusMonths(1));
+                break;
+            case TRIMESTRAL:
+                membresia.setFechaFin(fechaInicio.plusMonths(3));
+                break;
+            case ANUAL:
+                membresia.setFechaFin(fechaInicio.plusYears(1));
+                break;
+        }
+        
+        Membresia membresiaActualizada = membresiaRepository.save(membresia);
+        return membresiaMapper.toDTO(membresiaActualizada);
+    }
+
 
     public List<MembresiaDTO> obtenerMembresiasSinPagar() {
         return membresiaRepository.findMembresiasSinPagar().stream()

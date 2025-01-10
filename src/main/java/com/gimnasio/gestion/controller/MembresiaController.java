@@ -36,4 +36,10 @@ public class MembresiaController {
     public ResponseEntity<List<MembresiaDTO>> obtenerMembresiasSinPagar() {
         return ResponseEntity.ok(membresiaService.obtenerMembresiasSinPagar());
     }
+
+    @PutMapping("/{id}")
+public ResponseEntity<MembresiaDTO> actualizarMembresia(@PathVariable Long id, @RequestBody MembresiaDTO membresiaDTO) {
+    membresiaDTO.setId(id);
+    return ResponseEntity.ok(membresiaService.actualizarMembresia(membresiaDTO));
+}
 }
