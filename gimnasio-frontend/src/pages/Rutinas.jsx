@@ -160,20 +160,10 @@ const actualizarRutina = async (e) => {
   return (
     <>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error">{error}</Alert>}
 
+      <Box>
 
-      {userRole === 'ADMIN' && (
-      <Button 
-        variant="contained" 
-        onClick={() => setOpenDialog(true)} 
-        sx={{ mb: 2 }}
-      >
-        Nueva Rutina
-      </Button>
-      )}
-
-<Box>
-{error && <Alert severity="error">{error}</Alert>}
 <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
   <SportsGymnastics 
     sx={{ 
@@ -200,6 +190,18 @@ const actualizarRutina = async (e) => {
           Listado de Rutinas
         </Typography>
       </Box>
+
+      {userRole === 'ADMIN' && (
+      <Button 
+        variant="contained" 
+        onClick={() => setOpenDialog(true)} 
+        sx={{ mb: 2 }}
+      >
+        Nueva Rutina
+      </Button>
+      )}
+
+
 
       <TableContainer component={Paper}>
         

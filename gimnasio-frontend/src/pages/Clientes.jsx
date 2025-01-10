@@ -4,7 +4,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
-  Box, Typography, Switch
+  Box, Typography, Switch, InputLabel
 } from '@mui/material';
 import api from '../utils/axios';
 import moment from 'moment';
@@ -66,14 +66,20 @@ const [usuarioEdit, setUsuarioEdit] = useState({
   }, []);
 
 
-  const clientesFiltrados = clientes
-  .filter(cliente => 
-    searchTerm ? (
+  const [filterEstado, setFilterEstado] = useState('');
+
+const clientesFiltrados = clientes
+  .filter(cliente => {
+    const matchSearch = searchTerm === '' || 
       cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       cliente.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cliente.email.toLowerCase().includes(searchTerm.toLowerCase())
-    ) : true
-  )
+      cliente.email.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchEstado = filterEstado === '' || 
+      cliente.activo === (filterEstado === 'true');
+      
+    return matchSearch && matchEstado;
+  })
   .slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
 
   const totalPaginas = Math.ceil(clientes.length / itemsPorPagina);
@@ -166,25 +172,6 @@ const [usuarioEdit, setUsuarioEdit] = useState({
     <Box>
     {error && <Alert severity="error">{error}</Alert>}
     
-    <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
-      <TextField
-        label="Buscar cliente"
-        variant="outlined"
-        size="small"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{ width: 300 }}
-        placeholder="Buscar por nombre, email..."
-      />
-      <Button 
-        variant="contained" 
-        onClick={() => setOpenDialog(true)}
-        sx={{ ml: 'auto' }}
-      >
-        Nuevo Cliente
-      </Button>
-    </Box>
-
     <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
   <PeopleAlt 
     sx={{ 
@@ -211,6 +198,40 @@ const [usuarioEdit, setUsuarioEdit] = useState({
     Listado de Clientes
   </Typography>
 </Box>
+
+
+<Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+  <TextField
+    label="Buscar cliente"
+    variant="outlined"
+    size="small"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    sx={{ width: 300 }}
+    placeholder="Buscar por nombre, email..."
+  />
+  <FormControl size="small" sx={{ minWidth: 200 }}>
+    <InputLabel>Estado</InputLabel>
+    <Select
+      value={filterEstado || ''}
+      onChange={(e) => setFilterEstado(e.target.value)}
+      label="Estado"
+    >
+      <MenuItem value="">Todos</MenuItem>
+      <MenuItem value="true">Activos</MenuItem>
+      <MenuItem value="false">Inactivos</MenuItem>
+    </Select>
+  </FormControl>
+  <Button 
+    variant="contained" 
+    onClick={() => setOpenDialog(true)}
+    sx={{ ml: 'auto' }}
+  >
+    Nuevo Cliente
+  </Button>
+</Box>
+
+    
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

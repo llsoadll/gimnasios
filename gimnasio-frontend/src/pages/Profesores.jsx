@@ -4,7 +4,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
   Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
-  Box, Typography, Switch
+  Box, Typography, Switch, InputLabel
 } from '@mui/material';
 import api from '../utils/axios';
 import moment from 'moment';
@@ -139,14 +139,20 @@ const Profesores = () => {
     }
   };
 
-  const profesoresFiltrados = profesores
-  .filter(profesor => 
-    searchTerm ? (
+  const [filterEstado, setFilterEstado] = useState('');
+
+const profesoresFiltrados = profesores
+  .filter(profesor => {
+    const matchSearch = searchTerm === '' || 
       profesor.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       profesor.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      profesor.email.toLowerCase().includes(searchTerm.toLowerCase())
-    ) : true
-  )
+      profesor.email.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchEstado = filterEstado === '' || 
+      profesor.activo === (filterEstado === 'true');
+      
+    return matchSearch && matchEstado;
+  })
   .slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
 
 const totalPaginas = Math.ceil(profesores.length / itemsPorPagina);
@@ -155,25 +161,6 @@ const totalPaginas = Math.ceil(profesores.length / itemsPorPagina);
     <Box>
       {error && <Alert severity="error">{error}</Alert>}
       
-      <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
-        <TextField
-          label="Buscar profesor"
-          variant="outlined"
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ width: 300 }}
-          placeholder="Buscar por nombre, email..."
-        />
-        <Button 
-          variant="contained" 
-          onClick={() => setOpenDialog(true)}
-          sx={{ ml: 'auto' }}
-        >
-          Nuevo Profesor
-        </Button>
-      </Box>
-
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
   <FitnessCenterRounded 
     sx={{ 
@@ -200,6 +187,38 @@ const totalPaginas = Math.ceil(profesores.length / itemsPorPagina);
         Listado de Profesores
       </Typography>
     </Box>
+
+    <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+  <TextField
+    label="Buscar profesor"
+    variant="outlined"
+    size="small"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    sx={{ width: 300 }}
+    placeholder="Buscar por nombre, email..."
+  />
+  <FormControl size="small" sx={{ minWidth: 200 }}>
+    <InputLabel>Estado</InputLabel>
+    <Select
+      value={filterEstado || ''}
+      onChange={(e) => setFilterEstado(e.target.value)}
+      label="Estado"
+    >
+      <MenuItem value="">Todos</MenuItem>
+      <MenuItem value="true">Activos</MenuItem>
+      <MenuItem value="false">Inactivos</MenuItem>
+    </Select>
+  </FormControl>
+  <Button 
+    variant="contained" 
+    onClick={() => setOpenDialog(true)}
+    sx={{ ml: 'auto' }}
+  >
+    Nuevo Profesor
+  </Button>
+</Box>
+
 
       <TableContainer component={Paper}>
   <Table>

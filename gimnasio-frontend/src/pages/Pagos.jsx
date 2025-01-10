@@ -96,9 +96,6 @@ const Pagos = () => {
     <>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      <Button variant="contained" onClick={() => setOpenDialog(true)} sx={{ mb: 2 }}>
-        Registrar Pago
-      </Button>
 
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
         <Payment 
@@ -126,6 +123,10 @@ const Pagos = () => {
           Listado de Pagos
         </Typography>
       </Box>
+
+      <Button variant="contained" onClick={() => setOpenDialog(true)} sx={{ mb: 2 }}>
+        Registrar Pago
+      </Button>
 
       <TableContainer component={Paper}>
         <Table>
