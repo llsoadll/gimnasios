@@ -118,6 +118,33 @@ const pagosFiltrados = pagos.filter(pago => {
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
 
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
+  <Payment 
+    sx={{ 
+      fontSize: 35, 
+      mr: 2, 
+      color: 'primary.main',
+      transform: 'rotate(-15deg)',
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        transform: 'rotate(0deg) scale(1.1)'
+      }
+    }} 
+  />
+  <Typography 
+    variant="h5" 
+    sx={{
+      fontWeight: 600,
+      background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
+    }}
+  >
+    Listado de Pagos
+  </Typography>
+</Box>
+
       <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
   <TextField
     label="Buscar pago"
