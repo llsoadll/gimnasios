@@ -6,7 +6,11 @@ import {
   Box, Typography
 } from '@mui/material';
 import api from '../utils/axios';
-import { SportsGymnastics } from '@mui/icons-material';
+import { 
+  SportsGymnastics,
+  Edit as EditIcon,
+  Delete as DeleteIcon 
+} from '@mui/icons-material';
 
 
 
@@ -23,6 +27,13 @@ const Rutinas = () => {
     clienteId: '',
     entrenadorId: ''
   });
+  const [editDialog, setEditDialog] = useState(false);
+const [rutinaEdit, setRutinaEdit] = useState({
+  id: '',
+  nombre: '',
+  descripcion: '',
+  entrenadorId: ''
+});
 
   useEffect(() => {
     fetchRutinas();
@@ -95,6 +106,35 @@ const Rutinas = () => {
     } finally {
         setLoading(false);
     }
+};
+
+const handleEditClick = (rutina) => {
+  setRutinaEdit({
+    id: rutina.id,
+    nombre: rutina.nombre,
+    descripcion: rutina.descripcion,
+    entrenadorId: rutina.entrenador?.id || ''
+  });
+  setEditDialog(true);
+};
+
+const actualizarRutina = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    const rutinaData = {
+      nombre: rutinaEdit.nombre,
+      descripcion: rutinaEdit.descripcion,
+      entrenador: { id: parseInt(rutinaEdit.entrenadorId) }
+    };
+    await api.put(`/rutinas/${rutinaEdit.id}`, rutinaData);
+    await fetchRutinas();
+    setEditDialog(false);
+  } catch (err) {
+    setError('Error al actualizar rutina');
+  } finally {
+    setLoading(false);
+  }
 };
 
   const eliminarRutina = async (id) => {
@@ -174,7 +214,7 @@ const Rutinas = () => {
   <TableCell>Descripción</TableCell>
   {userRole !== 'CLIENTE' && <TableCell>Cliente</TableCell>}
   <TableCell>Entrenador</TableCell>
-  {userRole === 'ADMIN' && <TableCell>Acciones</TableCell>}
+  {(userRole === 'ADMIN' || userRole === 'ENTRENADOR') && <TableCell>Acciones</TableCell>}
 </TableRow>
           </TableHead>
           <TableBody>
@@ -190,18 +230,32 @@ const Rutinas = () => {
                 <TableCell>
                   {rutina.entrenador ? `${rutina.entrenador.nombre} ${rutina.entrenador.apellido}` : 'Sin entrenador'}
                 </TableCell>
-                {userRole === 'ADMIN' && (
-                <TableCell>
-                  <Button 
+                {(userRole === 'ADMIN' || userRole === 'ENTRENADOR') && (
+  <TableCell>
+    <Box sx={{ display: 'flex', gap: 2 }}>
+    <Button
   variant="contained"
-  color="error"
+  color="primary"
   size="small"
-  onClick={() => eliminarRutina(rutina.id)}
-                  >
-                    Eliminar
-                  </Button>
-                </TableCell>
-                )}
+  onClick={() => handleEditClick(rutina)}
+  startIcon={<EditIcon />}
+>
+  Editar
+</Button>
+{userRole === 'ADMIN' && (
+  <Button
+    variant="contained"
+    color="error"
+    size="small"
+    onClick={() => eliminarRutina(rutina.id)}
+    startIcon={<DeleteIcon />}
+  >
+    Eliminar
+  </Button>
+)}
+    </Box>
+  </TableCell>
+)}
               </TableRow>
             ))}
           </TableBody>
@@ -265,6 +319,48 @@ const Rutinas = () => {
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
         </DialogActions>
       </Dialog>
+
+<Dialog open={editDialog} onClose={() => setEditDialog(false)}>
+  <DialogTitle>Modificar Rutina</DialogTitle>
+  <DialogContent>
+    <form onSubmit={actualizarRutina}>
+      <TextField
+        fullWidth
+        margin="normal"
+        label="Nombre"
+        value={rutinaEdit.nombre}
+        onChange={e => setRutinaEdit({...rutinaEdit, nombre: e.target.value})}
+      />
+      <TextField
+        fullWidth
+        margin="normal"
+        label="Descripción"
+        multiline
+        rows={4}
+        value={rutinaEdit.descripcion}
+        onChange={e => setRutinaEdit({...rutinaEdit, descripcion: e.target.value})}
+      />
+      {userRole === 'ADMIN' && (
+        <FormControl fullWidth margin="normal">
+          <Select
+            value={rutinaEdit.entrenadorId}
+            onChange={e => setRutinaEdit({...rutinaEdit, entrenadorId: e.target.value})}
+          >
+            {entrenadores.map(entrenador => (
+              <MenuItem key={entrenador.id} value={entrenador.id}>
+                {`${entrenador.nombre} ${entrenador.apellido}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+      <DialogActions>
+        <Button onClick={() => setEditDialog(false)}>Cancelar</Button>
+        <Button type="submit" variant="contained">Guardar</Button>
+      </DialogActions>
+    </form>
+  </DialogContent>
+</Dialog>
     </>
   );
 };

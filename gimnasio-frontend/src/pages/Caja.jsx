@@ -160,31 +160,63 @@ return (
       </Grid>
       
       <Grid item xs={12}>
-        <Paper sx={{ p: 2 }}>
-          <Typography variant="h6">Gráfico de Ingresos</Typography>
-          <LineChart width={800} height={400} data={ingresos}>
-    <CartesianGrid strokeDasharray="3 3" />
-    <XAxis 
+      <Paper sx={{ p: 3, mb: 3 }}>
+  <Typography variant="h6" gutterBottom>Gráfico de Ingresos</Typography>
+  <Box sx={{ height: '500px', width: '100%', overflow: 'auto' }}>
+    <LineChart 
+      width={1200} 
+      height={400} 
+      data={ingresos}
+      margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
+    >
+      <CartesianGrid 
+        strokeDasharray="3 3" 
+        stroke="rgba(0,0,0,0.1)"
+      />
+      <XAxis 
         dataKey="fecha" 
-        angle={0}
-        textAnchor="end"
         height={60}
-    />
-    <YAxis />
-    <Tooltip 
-        formatter={(value) => `$${value}`}
+        tick={{ fill: '#666', fontSize: 12 }}
+        tickMargin={10}
+      />
+      <YAxis 
+        tick={{ fill: '#666', fontSize: 12 }}
+        tickFormatter={(value) => `$${value}`}
+      />
+      <Tooltip 
+        contentStyle={{
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          border: '1px solid #ddd',
+          borderRadius: '4px',
+          padding: '10px'
+        }}
+        formatter={(value) => [`$${value}`, 'Monto']}
         labelFormatter={(label) => `Fecha: ${label}`}
-    />
-    <Legend />
-    <Line 
+      />
+      <Legend 
+        verticalAlign="top" 
+        height={36}
+      />
+      <Line 
         type="monotone" 
         dataKey="monto" 
-        stroke="#8884d8" 
-        name="Monto ($)"
-        dot={{ r: 4 }}
-    />
-</LineChart>
-        </Paper>
+        stroke="#2196f3"
+        strokeWidth={3}
+        dot={{ 
+          r: 6,
+          fill: '#fff',
+          strokeWidth: 3
+        }}
+        activeDot={{ 
+          r: 8,
+          strokeWidth: 0,
+          fill: '#2196f3'
+        }}
+        name="Ingresos"
+      />
+    </LineChart>
+  </Box>
+</Paper>
       </Grid>
       </Grid>
     </Box>

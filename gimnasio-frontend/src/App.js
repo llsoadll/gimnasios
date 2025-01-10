@@ -135,19 +135,19 @@ function App() {
 } />
             
             <Route path="/rutinas" element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE', 'ENTRENADOR']}>
                 <Rutinas />
               </ProtectedRoute>
             } />
 
 <Route path="/clases" element={
-  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE', 'ENTRENADOR']}>
     <Clases />
   </ProtectedRoute>
 } />
             
             <Route path="/seguimientos" element={
-  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE', 'ENTRENADOR']}>
     <Seguimientos />
   </ProtectedRoute>
 } />

@@ -36,4 +36,10 @@ public class RutinaController {
 public ResponseEntity<List<RutinaDTO>> obtenerRutinasCliente(@PathVariable Long clienteId) {
     return ResponseEntity.ok(rutinaService.obtenerRutinasCliente(clienteId));
 }
+
+@PutMapping("/{id}")
+public ResponseEntity<RutinaDTO> actualizarRutina(@PathVariable Long id, @RequestBody RutinaDTO rutinaDTO) {
+    rutinaDTO.setId(id);
+    return ResponseEntity.ok(rutinaService.actualizarRutina(rutinaDTO));
+}
 }

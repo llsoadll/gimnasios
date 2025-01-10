@@ -155,27 +155,33 @@ const fetchMembresia = async () => {
 
   const getMenuItems = () => {
     const commonItems = [
-      { text: 'Dashboard', path: '/dashboard' },
       { text: 'Rutinas', path: '/rutinas' },
       { text: 'Clases', path: '/clases' },
       { text: 'Seguimientos', path: '/seguimientos' }
     ];
   
-    const adminItems = [
-      { 
-        text: 'Usuarios',
-        subItems: [
-          { text: 'Clientes', path: '/usuarios/clientes' },
-          { text: 'Profesores', path: '/usuarios/profesores' }
-        ]
-      },
-      { text: 'Membresías', path: '/membresias' },
-      { text: 'Pagos', path: '/pagos' },
-      { text: 'Caja', path: '/caja' },
-      ...commonItems  // Agregar los items comunes al final
-    ];
-  
-    return userRole === 'ADMIN' ? adminItems : commonItems;
+    if (userRole === 'ADMIN') {
+      return [
+        { 
+          text: 'Usuarios',
+          subItems: [
+            { text: 'Clientes', path: '/usuarios/clientes' },
+            { text: 'Profesores', path: '/usuarios/profesores' }
+          ]
+        },
+        { text: 'Membresías', path: '/membresias' },
+        { text: 'Pagos', path: '/pagos' },
+        { text: 'Caja', path: '/caja' },
+        ...commonItems
+      ];
+    } else if (userRole === 'ENTRENADOR') {
+      return commonItems;
+    } else {
+      return [
+        { text: 'Dashboard', path: '/dashboard' },
+        ...commonItems
+      ];
+    }
   };
 
   useEffect(() => {

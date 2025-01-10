@@ -47,6 +47,25 @@ public class RutinaService {
             .map(rutinaMapper::toDTO)
             .collect(Collectors.toList());
     }
+    
+
+
+    public RutinaDTO actualizarRutina(RutinaDTO rutinaDTO) {
+        Rutina rutina = rutinaRepository.findById(rutinaDTO.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Rutina no encontrada"));
+        
+        rutina.setNombre(rutinaDTO.getNombre());
+        rutina.setDescripcion(rutinaDTO.getDescripcion());
+        
+        if (rutinaDTO.getEntrenador() != null) {
+            Usuario entrenador = usuarioRepository.findById(rutinaDTO.getEntrenador().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Entrenador no encontrado"));
+            rutina.setEntrenador(entrenador);
+        }
+        
+        Rutina rutinaActualizada = rutinaRepository.save(rutina);
+        return rutinaMapper.toDTO(rutinaActualizada);
+    }
 
     public void eliminarRutina(Long id) {
         rutinaRepository.deleteById(id);
