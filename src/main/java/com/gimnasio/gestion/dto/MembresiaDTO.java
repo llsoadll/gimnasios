@@ -16,4 +16,5 @@ public class MembresiaDTO {
     private boolean activa;
     private TipoMembresia tipo;
     private List<PagoDTO> pagos;
+    private Long clienteId;  
 }

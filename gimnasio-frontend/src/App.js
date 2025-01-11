@@ -87,8 +87,6 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <BrowserRouter>
         <Layout>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
@@ -166,7 +164,6 @@ function App() {
             
           </Routes>
         </Layout>
-      </BrowserRouter>
     </ThemeProvider>
   );
 }
