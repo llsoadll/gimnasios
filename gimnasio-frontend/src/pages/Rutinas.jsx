@@ -45,6 +45,21 @@ const [selectedTemplate, setSelectedTemplate] = useState(null);
     fetchUsuarios();
   }, [tabValue]);
 
+
+  // Definir colores por nivel
+const nivelColors = {
+  PRINCIPIANTE: '#4caf50', // Verde
+  INTERMEDIO: '#ff9800',   // Naranja
+  AVANZADO: '#f44336'      // Rojo
+};
+
+// Definir colores por categoría
+const categoriaColors = {
+  FUERZA: '#2196f3',       // Azul
+  CARDIO: '#9c27b0',       // Púrpura
+  FLEXIBILIDAD: '#00bcd4'  // Cyan
+};
+
   const fetchTemplates = async () => {
     try {
       const response = await api.get('/rutinas/templates');
@@ -353,29 +368,46 @@ const agregarTemplate = async (e) => {
       display: 'flex',
       flexDirection: 'column',
       transition: 'transform 0.3s, box-shadow 0.3s',
+      borderLeft: `5px solid ${nivelColors[item.nivel]}`,
       '&:hover': {
         transform: 'translateY(-8px)',
         boxShadow: '0 12px 20px rgba(0,0,0,0.1)'
       }
     }}>
       <CardMedia
-  component="img"
-  height="200"
-  image={item.imagenUrl || '/images/default-routine.jpg'}
-  alt={item.nombre}
-  onError={(e) => {
-    e.target.src = '/images/default-routine.jpg';
-    e.target.onerror = null;
-  }}
-/>
+        component="img"
+        height="200"
+        image={item.imagenUrl || '/images/default-routine.jpg'}
+        alt={item.nombre}
+        onError={(e) => {
+          e.target.src = '/images/default-routine.jpg';
+          e.target.onerror = null;
+        }}
+      />
       <CardContent>
         <Typography variant="h5" gutterBottom>{item.nombre}</Typography>
         <Typography variant="body2" color="text.secondary">
           {item.descripcion}
         </Typography>
-        <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-          <Chip label={item.nivel} size="small" />
-          <Chip label={item.categoria} variant="outlined" size="small" />
+        <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+          <Chip 
+            label={item.nivel}
+            size="small"
+            sx={{ 
+              bgcolor: `${nivelColors[item.nivel]}`,
+              color: 'white',
+              fontWeight: 'bold'
+            }}
+          />
+          <Chip 
+            label={item.categoria}
+            size="small"
+            sx={{ 
+              bgcolor: `${categoriaColors[item.categoria]}`,
+              color: 'white',
+              fontWeight: 'bold'
+            }}
+          />
         </Box>
       </CardContent>
       <CardActions sx={{ mt: 'auto', justifyContent: 'flex-end' }}>
