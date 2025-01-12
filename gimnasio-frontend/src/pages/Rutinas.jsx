@@ -73,6 +73,18 @@ const [selectedTemplate, setSelectedTemplate] = useState(null);
     }
   };
 
+  const convertirUrlUnsplash = (url) => {
+    if (url.includes('unsplash.com')) {
+      const match = url.match(/photo-([^?]+)/);
+      if (match) {
+        const photoId = match[1];
+        // Añade .jpg al final de la URL
+        return `https://images.unsplash.com/photo-${photoId}?fm=jpg&q=80&w=1920&fit=crop.jpg`;
+      }
+    }
+    return url;
+  };
+
   const eliminarTemplate = async (templateId) => {
     if (window.confirm('¿Está seguro que desea eliminar este template?')) {
       try {
@@ -124,13 +136,32 @@ const asignarTemplate = async (e) => {
   }
 };
 
-  const agregarTemplate = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const validarImagenUrl = (url) => {
+  if (!url) return true; // Permite URLs vacías
+  // Verifica si es una URL de Unsplash
+  if (url.includes('unsplash.com')) {
+    return true; // Acepta URLs de Unsplash sin validar extensión
+  }
+  // Para otras URLs, verifica la extensión
+  return url.match(/\.(jpeg|jpg|gif|png)$/i) != null;
+};
+
+const agregarTemplate = async (e) => {
+  e.preventDefault();
+  let imageUrl = nuevaRutina.imagenUrl;
+  if (imageUrl) {
+    imageUrl = convertirUrlUnsplash(imageUrl);
+    if (!validarImagenUrl(imageUrl)) {
+      setError('La URL de la imagen debe terminar en .jpg, .jpeg, .gif o .png');
+      return;
+    }
+  }
+  setLoading(true);
     try {
       // Ensure entrenadorId is set correctly
       const templateData = {
         nombre: nuevaRutina.nombre,
+        imagenUrl: imageUrl,
         descripcion: nuevaRutina.descripcion,
         nivel: nuevaRutina.nivel || 'PRINCIPIANTE',
         categoria: nuevaRutina.categoria || 'FUERZA',
@@ -313,11 +344,15 @@ const asignarTemplate = async (e) => {
       }
     }}>
       <CardMedia
-        component="img"
-        height="200"
-        image={item.imagenUrl || '/images/default-routine.jpg'}
-        alt={item.nombre}
-      />
+  component="img"
+  height="200"
+  image={item.imagenUrl || '/images/default-routine.jpg'}
+  alt={item.nombre}
+  onError={(e) => {
+    e.target.src = '/images/default-routine.jpg';
+    e.target.onerror = null;
+  }}
+/>
       <CardContent>
         <Typography variant="h5" gutterBottom>{item.nombre}</Typography>
         <Typography variant="body2" color="text.secondary">
@@ -368,6 +403,35 @@ const asignarTemplate = async (e) => {
               value={nuevaRutina.descripcion}
               onChange={e => setNuevaRutina({...nuevaRutina, descripcion: e.target.value})}
             />
+            <TextField 
+  fullWidth
+  margin="normal"
+  label="URL de Imagen" 
+  value={nuevaRutina.imagenUrl}
+  onChange={e => setNuevaRutina({...nuevaRutina, imagenUrl: e.target.value})}
+  helperText="Ingresa la URL de una imagen (ejemplo: https://ejemplo.com/imagen.jpg)"
+/>
+
+{/* Vista previa de la imagen */}
+{nuevaRutina.imagenUrl && (
+  <Box sx={{ mt: 2, mb: 2 }}>
+    <img 
+      src={nuevaRutina.imagenUrl} 
+      alt="Vista previa"
+      style={{ 
+        maxWidth: '100%', 
+        maxHeight: '200px', 
+        objectFit: 'cover',
+        borderRadius: '8px'
+      }}
+      onError={(e) => {
+        e.target.src = '/images/default-routine.jpg';
+        e.target.onerror = null;
+      }}
+    />
+  </Box>
+)}
+
             <FormControl fullWidth margin="normal">
               <InputLabel>Nivel</InputLabel>
               <Select
