@@ -56,8 +56,16 @@ const [selectedTemplate, setSelectedTemplate] = useState(null);
 
   const fetchRutinas = async () => {
     try {
-      const response = await api.get('/rutinas');
-      setRutinas(response.data);
+      // Si el usuario es CLIENTE, obtener solo sus rutinas
+      if (userRole === 'CLIENTE') {
+        const clienteId = localStorage.getItem('userId');
+        const response = await api.get(`/rutinas/cliente/${clienteId}`);
+        setRutinas(response.data);
+      } else {
+        // Si es ADMIN/ENTRENADOR, obtener todas las rutinas
+        const response = await api.get('/rutinas');
+        setRutinas(response.data);
+      }
     } catch (err) {
       setError('Error al cargar rutinas');
     }
@@ -262,10 +270,17 @@ const agregarTemplate = async (e) => {
     <div>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      <Tabs value={tabValue} onChange={handleTabChange}>
-      <Tab label="Templates" />
-      <Tab label="Rutinas Asignadas" />
-    </Tabs>
+      {userRole === 'ADMIN' ? (
+  <Tabs value={tabValue} onChange={handleTabChange}>
+    <Tab label="Templates" />
+    <Tab label="Rutinas Asignadas" />
+  </Tabs>
+) : (
+  // Para CLIENTE, solo mostrar sus rutinas
+  <Typography variant="h6" sx={{ mb: 3 }}>
+    Mis Rutinas
+  </Typography>
+)}
 
     {/* Botones de acción según la pestaña */}
     <Box sx={{ 
