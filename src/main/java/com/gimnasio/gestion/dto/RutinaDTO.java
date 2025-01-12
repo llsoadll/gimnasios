@@ -1,16 +1,24 @@
 package com.gimnasio.gestion.dto;
 
+import java.util.List;
+import java.util.ArrayList;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import com.gimnasio.gestion.enums.NivelDificultad;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RutinaDTO {
     private Long id;
     private String nombre;
     private String descripcion;
-    private UsuarioDTO cliente;
-    private UsuarioDTO entrenador;
-    private Long clienteId;
+    private NivelDificultad nivel = NivelDificultad.PRINCIPIANTE;
+    private String categoria = "FUERZA";
     private Long entrenadorId;
-    private String clienteNombre;
-    private String entrenadorNombre;
+    private UsuarioSimpleDTO entrenador;
+    private Integer duracionMinutos;
+    private String imagenUrl;
+    private List<EjercicioDTO> ejercicios = new ArrayList<>();
 }

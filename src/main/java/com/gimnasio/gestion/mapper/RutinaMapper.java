@@ -2,46 +2,37 @@ package com.gimnasio.gestion.mapper;
 
 import org.springframework.stereotype.Component;
 import com.gimnasio.gestion.dto.RutinaDTO;
-import com.gimnasio.gestion.dto.UsuarioDTO;
+import com.gimnasio.gestion.dto.UsuarioSimpleDTO;
 import com.gimnasio.gestion.model.Rutina;
-import com.gimnasio.gestion.model.Usuario;
 
 @Component
 public class RutinaMapper {
     
-    public RutinaDTO toDTO(Rutina rutina) {
-        if (rutina == null) return null;
+    public RutinaDTO toDTO(Rutina entity) {
+        if (entity == null) return null;
         
         RutinaDTO dto = new RutinaDTO();
-        dto.setId(rutina.getId());
-        dto.setNombre(rutina.getNombre());
-        dto.setDescripcion(rutina.getDescripcion());
+        dto.setId(entity.getId());
+        dto.setNombre(entity.getNombre());
+        dto.setDescripcion(entity.getDescripcion());
+        dto.setNivel(entity.getNivel());
+        dto.setCategoria(entity.getCategoria());
+        dto.setDuracionMinutos(entity.getDuracionMinutos());
+        dto.setImagenUrl(entity.getImagenUrl());
         
-        if (rutina.getCliente() != null) {
-            UsuarioDTO clienteDTO = new UsuarioDTO();
-            clienteDTO.setId(rutina.getCliente().getId());
-            clienteDTO.setNombre(rutina.getCliente().getNombre());
-            clienteDTO.setApellido(rutina.getCliente().getApellido());
-            clienteDTO.setEmail(rutina.getCliente().getEmail());
-            clienteDTO.setTipo(rutina.getCliente().getTipo());
-            clienteDTO.setActivo(rutina.getCliente().isActivo());
-            dto.setCliente(clienteDTO);
-        }
-        
-        if (rutina.getEntrenador() != null) {
-            UsuarioDTO entrenadorDTO = new UsuarioDTO();
-            entrenadorDTO.setId(rutina.getEntrenador().getId());
-            entrenadorDTO.setNombre(rutina.getEntrenador().getNombre());
-            entrenadorDTO.setApellido(rutina.getEntrenador().getApellido());
-            entrenadorDTO.setEmail(rutina.getEntrenador().getEmail());
-            entrenadorDTO.setTipo(rutina.getEntrenador().getTipo());
-            entrenadorDTO.setActivo(rutina.getEntrenador().isActivo());
-            dto.setEntrenador(entrenadorDTO);
+        // Manejar entrenador
+        if (entity.getEntrenador() != null) {
+            UsuarioSimpleDTO entrenadorDto = new UsuarioSimpleDTO();
+            entrenadorDto.setId(entity.getEntrenador().getId());
+            entrenadorDto.setNombre(entity.getEntrenador().getNombre());
+            entrenadorDto.setApellido(entity.getEntrenador().getApellido());
+            dto.setEntrenador(entrenadorDto);
+            dto.setEntrenadorId(entity.getEntrenador().getId());
         }
         
         return dto;
     }
-
+    
     public Rutina toEntity(RutinaDTO dto) {
         if (dto == null) return null;
         
@@ -49,18 +40,13 @@ public class RutinaMapper {
         rutina.setId(dto.getId());
         rutina.setNombre(dto.getNombre());
         rutina.setDescripcion(dto.getDescripcion());
+        rutina.setNivel(dto.getNivel());
+        rutina.setCategoria(dto.getCategoria());
+        rutina.setDuracionMinutos(dto.getDuracionMinutos());
+        rutina.setImagenUrl(dto.getImagenUrl());
         
-        if (dto.getCliente() != null) {
-            Usuario cliente = new Usuario();
-            cliente.setId(dto.getCliente().getId());
-            rutina.setCliente(cliente);
-        }
-        
-        if (dto.getEntrenador() != null) {
-            Usuario entrenador = new Usuario();
-            entrenador.setId(dto.getEntrenador().getId());
-            rutina.setEntrenador(entrenador);
-        }
+        // No mapeamos el cliente aquí, se maneja en el servicio
+        rutina.setCliente(null);
         
         return rutina;
     }

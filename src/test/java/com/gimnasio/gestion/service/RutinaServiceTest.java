@@ -79,10 +79,8 @@ void testCrearRutina() {
     RutinaDTO rutinaDTO = new RutinaDTO();
     rutinaDTO.setNombre("Rutina Test");
     rutinaDTO.setDescripcion("Descripción test");
-    rutinaDTO.setClienteId(1L);
     rutinaDTO.setEntrenadorId(2L);
 
-    when(usuarioRepository.findById(1L)).thenReturn(Optional.of(clienteTest));
     when(usuarioRepository.findById(2L)).thenReturn(Optional.of(entrenadorTest));
     when(rutinaRepository.save(any(Rutina.class))).thenAnswer(invocation -> {
         Rutina rutina = invocation.getArgument(0);
@@ -94,7 +92,6 @@ void testCrearRutina() {
         Rutina rutina = new Rutina();
         rutina.setNombre(dto.getNombre());
         rutina.setDescripcion(dto.getDescripcion());
-        rutina.setCliente(clienteTest);
         rutina.setEntrenador(entrenadorTest);
         return rutina;
     });
