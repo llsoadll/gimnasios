@@ -3,7 +3,7 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Paper, Button, Dialog, TextField, FormControl, Select, MenuItem,
   DialogTitle, DialogContent, DialogActions, Alert, CircularProgress,
-  Box, Grid, Typography
+  Box, Grid, Typography, InputLabel
 } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import {
@@ -27,6 +27,7 @@ const Seguimientos = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [nuevoSeguimiento, setNuevoSeguimiento] = useState({
     fecha: new Date().toISOString().split('T')[0],
     peso: '',
@@ -293,31 +294,60 @@ const Seguimientos = () => {
 
       {/* Admin view */}
       {userRole === 'ADMIN' && (
-        <Box mb={2}>
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <Select
-              value={selectedCliente}
-              onChange={(e) => setSelectedCliente(e.target.value)}
-              displayEmpty
-            >
-              <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
-              {clientes.map(cliente => (
+        <Box mb={2} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        {/* Campo de búsqueda */}
+        <TextField
+          label="Buscar cliente"
+          variant="outlined"
+          size="small"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ width: 300 }}
+          placeholder="Buscar por nombre..."
+        />
+        
+        {/* Selector de cliente filtrado */}
+        <FormControl sx={{ minWidth: 300 }}>
+          <InputLabel>Cliente</InputLabel>
+          <Select
+            value={selectedCliente}
+            onChange={(e) => setSelectedCliente(e.target.value)}
+            label="Cliente"
+          >
+            <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
+            {clientes
+              .filter(cliente => 
+                searchTerm === '' || 
+                `${cliente.nombre} ${cliente.apellido}`
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase())
+              )
+              .map(cliente => (
                 <MenuItem key={cliente.id} value={cliente.id}>
                   {`${cliente.nombre} ${cliente.apellido}`}
                 </MenuItem>
               ))}
-            </Select>
-          </FormControl>
-
-          {selectedCliente && (
-            <Button 
-              variant="contained" 
-              onClick={() => setOpenDialog(true)}
-            >
-              Nuevo Seguimiento
-            </Button>
-          )}
-        </Box>
+          </Select>
+        </FormControl>
+      
+        {/* Botón de nuevo seguimiento */}
+        {selectedCliente && (
+          <Button 
+            variant="contained"
+            onClick={() => setOpenDialog(true)}
+            sx={{
+              background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+              color: 'white',
+              '&:hover': {
+                background: 'linear-gradient(45deg, #21CBF3 30%, #1976d2 90%)',
+                transform: 'translateY(-2px)'
+              }
+            }}
+          >
+            Nuevo Seguimiento
+          </Button>
+        )}
+      </Box>
       )}
 
       {/* Seguimientos table and chart - visible for both ADMIN and CLIENTE */}
