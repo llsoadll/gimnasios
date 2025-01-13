@@ -6,6 +6,7 @@ import { Collapse } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MenuIcon from '@mui/icons-material/Menu';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
   Box,
   AppBar,
@@ -43,29 +44,108 @@ const StyledCard = styled(Paper)({
 });
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  background: 'linear-gradient(90deg, #1976d2 0%, #1565c0 100%)',
-  boxShadow: 'none',
-  zIndex: theme.zIndex.drawer + 1  // Add this line to make AppBar appear above drawer
+  zIndex: theme.zIndex.drawer + 1,
+  background: 'linear-gradient(90deg, #1a237e 0%, #283593 100%)', // Azul más oscuro y elegante
+  boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+  '& .MuiToolbar-root': {
+    height: '70px',
+    padding: '0 24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    '& .user-section': {
+      display: 'flex',
+      alignItems: 'center',
+      gap: '20px',
+      '& .user-info': {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end'
+      },
+      '& .logout-button': {
+        borderRadius: '20px',
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        padding: '8px 16px',
+        '&:hover': {
+          backgroundColor: 'rgba(255,255,255,0.25)'
+        }
+      }
+    }
+  }
 }));
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
-    background: 'linear-gradient(180deg, #1976d2 0%, #1565c0 100%)',
+    background: 'linear-gradient(180deg, #1a237e 0%, #0d47a1 100%)', // Coincide con el AppBar
     color: 'white',
+    width: drawerWidth,
+    padding: '10px',
+    
     '& .MuiListItem-root': {
-      margin: '8px 16px',
-      borderRadius: '8px',
+      margin: '8px 0',
+      borderRadius: '12px',
+      transition: 'all 0.3s ease',
+      
       '&:hover': {
-        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+        backgroundColor: 'rgba(255,255,255,0.12)',
+        transform: 'translateX(5px)',
+        boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+      },
+      
+      '&.Mui-selected': {
+        backgroundColor: 'rgba(255,255,255,0.18)',
+        '&:hover': {
+          backgroundColor: 'rgba(255,255,255,0.22)'
+        }
+      }
+    },
+    
+    // Estilo para los submenús
+    '& .MuiCollapse-root': {
+      '& .MuiList-root': {
+        backgroundColor: 'rgba(0,0,0,0.1)',
+        borderRadius: '8px',
+        margin: '0 10px',
+        
+        '& .MuiListItem-root': {
+          margin: '4px 0',
+          paddingLeft: '32px',
+          borderRadius: '8px',
+          
+          '&:hover': {
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            transform: 'translateX(0px)'
+          }
+        }
+      }
+    },
+    
+    // Estilo para los textos
+    '& .MuiListItemText-root': {
+      '& .MuiTypography-root': {
+        fontWeight: 500,
+        fontSize: '0.95rem',
+        letterSpacing: '0.5px'
+      }
+    },
+    
+    // Estilo para los iconos de expandir
+    '& .MuiSvgIcon-root': {
+      transition: 'transform 0.3s ease',
+      '&.expanded': {
+        transform: 'rotate(180deg)'
       }
     }
   }
 }));
 
 const MainContainer = styled(Container)(({ theme }) => ({
-  marginTop: theme.spacing(4),
-  marginLeft: `${drawerWidth}px`, // Add margin for drawer
-  width: `calc(100% - ${drawerWidth}px)` // Adjust width
+  marginTop: theme.spacing(8), // Aumentar el margen superior
+  marginLeft: { xs: 0, sm: `${drawerWidth}px` }, // Responsive margin
+  padding: theme.spacing(3),
+  width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` }, // Responsive width
+  maxWidth: 'none', // Quitar el maxWidth por defecto de Container
+  transition: 'margin 0.3s ease', // Suave transición
 }));
 
 const Layout = ({ children }) => {
@@ -198,50 +278,62 @@ const fetchMembresia = async () => {
   return (
     <Box sx={{ display: 'flex' }}>
       <StyledAppBar position="fixed">
-        <Toolbar>
-          {isMobile && (
-            <IconButton
-              color="inherit"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-          )}
-         
-<Typography 
-  variant="h5" 
-  sx={{ 
-    flexGrow: 1,
-    fontSize: { 
-      xs: '1.2rem',
-      sm: '1.5rem',
-      md: '1.8rem' 
-    }
-  }}
->
-  Gestión de Gimnasio
-</Typography>
-          {userRole === 'CLIENTE' && membresia && (
-            <Box sx={{ mr: 2, display: 'flex', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ mr: 1 }}>
-                Membresía {membresia.tipo}
-              </Typography>
-              <Typography variant="body2" color="rgba(255, 255, 255, 0.7)">
-                (Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')})
-              </Typography>
-            </Box>
-          )}
-          {usuario && (
-            <Typography variant="body2" sx={{ mr: 2 }}>
-              {usuario.nombre} {usuario.apellido}
-            </Typography>
-          )}
-          <Button color="inherit" onClick={handleLogout}>
-            Cerrar Sesión
-          </Button>
-        </Toolbar>
+      <Toolbar>
+  {isMobile && (
+    <IconButton color="inherit" onClick={handleDrawerToggle}>
+      <MenuIcon />
+    </IconButton>
+  )}
+  
+  <Box sx={{ 
+  flexGrow: 1, 
+  display: 'flex', 
+  alignItems: 'center'
+}}>
+  <img
+    src="/images/logo.png" // Asegúrate de que el logo esté en la carpeta public/images
+    alt="Logo Gimnasio"
+    style={{
+      height: '150px', // Ajusta el tamaño según necesites
+      marginRight: '10px',
+      objectFit: 'contain'
+    }}
+  />
+</Box>
+
+  <Box className="user-section">
+    {userRole === 'CLIENTE' && membresia && (
+      <Box className="user-info">
+        <Typography variant="body2">
+          Membresía {membresia.tipo}
+        </Typography>
+        <Typography variant="caption">
+          Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')}
+        </Typography>
+      </Box>
+    )}
+    
+    {usuario && (
+      <Box className="user-info">
+        <Typography variant="subtitle2">
+          {usuario.nombre} {usuario.apellido}
+        </Typography>
+        <Typography variant="caption">
+          {userRole.toLowerCase()}
+        </Typography>
+      </Box>
+    )}
+
+    <Button 
+      className="logout-button"
+      color="inherit"
+      onClick={handleLogout}
+      startIcon={<LogoutIcon />}
+    >
+      Cerrar Sesión
+    </Button>
+  </Box>
+</Toolbar>
       </StyledAppBar>
       
       <StyledDrawer
@@ -296,13 +388,21 @@ const fetchMembresia = async () => {
       </StyledDrawer>
 
       <Box component="main" sx={{ 
-        flexGrow: 1, 
-        p: { xs: 2, sm: 3 },
-        width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` },
-        marginLeft: { xs: 0, sm: `${drawerWidth}px` }
-      }}>
-        <Toolbar />
-        {children}
+  flexGrow: 1,
+  p: { xs: 2, sm: 3 },  // Padding general más pequeño
+  pl: { sm: 6 }, // Padding izquierdo específico para tamaños sm y superiores
+  minHeight: '100vh',
+  backgroundColor: '#f5f5f5',
+  marginLeft: { xs: 0, sm: `${drawerWidth}px` },
+  width: { xs: '100%', sm: `calc(100% - ${drawerWidth}px)` },
+  transition: 'margin 0.3s ease',
+  paddingTop: '76px',
+  '& > *:first-child': {
+    marginTop: 2
+  }
+}}>
+  <Toolbar />
+  {children}
       </Box>
     </Box>
   );
