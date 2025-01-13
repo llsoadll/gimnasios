@@ -8,7 +8,7 @@ import {
 // Remove DeleteIcon from first import since it's duplicated
 import { VisibilityIcon, EditIcon, PlayArrowIcon } from '@mui/icons-material';
 // Keep DeleteIcon here with Add and Assignment icons
-import { Add as AddIcon, Assignment as AssignmentIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Add as AddIcon, Assignment as AssignmentIcon, Delete as DeleteIcon, Person as PersonIcon } from '@mui/icons-material';
 import api from '../services/api';
 
 
@@ -524,11 +524,33 @@ const agregarTemplate = async (e) => {
               />
 
               {/* Agregar esta parte para mostrar el cliente cuando es una rutina asignada */}
-  {tabValue === 1 && item.cliente && (
-    <Typography variant="body2" sx={{ mt: 1, width: '100%' }}>
-      Cliente: {item.cliente.nombre} {item.cliente.apellido}
+              {tabValue === 1 && item.cliente && (
+  <Box sx={{ 
+    mt: 2,
+    p: 1.5,
+    width: '100%', // Añadir esto para que ocupe todo el ancho
+    borderRadius: '8px',
+    bgcolor: 'rgba(25, 118, 210, 0.1)',
+    border: '1px solid rgba(25, 118, 210, 0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1
+  }}>
+    <PersonIcon sx={{ 
+      color: 'primary.main',
+      fontSize: '1.2rem'
+    }} />
+    <Typography 
+      variant="body2" 
+      sx={{ 
+        fontWeight: 500,
+        color: 'primary.main'
+      }}
+    >
+      {item.cliente.nombre} {item.cliente.apellido}
     </Typography>
-  )}
+  </Box>
+)}
             </Box>
           </CardContent>
           <CardActions sx={{ mt: 'auto', justifyContent: 'flex-end' }}>
