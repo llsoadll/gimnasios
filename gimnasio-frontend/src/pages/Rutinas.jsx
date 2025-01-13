@@ -5,6 +5,8 @@ import {
   CardContent, CardMedia, Typography, Box, Chip, Alert, CircularProgress,
   Tabs, Tab, CardActions
 } from '@mui/material';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 // Remove DeleteIcon from first import since it's duplicated
 import { VisibilityIcon, EditIcon, PlayArrowIcon } from '@mui/icons-material';
 // Keep DeleteIcon here with Add and Assignment icons
@@ -446,9 +448,12 @@ const agregarTemplate = async (e) => {
           />
           <CardContent>
             <Typography variant="h5" gutterBottom>{rutina.nombre}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {rutina.descripcion}
-            </Typography>
+            <Typography 
+  variant="body2" 
+  color="text.secondary"
+  dangerouslySetInnerHTML={{ __html: rutina.descripcion }}
+  sx={{ mb: 2 }}
+/>
             <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip 
                 label={rutina.nivel}
@@ -500,9 +505,12 @@ const agregarTemplate = async (e) => {
           />
           <CardContent>
             <Typography variant="h5" gutterBottom>{item.nombre}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              {item.descripcion}
-            </Typography>
+            <Typography 
+    variant="body2" 
+    color="text.secondary"
+    dangerouslySetInnerHTML={{ __html: item.descripcion }}
+    sx={{ mb: 2 }}
+  />
             <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
               <Chip 
                 label={item.nivel}
@@ -606,15 +614,21 @@ const agregarTemplate = async (e) => {
               value={nuevaRutina.nombre}
               onChange={e => setNuevaRutina({...nuevaRutina, nombre: e.target.value})}
             />
-            <TextField 
-              fullWidth
-              margin="normal"
-              label="Descripción"
-              multiline
-              rows={4}
-              value={nuevaRutina.descripcion}
-              onChange={e => setNuevaRutina({...nuevaRutina, descripcion: e.target.value})}
-            />
+            <FormControl fullWidth sx={{ mb: 2 }}>
+  <Typography variant="subtitle1" sx={{ mb: 1 }}>Descripción</Typography>
+  <ReactQuill 
+    value={nuevaRutina.descripcion}
+    onChange={(content) => setNuevaRutina({...nuevaRutina, descripcion: content})}
+    style={{ height: '200px', marginBottom: '50px' }}
+    modules={{
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['clean']
+      ]
+    }}
+  />
+</FormControl>
             <TextField 
   fullWidth
   margin="normal"
