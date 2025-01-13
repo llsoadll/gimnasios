@@ -23,6 +23,10 @@ const Rutinas = () => {
   const [error, setError] = useState(null);
   const [asignarDialogOpen, setAsignarDialogOpen] = useState(false);
 const [selectedTemplate, setSelectedTemplate] = useState(null);
+const [searchTerm, setSearchTerm] = useState('');
+const [filterNivel, setFilterNivel] = useState('');
+const [paginaActual, setPaginaActual] = useState(1);
+const [itemsPorPagina] = useState(6); // 6 rutinas por página
   const userRole = localStorage.getItem('userRole');
 
   const [nuevaRutina, setNuevaRutina] = useState({
@@ -113,6 +117,25 @@ const categoriaColors = {
     }
     return url;
   };
+
+  const rutinasFiltradas = rutinas.filter(rutina => {
+    const matchSearch = searchTerm === '' || 
+      rutina.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (rutina.cliente && `${rutina.cliente.nombre} ${rutina.cliente.apellido}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()));
+        
+    const matchNivel = filterNivel === '' || rutina.nivel === filterNivel;
+        
+    return matchSearch && matchNivel;
+  });
+  
+  // Calcular rutinas paginadas
+  const totalPaginas = Math.ceil(rutinasFiltradas.length / itemsPorPagina);
+  const rutinasAPaginar = rutinasFiltradas.slice(
+    (paginaActual - 1) * itemsPorPagina,
+    paginaActual * itemsPorPagina
+  );
 
   const eliminarTemplate = async (templateId) => {
     if (window.confirm('¿Está seguro que desea eliminar este template?')) {
@@ -365,6 +388,35 @@ const agregarTemplate = async (e) => {
       )}
     </Box>
 
+    {tabValue === 1 && (
+  <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+    <TextField
+      label="Buscar rutina"
+      variant="outlined"
+      size="small"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      sx={{ width: 300 }}
+      placeholder="Buscar por nombre o cliente..."
+    />
+    
+    <FormControl size="small" sx={{ minWidth: 200 }}>
+      <InputLabel>Nivel</InputLabel>
+      <Select
+        value={filterNivel}
+        onChange={(e) => setFilterNivel(e.target.value)}
+        label="Nivel"
+      >
+        <MenuItem value="">Todos</MenuItem>
+        <MenuItem value="PRINCIPIANTE">Principiante</MenuItem>
+        <MenuItem value="INTERMEDIO">Intermedio</MenuItem>
+        <MenuItem value="AVANZADO">Avanzado</MenuItem>
+      </Select>
+    </FormControl>
+  </Box>
+)}
+
+
       {/* Grid de templates o rutinas */}
 <Grid container spacing={3}>
   {userRole === 'CLIENTE' ? (
@@ -423,7 +475,7 @@ const agregarTemplate = async (e) => {
     ))
   ) : (
     // Vista para ADMIN/ENTRENADOR - muestra templates o rutinas según la pestaña
-    (tabValue === 0 ? templates : rutinas).map((item) => (
+    (tabValue === 0 ? templates : rutinasAPaginar).map((item) => (
       <Grid item xs={12} sm={6} md={4} key={item.id}>
         <Card sx={{ 
           height: '100%',
@@ -496,6 +548,27 @@ const agregarTemplate = async (e) => {
     ))
   )}
 </Grid>
+
+{tabValue === 1 && (
+  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+    <Button 
+      disabled={paginaActual === 1} 
+      onClick={() => setPaginaActual(prev => prev - 1)}
+    >
+      Anterior
+    </Button>
+    <Typography sx={{ alignSelf: 'center' }}>
+      Página {paginaActual} de {totalPaginas}
+    </Typography>
+    <Button 
+      disabled={paginaActual === totalPaginas} 
+      onClick={() => setPaginaActual(prev => prev + 1)}
+    >
+      Siguiente
+    </Button>
+  </Box>
+)}
+
 
       {/* Diálogo para crear template/rutina */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
