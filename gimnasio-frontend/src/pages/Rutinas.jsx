@@ -8,9 +8,9 @@ import {
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 // Remove DeleteIcon from first import since it's duplicated
-import { VisibilityIcon, EditIcon, PlayArrowIcon } from '@mui/icons-material';
+import { VisibilityIcon, PlayArrowIcon } from '@mui/icons-material';
 // Keep DeleteIcon here with Add and Assignment icons
-import { Add as AddIcon, Assignment as AssignmentIcon, Delete as DeleteIcon, Person as PersonIcon } from '@mui/icons-material';
+import { Add as AddIcon, Assignment as AssignmentIcon, Delete as DeleteIcon, Person as PersonIcon, Edit as EditIcon } from '@mui/icons-material';
 import api from '../services/api';
 
 
@@ -28,6 +28,8 @@ const [selectedTemplate, setSelectedTemplate] = useState(null);
 const [searchTerm, setSearchTerm] = useState('');
 const [filterNivel, setFilterNivel] = useState('');
 const [paginaActual, setPaginaActual] = useState(1);
+const [templateEdit, setTemplateEdit] = useState(null);
+const [editDialogOpen, setEditDialogOpen] = useState(false);
 const [itemsPorPagina] = useState(6); // 6 rutinas por página
   const userRole = localStorage.getItem('userRole');
 
@@ -288,6 +290,22 @@ const agregarTemplate = async (e) => {
       setError(`Error al crear rutina: ${err.response?.data?.message || err.message}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const actualizarTemplate = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.put(`/rutinas/templates/${templateEdit.id}`, templateEdit);
+      if (response.status === 200) {
+        setTemplates(templates.map(t => 
+          t.id === templateEdit.id ? response.data : t
+        ));
+        setEditDialogOpen(false);
+        setTemplateEdit(null);
+      }
+    } catch (err) {
+      setError('Error al actualizar template');
     }
   };
 
@@ -562,17 +580,35 @@ const agregarTemplate = async (e) => {
             </Box>
           </CardContent>
           <CardActions sx={{ mt: 'auto', justifyContent: 'flex-end' }}>
-            {userRole === 'ADMIN' && (
-              <Button
-                size="small"
-                color="error"
-                startIcon={<DeleteIcon />}
-                onClick={() => tabValue === 0 ? eliminarTemplate(item.id) : eliminarRutina(item.id)}
-              >
-                Eliminar
-              </Button>
-            )}
-          </CardActions>
+  {userRole === 'ADMIN' && (
+    <>
+      {/* Botón Editar solo para templates */}
+      {tabValue === 0 && (
+        <Button
+          size="small"
+          color="primary"
+          startIcon={<EditIcon />}
+          onClick={() => {
+            setTemplateEdit(item);
+            setEditDialogOpen(true);
+          }}
+        >
+          Editar
+        </Button>
+      )}
+      
+      {/* Botón Eliminar para ambas pestañas */}
+      <Button
+        size="small"
+        color="error"
+        startIcon={<DeleteIcon />}
+        onClick={() => tabValue === 0 ? eliminarTemplate(item.id) : eliminarRutina(item.id)}
+      >
+        Eliminar
+      </Button>
+    </>
+  )}
+</CardActions>
         </Card>
       </Grid>
     ))
@@ -728,6 +764,49 @@ const agregarTemplate = async (e) => {
           </form>
         </DialogContent>
       </Dialog>
+
+{/* Nuevo diálogo para editar template */}
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+  <DialogTitle>Editar Template</DialogTitle>
+  <DialogContent>
+    <form onSubmit={actualizarTemplate}>
+      <TextField 
+        fullWidth
+        margin="normal"
+        label="Nombre" 
+        value={templateEdit?.nombre || ''}
+        onChange={e => setTemplateEdit({...templateEdit, nombre: e.target.value})}
+      />
+      <ReactQuill 
+        value={templateEdit?.descripcion || ''}
+        onChange={(content) => setTemplateEdit({...templateEdit, descripcion: content})}
+        style={{ height: '200px', marginBottom: '50px' }}
+        modules={{
+          toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['clean']
+          ]
+        }}
+      />
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Nivel</InputLabel>
+        <Select
+          value={templateEdit?.nivel || ''}
+          onChange={e => setTemplateEdit({...templateEdit, nivel: e.target.value})}
+        >
+          <MenuItem value="PRINCIPIANTE">Principiante</MenuItem>
+          <MenuItem value="INTERMEDIO">Intermedio</MenuItem>
+          <MenuItem value="AVANZADO">Avanzado</MenuItem>
+        </Select>
+      </FormControl>
+      <DialogActions>
+        <Button onClick={() => setEditDialogOpen(false)}>Cancelar</Button>
+        <Button type="submit" variant="contained">Guardar</Button>
+      </DialogActions>
+    </form>
+  </DialogContent>
+</Dialog>
 
       {/* Nuevo diálogo para asignar template */}
     <Dialog open={asignarDialogOpen} onClose={() => setAsignarDialogOpen(false)}>

@@ -176,6 +176,27 @@ public class RutinaService {
             .collect(Collectors.toList());
     }
 
+    public RutinaTemplateDTO actualizarTemplate(RutinaTemplateDTO dto) {
+        RutinaTemplate template = rutinaTemplateRepository.findById(dto.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Template no encontrado"));
+            
+        template.setNombre(dto.getNombre());
+        template.setDescripcion(dto.getDescripcion());
+        template.setNivel(dto.getNivel());
+        template.setCategoria(dto.getCategoria());
+        template.setDuracionMinutos(dto.getDuracionMinutos());
+        template.setImagenUrl(dto.getImagenUrl());
+        
+        if (dto.getEntrenadorId() != null) {
+            Usuario entrenador = usuarioRepository.findById(dto.getEntrenadorId())
+                .orElseThrow(() -> new ResourceNotFoundException("Entrenador no encontrado"));
+            template.setEntrenador(entrenador);
+        }
+        
+        RutinaTemplate templateActualizado = rutinaTemplateRepository.save(template);
+        return convertirATemplateDTO(templateActualizado);
+    }
+
     private RutinaTemplateDTO convertirATemplateDTO(RutinaTemplate template) {
         RutinaTemplateDTO dto = new RutinaTemplateDTO();
         dto.setId(template.getId());

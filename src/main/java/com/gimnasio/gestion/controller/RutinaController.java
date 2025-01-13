@@ -89,6 +89,14 @@ public ResponseEntity<RutinaDTO> actualizarRutina(@PathVariable Long id, @Reques
     return ResponseEntity.ok(rutinaService.actualizarRutina(rutinaDTO));
 }
 
+@PutMapping("/templates/{id}")
+public ResponseEntity<RutinaTemplateDTO> actualizarTemplate(
+    @PathVariable Long id, 
+    @RequestBody RutinaTemplateDTO dto
+) {
+    dto.setId(id);
+    return ResponseEntity.ok(rutinaService.actualizarTemplate(dto));
+}
 
 
 
