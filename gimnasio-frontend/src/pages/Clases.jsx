@@ -25,16 +25,11 @@ import {
 import { Tooltip, IconButton } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import api from '../utils/axios';
-import { Event } from '@mui/icons-material';
+import { Event, PeopleAlt } from '@mui/icons-material';
 
 const Clases = () => {
   const [clases, setClases] = useState([]);
   const [mensaje, setMensaje] = useState(null); 
-  const handleOpenInscripcionDialog = (clase) => {
-    setSelectedClase(clase);
-    fetchClientes(); // Cargar clientes antes de abrir el diálogo
-    setInscripcionDialogOpen(true);
-  };
   const userId = localStorage.getItem('userId'); // Obtener ID del usuario actual
   const userRole = localStorage.getItem('userRole'); // Obtener el rol del usuario
   const [clientes, setClientes] = useState([]);
@@ -45,7 +40,14 @@ const Clases = () => {
   const [entrenadores, setEntrenadores] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [alumnosDialogOpen, setAlumnosDialogOpen] = useState(false);
+const [claseSeleccionada, setClaseSeleccionada] = useState(null);
   const [error, setError] = useState(null);
+  const handleOpenInscripcionDialog = (clase) => {
+    setSelectedClase(clase);
+    fetchClientes(); // Cargar clientes antes de abrir el diálogo
+    setInscripcionDialogOpen(true);
+  };
   const [nuevaClase, setNuevaClase] = useState({
     nombre: '',
     descripcion: '',
@@ -262,103 +264,150 @@ const inscribirme = async (claseId) => {
       )}
 
 
-      <TableContainer component={Paper}>
+<TableContainer component={Paper}>
   <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell>Nombre</TableCell>
-        <TableCell>Descripción</TableCell>
-        <TableCell>Día</TableCell>
-        <TableCell>Horario</TableCell>
-        <TableCell>Cupos Total</TableCell>
-        <TableCell>Cupos Disponibles</TableCell>
-        <TableCell>Entrenador</TableCell>
-        {userRole === 'ADMIN' && <TableCell>Alumnos Inscriptos</TableCell>}
-        <TableCell>Inscripción</TableCell>
-        <TableCell>Acciones</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-    {clases.map((clase) => (
-  <TableRow key={clase.id}>
-    <TableCell>{clase.nombre}</TableCell>
-    <TableCell>{clase.descripcion}</TableCell>
-    <TableCell>{clase.dia}</TableCell>
-    <TableCell>{clase.horario}</TableCell>
-    <TableCell>{clase.cuposTotal}</TableCell>
-    <TableCell>{clase.cuposDisponibles}</TableCell>
-    <TableCell>{`${clase.entrenador?.nombre} ${clase.entrenador?.apellido}`}</TableCell>
-    {userRole === 'ADMIN' && (
-      <TableCell>
-      {clase.clientesInscritos?.length > 0 ? (
-        <div>
-          {clase.clientesInscritos.map(cliente => (
-            <Box key={cliente.id} display="flex" alignItems="center" mb={1}>
-              <Typography variant="body2">
-                {`${cliente.nombre} ${cliente.apellido}`}
-              </Typography>
-              <Button
-                size="small"
-                color="error"
-                onClick={() => darDeBajaCliente(cliente.inscripcionId)}
-                sx={{ ml: 1 }}
-              >
-                Dar de baja
-              </Button>
-            </Box>
-          ))}
-        </div>
-      ) : (
-        <Typography variant="body2">No hay alumnos inscriptos</Typography>
-      )}
-    </TableCell>
-    )}
-    <TableCell>
-      {userRole === 'ADMIN' ? (
-        <Button
-          color="primary"
-          onClick={() => handleOpenInscripcionDialog(clase)}
-          disabled={clase.cuposDisponibles === 0}
-          sx={{ mr: 1 }}
-        >
-          Inscribir Cliente
-        </Button>
-      ) : userRole === 'CLIENTE' && (
-        estaInscrito(clase) ? (
-          <Button
-            color="error"
-            onClick={() => darmedeBaja(clase.id)}
-          >
-            Darme de baja
-          </Button>
-        ) : (
-          <Button
-            color="primary"
-            onClick={() => inscribirme(clase.id)}
-            disabled={clase.cuposDisponibles === 0}
-          >
-            Inscribirme
-          </Button>
-        )
-      )}
-    </TableCell>
-    <TableCell>
-      {userRole === 'ADMIN' && (
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => eliminarClase(clase.id)}
-          size="small"
-        >
-          Eliminar
-        </Button>
-      )}
-    </TableCell>
+  <TableHead>
+  <TableRow>
+    <TableCell>Nombre</TableCell>
+    <TableCell>Descripción</TableCell>
+    <TableCell>Día</TableCell>
+    <TableCell>Horario</TableCell>
+    <TableCell>Cupos Total</TableCell>
+    <TableCell>Cupos Disponibles</TableCell>
+    <TableCell>Entrenador</TableCell>
+    {userRole === 'ADMIN' && <TableCell>Alumnos</TableCell>}
+    <TableCell>Inscripción</TableCell>
+    {userRole === 'ADMIN' && <TableCell>Acciones</TableCell>}
   </TableRow>
-))}
-    </TableBody>
+</TableHead>
+<TableBody>
+  {clases.map((clase) => (
+    <TableRow key={clase.id}>
+      <TableCell>{clase.nombre}</TableCell>
+      <TableCell>{clase.descripcion}</TableCell>
+      <TableCell>{clase.dia}</TableCell>
+      <TableCell>{clase.horario}</TableCell>
+      <TableCell>{clase.cupo}</TableCell>
+      <TableCell>{clase.cuposDisponibles}</TableCell>
+      <TableCell>{`${clase.entrenador?.nombre} ${clase.entrenador?.apellido}`}</TableCell>
+      {userRole === 'ADMIN' && (
+        <TableCell>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              setClaseSeleccionada(clase);
+              setAlumnosDialogOpen(true);
+            }}
+            startIcon={<PeopleAlt />}
+          >
+            Ver Alumnos ({clase.clientesInscritos?.length || 0})
+          </Button>
+        </TableCell>
+      )}
+      <TableCell>
+      {userRole === 'ADMIN' ? (
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={() => handleOpenInscripcionDialog(clase)}
+      disabled={clase.cuposDisponibles === 0}
+    >
+      Inscribir Cliente
+    </Button>
+  ) : userRole === 'CLIENTE' && (
+    estaInscrito(clase) ? (
+      <Button
+        variant="contained"
+        color="error"
+        onClick={() => darmedeBaja(clase.id)}
+      >
+        Darme de baja
+      </Button>
+    ) : (
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => inscribirme(clase.id)}
+        disabled={clase.cuposDisponibles === 0}
+      >
+        Inscribirme
+      </Button>
+    )
+  )}
+      </TableCell>
+      {userRole === 'ADMIN' && (
+        <TableCell>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => eliminarClase(clase.id)}
+            size="small"
+          >
+            Eliminar
+          </Button>
+        </TableCell>
+      )}
+    </TableRow>
+  ))}
+</TableBody>
   </Table>
 </TableContainer>
+
+{/* Diálogo para mostrar alumnos */}
+<Dialog 
+  open={alumnosDialogOpen} 
+  onClose={() => setAlumnosDialogOpen(false)}
+  maxWidth="md"
+  fullWidth
+>
+  <DialogTitle>
+    Alumnos Inscriptos - {claseSeleccionada?.nombre}
+  </DialogTitle>
+  <DialogContent>
+    {claseSeleccionada?.clientesInscritos?.length > 0 ? (
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {claseSeleccionada.clientesInscritos.map(cliente => (
+              <TableRow key={cliente.id}>
+                <TableCell>{`${cliente.nombre} ${cliente.apellido}`}</TableCell>
+                <TableCell>{cliente.email}</TableCell>
+                <TableCell>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => {
+                      darDeBajaCliente(cliente.inscripcionId);
+                      setAlumnosDialogOpen(false);
+                    }}
+                  >
+                    Dar de baja
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    ) : (
+      <Typography>No hay alumnos inscriptos</Typography>
+    )}
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => setAlumnosDialogOpen(false)}>
+      Cerrar
+    </Button>
+  </DialogActions>
+</Dialog>
+
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Nueva Clase</DialogTitle>
