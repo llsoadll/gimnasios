@@ -45,31 +45,53 @@ const StyledCard = styled(Paper)({
 
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  background: 'linear-gradient(90deg, #1a237e 0%, #283593 100%)', // Azul más oscuro y elegante
+  background: 'linear-gradient(90deg, #1a237e 0%, #283593 100%)',
   boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
   '& .MuiToolbar-root': {
-    height: '70px',
-    padding: '0 24px',
+    height: { xs: '60px', sm: '70px' },
+    padding: { xs: '0 16px', sm: '0 24px' },
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     '& .user-section': {
       display: 'flex',
       alignItems: 'center',
-      gap: '20px',
+      gap: { xs: '12px', sm: '24px' },
       '& .user-info': {
-        display: 'flex',
+        display: { xs: 'none', sm: 'flex' }, // Ocultar info en móviles
         flexDirection: 'column',
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        '& .MuiTypography-subtitle2': {
+          color: 'white',
+          fontWeight: 500,
+          fontSize: { xs: '0.8rem', sm: '1rem' }
+        },
+        '& .MuiTypography-caption': {
+          color: 'rgba(255,255,255,0.7)',
+          fontSize: { xs: '0.7rem', sm: '0.8rem' }
+        }
       },
       '& .logout-button': {
-        borderRadius: '20px',
-        backgroundColor: 'rgba(255,255,255,0.15)',
-        padding: '8px 16px',
-        '&:hover': {
-          backgroundColor: 'rgba(255,255,255,0.25)'
-        }
-      }
+  marginLeft: '12px', 
+  borderRadius: '20px',
+  backgroundColor: 'rgba(255,255,255,0.15)',
+  padding: { xs: '2px 4px', sm: '8px 16px' }, // Reducir padding en móviles
+  minWidth: { xs: '32px', sm: '120px' }, // Reducir ancho mínimo en móviles
+  '& .MuiButton-startIcon': {
+    margin: { xs: 0, sm: '8px' },
+    '& svg': {  // Ajustar tamaño del ícono
+      fontSize: { xs: '1.2rem', sm: '1.5rem' }
+    }
+  },
+  '& .MuiButton-label': {
+    display: { xs: 'none', sm: 'block' }
+  },
+  '&:hover': {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    transform: 'translateY(-2px)'
+  },
+  transition: 'all 0.3s ease'
+}
     }
   }
 }));
@@ -289,7 +311,8 @@ const fetchMembresia = async () => {
   flexGrow: 1, 
   display: 'flex', 
   alignItems: 'center',
-  mt: { xs: 1, sm: 2 }
+  mt: { xs: 1, sm: 2 },
+  mb: 2
 }}>
   <Box
     component="img"
@@ -301,7 +324,7 @@ const fetchMembresia = async () => {
       maxHeight: { 
         xs: '130px',    // Más pequeño en móvil
         sm: '150px',    // Tamaño medio en tablet
-        md: '200px'     // Tamaño completo en desktop
+        md: '250px'     // Tamaño completo en desktop
       },
       maxWidth: { 
         xs: '150px',   // Más pequeño en móvil
