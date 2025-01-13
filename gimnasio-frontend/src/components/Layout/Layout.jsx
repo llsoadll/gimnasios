@@ -288,15 +288,29 @@ const fetchMembresia = async () => {
   <Box sx={{ 
   flexGrow: 1, 
   display: 'flex', 
-  alignItems: 'center'
+  alignItems: 'center',
+  mt: { xs: 1, sm: 2 }
 }}>
-  <img
-    src="/images/logo.png" // Asegúrate de que el logo esté en la carpeta public/images
+  <Box
+    component="img"
+    src="/images/logo.png"
     alt="Logo Gimnasio"
-    style={{
-      height: '150px', // Ajusta el tamaño según necesites
-      marginRight: '10px',
-      objectFit: 'contain'
+    sx={{
+      height: 'auto',
+      width: 'auto',
+      maxHeight: { 
+        xs: '130px',    // Más pequeño en móvil
+        sm: '150px',    // Tamaño medio en tablet
+        md: '200px'     // Tamaño completo en desktop
+      },
+      maxWidth: { 
+        xs: '150px',   // Más pequeño en móvil
+        sm: '200px',   // Tamaño medio en tablet
+        md: '300px'    // Tamaño completo en desktop
+      },
+      marginRight: 2,
+      objectFit: 'contain',
+      transition: 'all 0.3s ease' // Suavizar la transición
     }}
   />
 </Box>
