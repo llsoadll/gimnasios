@@ -200,17 +200,30 @@ const clientesFiltrados = clientes
 </Box>
 
 
-<Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
-  <TextField
+<Box sx={{ 
+  mb: 2, 
+  display: 'flex', 
+  flexDirection: { xs: 'column', sm: 'row' }, // Columna en móvil, fila en desktop
+  gap: 2,
+  alignItems: { xs: 'stretch', sm: 'center' } // Estiran en móvil, centrados en desktop
+}}>
+<TextField
     label="Buscar cliente"
     variant="outlined"
     size="small"
     value={searchTerm}
     onChange={(e) => setSearchTerm(e.target.value)}
-    sx={{ width: 300 }}
+    sx={{ 
+      width: { xs: '100%', sm: 300 } // Ancho completo en móvil, 300px en desktop
+    }}
     placeholder="Buscar por nombre, email..."
   />
-  <FormControl size="small" sx={{ minWidth: 200 }}>
+  <FormControl 
+    size="small" 
+    sx={{ 
+      width: { xs: '100%', sm: 200 } // Ancho completo en móvil, 200px en desktop
+    }}
+  >
     <InputLabel>Estado</InputLabel>
     <Select
       value={filterEstado || ''}
@@ -225,14 +238,25 @@ const clientesFiltrados = clientes
   <Button 
     variant="contained" 
     onClick={() => setOpenDialog(true)}
-    sx={{ ml: 'auto' }}
+    sx={{ 
+      width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
+      alignSelf: { sm: 'flex-start' }
+    }}
   >
     Nuevo Cliente
   </Button>
 </Box>
 
     
-      <TableContainer component={Paper}>
+<TableContainer 
+  component={Paper}
+  sx={{
+    overflowX: 'auto', // Permite scroll horizontal en móvil
+    '& .MuiTable-root': {
+      minWidth: { xs: 'max-content', md: '100%' } // Asegura que la tabla no se comprima demasiado
+    }
+  }}
+>
         <Table>
           <TableHead>
             <TableRow>
