@@ -37,13 +37,19 @@ const [selectedTemplate, setSelectedTemplate] = useState(null);
   });
 
   useEffect(() => {
-    if (tabValue === 0) {
-      fetchTemplates();
-    } else {
+    // Si es CLIENTE, solo cargar sus rutinas
+    if (userRole === 'CLIENTE') {
       fetchRutinas();
+    } else {
+      // Si es ADMIN o ENTRENADOR, cargar según la pestaña seleccionada
+      if (tabValue === 0) {
+        fetchTemplates();
+      } else {
+        fetchRutinas();
+      }
     }
     fetchUsuarios();
-  }, [tabValue]);
+  }, [tabValue, userRole]);
 
 
   // Definir colores por nivel
@@ -360,72 +366,129 @@ const agregarTemplate = async (e) => {
     </Box>
 
       {/* Grid de templates o rutinas */}
-      <Grid container spacing={3}>
-      {(tabValue === 0 ? templates : rutinas).map((item) => (
-  <Grid item xs={12} sm={6} md={4} key={item.id}>
-    <Card sx={{ 
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      transition: 'transform 0.3s, box-shadow 0.3s',
-      borderLeft: `5px solid ${nivelColors[item.nivel]}`,
-      '&:hover': {
-        transform: 'translateY(-8px)',
-        boxShadow: '0 12px 20px rgba(0,0,0,0.1)'
-      }
-    }}>
-      <CardMedia
-        component="img"
-        height="200"
-        image={item.imagenUrl || '/images/default-routine.jpg'}
-        alt={item.nombre}
-        onError={(e) => {
-          e.target.src = '/images/default-routine.jpg';
-          e.target.onerror = null;
-        }}
-      />
-      <CardContent>
-        <Typography variant="h5" gutterBottom>{item.nombre}</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {item.descripcion}
-        </Typography>
-        <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          <Chip 
-            label={item.nivel}
-            size="small"
-            sx={{ 
-              bgcolor: `${nivelColors[item.nivel]}`,
-              color: 'white',
-              fontWeight: 'bold'
+<Grid container spacing={3}>
+  {userRole === 'CLIENTE' ? (
+    // Vista para CLIENTE - solo muestra sus rutinas asignadas
+    rutinas.map((rutina) => (
+      <Grid item xs={12} sm={6} md={4} key={rutina.id}>
+        <Card sx={{ 
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'transform 0.3s, box-shadow 0.3s',
+          borderLeft: `5px solid ${nivelColors[rutina.nivel]}`,
+          '&:hover': {
+            transform: 'translateY(-8px)',
+            boxShadow: '0 12px 20px rgba(0,0,0,0.1)'
+          }
+        }}>
+          <CardMedia
+            component="img"
+            height="200"
+            image={rutina.imagenUrl || '/images/default-routine.jpg'}
+            alt={rutina.nombre}
+            onError={(e) => {
+              e.target.src = '/images/default-routine.jpg';
+              e.target.onerror = null;
             }}
           />
-          <Chip 
-            label={item.categoria}
-            size="small"
-            sx={{ 
-              bgcolor: `${categoriaColors[item.categoria]}`,
-              color: 'white',
-              fontWeight: 'bold'
-            }}
-          />
-        </Box>
-      </CardContent>
-      <CardActions sx={{ mt: 'auto', justifyContent: 'flex-end' }}>
-        {userRole === 'ADMIN' && (
-          <Button
-            size="small"
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => tabValue === 0 ? eliminarTemplate(item.id) : eliminarRutina(item.id)}
-          >
-            Eliminar
-          </Button>
-        )}
-      </CardActions>
-    </Card>
-  </Grid>
-))}
+          <CardContent>
+            <Typography variant="h5" gutterBottom>{rutina.nombre}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {rutina.descripcion}
+            </Typography>
+            <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Chip 
+                label={rutina.nivel}
+                size="small"
+                sx={{ 
+                  bgcolor: `${nivelColors[rutina.nivel]}`,
+                  color: 'white',
+                  fontWeight: 'bold'
+                }}
+              />
+              <Chip 
+                label={rutina.categoria}
+                size="small"
+                sx={{ 
+                  bgcolor: `${categoriaColors[rutina.categoria]}`,
+                  color: 'white',
+                  fontWeight: 'bold'
+                }}
+              />
+            </Box>
+          </CardContent>
+        </Card>
       </Grid>
+    ))
+  ) : (
+    // Vista para ADMIN/ENTRENADOR - muestra templates o rutinas según la pestaña
+    (tabValue === 0 ? templates : rutinas).map((item) => (
+      <Grid item xs={12} sm={6} md={4} key={item.id}>
+        <Card sx={{ 
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'transform 0.3s, box-shadow 0.3s',
+          borderLeft: `5px solid ${nivelColors[item.nivel]}`,
+          '&:hover': {
+            transform: 'translateY(-8px)',
+            boxShadow: '0 12px 20px rgba(0,0,0,0.1)'
+          }
+        }}>
+          <CardMedia
+            component="img"
+            height="200"
+            image={item.imagenUrl || '/images/default-routine.jpg'}
+            alt={item.nombre}
+            onError={(e) => {
+              e.target.src = '/images/default-routine.jpg';
+              e.target.onerror = null;
+            }}
+          />
+          <CardContent>
+            <Typography variant="h5" gutterBottom>{item.nombre}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {item.descripcion}
+            </Typography>
+            <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Chip 
+                label={item.nivel}
+                size="small"
+                sx={{ 
+                  bgcolor: `${nivelColors[item.nivel]}`,
+                  color: 'white',
+                  fontWeight: 'bold'  
+                }}
+              />
+              <Chip 
+                label={item.categoria}
+                size="small"
+                sx={{ 
+                  bgcolor: `${categoriaColors[item.categoria]}`,
+                  color: 'white',
+                  fontWeight: 'bold'
+                }}
+              />
+            </Box>
+          </CardContent>
+          <CardActions sx={{ mt: 'auto', justifyContent: 'flex-end' }}>
+            {userRole === 'ADMIN' && (
+              <Button
+                size="small"
+                color="error"
+                startIcon={<DeleteIcon />}
+                onClick={() => tabValue === 0 ? eliminarTemplate(item.id) : eliminarRutina(item.id)}
+              >
+                Eliminar
+              </Button>
+            )}
+          </CardActions>
+        </Card>
+      </Grid>
+    ))
+  )}
+</Grid>
 
       {/* Diálogo para crear template/rutina */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
