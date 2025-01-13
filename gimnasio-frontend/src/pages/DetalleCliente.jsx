@@ -183,10 +183,26 @@ const DetalleCliente = () => {
       <Paper sx={{ 
   p: 3,
   mb: 3,
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  color: 'white' 
+  backgroundColor: 'white',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+  borderRadius: '12px',
+  '& .MuiTableCell-root': { // Estilo para las celdas de la tabla
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  '& .MuiTypography-root': { // Estilo para los textos
+    color: 'text.primary'
+  },
+  '& .title': { // Estilo para el título
+    borderBottom: '2px solid #1976d2',
+    paddingBottom: 1,
+    marginBottom: 2,
+    color: '#1976d2',
+    fontWeight: 600
+  }
 }}>
-          <Typography variant="h5" gutterBottom>Información Personal</Typography>
+  <Typography className="title" variant="h5" gutterBottom>
+    Información Personal
+  </Typography>
           <Divider sx={{ my: 2 }} />
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -209,10 +225,26 @@ const DetalleCliente = () => {
       <Paper sx={{ 
   p: 3,
   mb: 3,
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  color: 'white' 
+  backgroundColor: 'white',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+  borderRadius: '12px',
+  '& .MuiTableCell-root': { // Estilo para las celdas de la tabla
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  '& .MuiTypography-root': { // Estilo para los textos
+    color: 'text.primary'
+  },
+  '& .title': { // Estilo para el título
+    borderBottom: '2px solid #1976d2',
+    paddingBottom: 1,
+    marginBottom: 2,
+    color: '#1976d2',
+    fontWeight: 600
+  }
 }}>
-          <Typography variant="h5" gutterBottom>Membresía Actual</Typography>
+  <Typography className="title" variant="h5" gutterBottom>
+    Membresía Actual 
+  </Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.membresias?.length > 0 ? (
             <TableContainer>
@@ -264,10 +296,26 @@ const DetalleCliente = () => {
       <Paper sx={{ 
   p: 3,
   mb: 3,
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  color: 'white' 
+  backgroundColor: 'white',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+  borderRadius: '12px',
+  '& .MuiTableCell-root': { // Estilo para las celdas de la tabla
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  '& .MuiTypography-root': { // Estilo para los textos
+    color: 'text.primary'
+  },
+  '& .title': { // Estilo para el título
+    borderBottom: '2px solid #1976d2',
+    paddingBottom: 1,
+    marginBottom: 2,
+    color: '#1976d2',
+    fontWeight: 600
+  }
 }}>
-          <Typography variant="h5" gutterBottom>Historial de Pagos</Typography>
+  <Typography className="title" variant="h5" gutterBottom>
+    Historial de Pagos
+  </Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.pagos?.length > 0 ? (
             <TableContainer>
@@ -301,35 +349,65 @@ const DetalleCliente = () => {
       <Paper sx={{ 
   p: 3,
   mb: 3,
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  color: 'white' 
+  backgroundColor: 'white',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+  borderRadius: '12px',
+  '& .MuiTableCell-root': { // Estilo para las celdas de la tabla
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  '& .MuiTypography-root': { // Estilo para los textos
+    color: 'text.primary'
+  },
+  '& .title': { // Estilo para el título
+    borderBottom: '2px solid #1976d2',
+    paddingBottom: 1,
+    marginBottom: 2,
+    color: '#1976d2',
+    fontWeight: 600
+  }
 }}>
-          <Typography variant="h5" gutterBottom>Rutinas Asignadas</Typography>
+  <Typography className="title" variant="h5" gutterBottom>
+    Rutinas Asignadas
+  </Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.rutinas?.length > 0 ? (
             <TableContainer>
               <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell><Typography sx={{ color: 'white' }}>Nombre</Typography></TableCell>
-                    <TableCell><Typography sx={{ color: 'white' }}>Descripción</Typography></TableCell>
-                    <TableCell><Typography sx={{ color: 'white' }}>Entrenador</Typography></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {cliente.rutinas.map(rutina => (
-                    <TableRow key={rutina.id}>
-                      <TableCell><Typography sx={{ color: 'white' }}>{rutina.nombre}</Typography></TableCell>
-                      <TableCell>
-  <Typography 
-    sx={{ color: 'white' }}
-    dangerouslySetInnerHTML={{ __html: rutina.descripcion }}
-  />
-</TableCell>
-                      <TableCell><Typography sx={{ color: 'white' }}>{`${rutina.entrenador.nombre} ${rutina.entrenador.apellido}`}</Typography></TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+              <TableHead>
+  <TableRow>
+    <TableCell><Typography sx={{ color: 'white' }}>Nombre</Typography></TableCell>
+    <TableCell><Typography sx={{ color: 'white' }}>Descripción</Typography></TableCell>
+    <TableCell><Typography sx={{ color: 'white' }}>Entrenador</Typography></TableCell>
+  </TableRow>
+</TableHead>
+<TableBody>
+  {cliente.rutinas.map(rutina => (
+    <TableRow key={rutina.id}>
+      <TableCell><Typography sx={{ color: 'white' }}>{rutina.nombre}</Typography></TableCell>
+      <TableCell>
+        <Typography 
+          sx={{ 
+            color: 'white',
+            maxHeight: '150px',
+            overflowY: 'auto',
+            '&::-webkit-scrollbar': {
+              width: '8px'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              borderRadius: '4px'
+            },
+            '&::-webkit-scrollbar-track': {
+              backgroundColor: 'rgba(0,0,0,0.1)'
+            }
+          }}
+          dangerouslySetInnerHTML={{ __html: rutina.descripcion }}
+        />
+      </TableCell>
+      <TableCell><Typography sx={{ color: 'white' }}>{`${rutina.entrenador.nombre} ${rutina.entrenador.apellido}`}</Typography></TableCell>
+    </TableRow>
+  ))}
+</TableBody>
               </Table>
             </TableContainer>
           ) : (
@@ -343,10 +421,26 @@ const DetalleCliente = () => {
       <Paper sx={{ 
   p: 3,
   mb: 3,
-  background: 'linear-gradient(45deg, #2196f3 30%, #21cbf3 90%)',
-  color: 'white' 
+  backgroundColor: 'white',
+  boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
+  borderRadius: '12px',
+  '& .MuiTableCell-root': { // Estilo para las celdas de la tabla
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  '& .MuiTypography-root': { // Estilo para los textos
+    color: 'text.primary'
+  },
+  '& .title': { // Estilo para el título
+    borderBottom: '2px solid #1976d2',
+    paddingBottom: 1,
+    marginBottom: 2,
+    color: '#1976d2',
+    fontWeight: 600
+  }
 }}>
-          <Typography variant="h5" gutterBottom>Clases Inscritas</Typography>
+  <Typography className="title" variant="h5" gutterBottom>
+    Clases Inscritas
+  </Typography>
           <Divider sx={{ my: 2 }} />
           {cliente.clasesInscritas?.length > 0 ? (
             <TableContainer>
