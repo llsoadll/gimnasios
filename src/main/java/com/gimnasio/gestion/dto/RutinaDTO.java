@@ -17,6 +17,7 @@ public class RutinaDTO {
     private NivelDificultad nivel = NivelDificultad.PRINCIPIANTE;
     private String categoria = "FUERZA";
     private Long entrenadorId;
+    private UsuarioSimpleDTO cliente;
     private UsuarioSimpleDTO entrenador;
     private Integer duracionMinutos;
     private String imagenUrl;

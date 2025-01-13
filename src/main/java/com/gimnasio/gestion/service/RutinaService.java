@@ -3,6 +3,7 @@ package com.gimnasio.gestion.service;
 import lombok.extern.slf4j.Slf4j;
 import com.gimnasio.gestion.dto.RutinaDTO;
 import com.gimnasio.gestion.dto.RutinaTemplateDTO;
+import com.gimnasio.gestion.dto.UsuarioSimpleDTO;
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.mapper.RutinaMapper;
 import com.gimnasio.gestion.model.Rutina;
@@ -86,10 +87,20 @@ public class RutinaService {
     }
 
     public List<RutinaDTO> obtenerTodas() {
-        return rutinaRepository.findAll().stream()
-                .map(rutinaMapper::toDTO)
-                .collect(Collectors.toList());
-    }
+    return rutinaRepository.findAll().stream()
+            .map(rutina -> {
+                RutinaDTO dto = rutinaMapper.toDTO(rutina);
+                if (rutina.getCliente() != null) {
+                    dto.setCliente(new UsuarioSimpleDTO(
+                        rutina.getCliente().getId(),
+                        rutina.getCliente().getNombre(),
+                        rutina.getCliente().getApellido()
+                    ));
+                }
+                return dto;
+            })
+            .collect(Collectors.toList());
+}
 
     @Transactional
     public void eliminarTemplate(Long id) {

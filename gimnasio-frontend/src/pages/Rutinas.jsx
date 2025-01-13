@@ -470,6 +470,13 @@ const agregarTemplate = async (e) => {
                   fontWeight: 'bold'
                 }}
               />
+
+              {/* Agregar esta parte para mostrar el cliente cuando es una rutina asignada */}
+  {tabValue === 1 && item.cliente && (
+    <Typography variant="body2" sx={{ mt: 1, width: '100%' }}>
+      Cliente: {item.cliente.nombre} {item.cliente.apellido}
+    </Typography>
+  )}
             </Box>
           </CardContent>
           <CardActions sx={{ mt: 'auto', justifyContent: 'flex-end' }}>
