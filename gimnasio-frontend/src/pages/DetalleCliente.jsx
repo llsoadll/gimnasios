@@ -320,7 +320,12 @@ const DetalleCliente = () => {
                   {cliente.rutinas.map(rutina => (
                     <TableRow key={rutina.id}>
                       <TableCell><Typography sx={{ color: 'white' }}>{rutina.nombre}</Typography></TableCell>
-                      <TableCell><Typography sx={{ color: 'white' }}>{rutina.descripcion}</Typography></TableCell>
+                      <TableCell>
+  <Typography 
+    sx={{ color: 'white' }}
+    dangerouslySetInnerHTML={{ __html: rutina.descripcion }}
+  />
+</TableCell>
                       <TableCell><Typography sx={{ color: 'white' }}>{`${rutina.entrenador.nombre} ${rutina.entrenador.apellido}`}</Typography></TableCell>
                     </TableRow>
                   ))}
