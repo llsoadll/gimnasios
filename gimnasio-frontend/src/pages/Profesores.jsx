@@ -161,7 +161,13 @@ const totalPaginas = Math.ceil(profesores.length / itemsPorPagina);
     <Box>
       {error && <Alert severity="error">{error}</Alert>}
       
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, borderBottom: '2px solid #1976d2', pb: 2 }}>
+      <Box sx={{ 
+  mb: 2, 
+  display: 'flex', 
+  flexDirection: { xs: 'column', sm: 'row' }, // Columna en móvil, fila en desktop
+  gap: 2,
+  alignItems: { xs: 'stretch', sm: 'center' } // Estiran en móvil, centrados en desktop
+}}>
   <FitnessCenterRounded 
     sx={{ 
       fontSize: 35, 

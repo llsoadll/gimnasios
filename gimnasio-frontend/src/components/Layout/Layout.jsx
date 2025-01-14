@@ -102,10 +102,11 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     color: 'white',
     width: drawerWidth,
     padding: '10px',
+    paddingTop: '40px',
     
     '& .MuiListItem-root': {
-      margin: '8px 0',
-      borderRadius: '12px',
+      margin: '10px 0',
+      borderRadius: '20px',
       transition: 'all 0.3s ease',
       
       '&:hover': {
