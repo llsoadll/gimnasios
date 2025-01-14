@@ -339,38 +339,62 @@ const fetchMembresia = async () => {
   />
 </Box>
 
-  <Box className="user-section">
-    {userRole === 'CLIENTE' && membresia && (
-      <Box className="user-info">
-        <Typography variant="body2">
-          Membresía {membresia.tipo}
-        </Typography>
-        <Typography variant="caption">
-          Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')}
-        </Typography>
-      </Box>
-    )}
+<Box className="user-section">
+  {userRole === 'CLIENTE' && membresia && (
+    <Box className="user-info" sx={{ 
+      display: { xs: 'none', md: 'flex' }, // Ocultar en móvil/tablet, mostrar en desktop
+      flexDirection: 'column',
+      alignItems: 'flex-end',
+      mr: 3 // Margen derecho para separar de la información del usuario
+    }}>
+      <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
+        Membresía {membresia.tipo}
+      </Typography>
+      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+        Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')}
+      </Typography>
+    </Box>
+  )}
     
     {usuario && (
-      <Box className="user-info">
-        <Typography variant="subtitle2">
-          {usuario.nombre} {usuario.apellido}
-        </Typography>
-        <Typography variant="caption">
-          {userRole.toLowerCase()}
-        </Typography>
-      </Box>
-    )}
+    <Box className="user-info" sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'flex-end', // Alinea todo a la derecha
+      mr: 2,
+      '& .MuiTypography-root': { // Aplica a todos los Typography dentro de user-info
+        textAlign: 'right', // Alinea el texto a la derecha
+        width: '100%' // Asegura que ocupen todo el ancho disponible
+      }
+    }}>
+      <Typography variant="subtitle2" sx={{ color: 'white', fontWeight: 500 }}>
+        {usuario.nombre} {usuario.apellido}
+      </Typography>
+      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+        {userRole.toLowerCase()}
+      </Typography>
+    </Box>
+  )}
 
-    <Button 
-      className="logout-button"
-      color="inherit"
-      onClick={handleLogout}
-      startIcon={<LogoutIcon />}
-    >
-      Cerrar Sesión
-    </Button>
-  </Box>
+<Button 
+  className="logout-button"
+  color="inherit"
+  onClick={handleLogout}
+  startIcon={<LogoutIcon />}
+  sx={{ 
+    minWidth: { xs: '40px', sm: '120px' }, // Más pequeño en móvil
+    padding: { xs: '6px', sm: '8px 16px' }, // Menos padding en móvil
+    '& .MuiButton-startIcon': {
+      margin: { xs: 0, sm: '8px' } // Sin margen en el ícono en móvil
+    },
+    '& .MuiButton-endIcon': {
+      display: { xs: 'none', sm: 'inline-flex' } // Oculta el texto en móvil
+    }
+  }}
+>
+  <Box sx={{ display: { xs: 'none', sm: 'block' } }}>Cerrar Sesión</Box>
+</Button>
+</Box>
 </Toolbar>
       </StyledAppBar>
       
