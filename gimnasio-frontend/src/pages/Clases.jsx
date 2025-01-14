@@ -43,6 +43,7 @@ const Clases = () => {
   const [alumnosDialogOpen, setAlumnosDialogOpen] = useState(false);
 const [claseSeleccionada, setClaseSeleccionada] = useState(null);
   const [error, setError] = useState(null);
+  const [searchClientTerm, setSearchClientTerm] = useState('');
   const handleOpenInscripcionDialog = (clase) => {
     setSelectedClase(clase);
     fetchClientes(); // Cargar clientes antes de abrir el diálogo
@@ -253,15 +254,23 @@ const inscribirme = async (claseId) => {
       </Typography>
     </Box>
 
+    <Box sx={{ 
+  display: 'flex',
+  mb: 3 // Agregar margen inferior de 24px (3 * 8px)
+}}>
       {userRole === 'ADMIN' && (
       <Button 
-        variant="contained" 
-        onClick={() => setOpenDialog(true)} 
-        sx={{ mb: 2 }}
-      >
-        Nueva Clase
-      </Button>
+          variant="contained" 
+          onClick={() => setOpenDialog(true)}
+          sx={{ 
+            width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
+            alignSelf: { sm: 'flex-start' }
+          }}
+        >
+          Nueva Clase
+        </Button>
       )}
+      </Box>
 
 
 <TableContainer component={Paper}>
@@ -481,10 +490,7 @@ const inscribirme = async (claseId) => {
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
         </DialogActions>
       </Dialog>
-<Dialog 
-  open={inscripcionDialogOpen} 
-  onClose={() => setInscripcionDialogOpen(false)}
->
+      <Dialog open={inscripcionDialogOpen} onClose={() => setInscripcionDialogOpen(false)}>
   <DialogTitle>Inscribir Cliente en Clase</DialogTitle>
   <DialogContent>
     {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -494,26 +500,40 @@ const inscribirme = async (claseId) => {
         <CircularProgress />
       </Box>
     ) : (
-      <FormControl fullWidth margin="normal">
-        <InputLabel>Seleccionar Cliente</InputLabel>
-        <Select
-          value={selectedClienteId}
-          onChange={e => setSelectedClienteId(e.target.value)}
-          label="Seleccionar Cliente"
-        >
-          <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
-          {clientes.map(cliente => (
-            <MenuItem key={cliente.id} value={cliente.id}>
-              {`${cliente.nombre} ${cliente.apellido}`}
-            </MenuItem>
-          ))}
-        </Select>
-        {selectedClase && (
-          <Typography variant="body2" sx={{ mt: 2 }}>
-            Clase: {selectedClase.nombre} - {selectedClase.horario}
-          </Typography>
-        )}
-      </FormControl>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          label="Buscar cliente"
+          variant="outlined"
+          size="small"
+          value={searchClientTerm}
+          onChange={(e) => setSearchClientTerm(e.target.value)}
+          placeholder="Buscar por nombre..."
+        />
+        
+        <FormControl fullWidth>
+          <InputLabel>Seleccionar Cliente</InputLabel>
+          <Select
+            value={selectedClienteId}
+            onChange={(e) => setSelectedClienteId(e.target.value)}
+            label="Seleccionar Cliente"
+          >
+            <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
+            {clientes
+              .filter(cliente => 
+                searchClientTerm === '' || 
+                `${cliente.nombre} ${cliente.apellido}`
+                  .toLowerCase()
+                  .includes(searchClientTerm.toLowerCase())
+              )
+              .map(cliente => (
+                <MenuItem key={cliente.id} value={cliente.id}>
+                  {`${cliente.nombre} ${cliente.apellido}`}
+                </MenuItem>
+              ))
+            }
+          </Select>
+        </FormControl>
+      </Box>
     )}
   </DialogContent>
   <DialogActions>
