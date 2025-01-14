@@ -145,17 +145,23 @@ const pagosFiltrados = pagos.filter(pago => {
   </Typography>
 </Box>
 
-      <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+<Box sx={{ 
+  mb: 2, 
+  display: 'flex', 
+  flexDirection: { xs: 'column', sm: 'row' }, // Columna en móvil, fila en desktop
+  gap: 2,
+  alignItems: { xs: 'stretch', sm: 'center' } // Estiran en móvil, centrados en desktop
+}}>
   <TextField
     label="Buscar pago"
     variant="outlined"
     size="small"
     value={searchTerm}
     onChange={(e) => setSearchTerm(e.target.value)}
-    sx={{ width: 300 }}
+    sx={{ width: { xs: '100%', sm: 300 } }}
     placeholder="Buscar por nombre de cliente..."
   />
-  <FormControl size="small" sx={{ minWidth: 200 }}>
+  <FormControl size="small" sx={{ width: { xs: '100%', sm: 200 } }}>
     <InputLabel>Método de Pago</InputLabel>
     <Select
       value={filterMetodoPago}
@@ -171,7 +177,10 @@ const pagosFiltrados = pagos.filter(pago => {
   <Button 
     variant="contained" 
     onClick={() => setOpenDialog(true)}
-    sx={{ ml: 'auto' }}
+    sx={{ 
+      width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
+      alignSelf: { sm: 'flex-start' }
+    }}
   >
     Registrar Pago
   </Button>
