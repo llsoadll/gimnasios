@@ -394,41 +394,31 @@ const agregarTemplate = async (e) => {
         // Pestaña Templates
         userRole === 'ADMIN' && (
           <Button 
-            variant="contained" 
-            onClick={() => setOpenDialog(true)}
-            startIcon={<AddIcon />}
-            sx={{
-              background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
-              color: 'white',
-              boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #21CBF3 30%, #1976d2 90%)',
-                transform: 'translateY(-2px)'
-              }
-            }}
-          >
-            Nuevo Template
-          </Button>
+  variant="contained" 
+  onClick={() => setOpenDialog(true)}
+  startIcon={<AddIcon />}
+  sx={{ 
+    width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
+    alignSelf: { sm: 'flex-start' }
+  }}
+>
+  Nuevo Template
+</Button>
         )
       ) : (
         // Pestaña Rutinas Asignadas
         <>
           <Button 
-            variant="contained"
-            onClick={() => setAsignarDialogOpen(true)}
-            startIcon={<AssignmentIcon />}
-            sx={{
-              background: 'linear-gradient(45deg, #2196f3 30%, #21CBF3 90%)',
-              color: 'white',
-              boxShadow: '0 3px 5px 2px rgba(33, 203, 243, .3)',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #21CBF3 30%, #2196f3 90%)',
-                transform: 'translateY(-2px)'
-              }
-            }}
-          >
-            Asignar Template
-          </Button>
+  variant="contained"
+  onClick={() => setAsignarDialogOpen(true)}
+  startIcon={<AssignmentIcon />}
+  sx={{ 
+    width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
+    alignSelf: { sm: 'flex-start' }
+  }}
+>
+  Asignar Template
+</Button>
           <Typography 
             variant="subtitle2" 
             sx={{ 
