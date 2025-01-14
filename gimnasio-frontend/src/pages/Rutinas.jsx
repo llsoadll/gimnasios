@@ -363,22 +363,17 @@ const agregarTemplate = async (e) => {
       textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
     }}
   >
-    {tabValue === 0 ? 'Lista de Templates' : 'Rutinas Asignadas'}
+    {userRole === 'CLIENTE' ? 'Mis Rutinas' : (tabValue === 0 ? 'Lista de Templates' : 'Rutinas Asignadas')}
   </Typography>
 </Box>
 
 
 
-      {userRole === 'ADMIN' ? (
+{userRole === 'ADMIN' && (
   <Tabs value={tabValue} onChange={handleTabChange}>
     <Tab label="Templates" />
     <Tab label="Rutinas Asignadas" />
   </Tabs>
-) : (
-  // Para CLIENTE, solo mostrar sus rutinas
-  <Typography variant="h6" sx={{ mb: 3 }}>
-    Mis Rutinas
-  </Typography>
 )}
 
     {/* Botones de acción según la pestaña */}
@@ -387,8 +382,6 @@ const agregarTemplate = async (e) => {
       gap: 2, 
       mb: 3, 
       mt: 2,
-      borderBottom: '2px solid #1976d2',
-      pb: 2 
     }}>
       {tabValue === 0 ? (
         // Pestaña Templates

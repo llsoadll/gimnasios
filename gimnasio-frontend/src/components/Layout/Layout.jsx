@@ -341,18 +341,28 @@ const fetchMembresia = async () => {
 
 <Box className="user-section">
   {userRole === 'CLIENTE' && membresia && (
-    <Box className="user-info" sx={{ 
-      display: { xs: 'none', md: 'flex' }, // Ocultar en móvil/tablet, mostrar en desktop
+    <Box className="user-info" sx={{
+      display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-end',
-      mr: 3 // Margen derecho para separar de la información del usuario
+      mr: 2,
+      '& .MuiTypography-root': {
+        textAlign: 'right',
+        width: '100%'
+      }
     }}>
-      <Typography variant="body2" sx={{ color: 'white', fontWeight: 500 }}>
-        Membresía {membresia.tipo}
+      <Typography variant="subtitle2" sx={{ color: 'white', fontWeight: 500 }}>
+        {usuario.nombre} {usuario.apellido}
       </Typography>
-      <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-        Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')}
-      </Typography>
+      {userRole === 'CLIENTE' && membresia ? (
+        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+          Vence: {new Date(membresia.fechaFin).toLocaleDateString('es-AR')}
+        </Typography>
+      ) : (
+        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+          {userRole.toLowerCase()}
+        </Typography>
+      )}
     </Box>
   )}
     
