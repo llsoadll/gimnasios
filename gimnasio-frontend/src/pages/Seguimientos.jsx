@@ -294,26 +294,31 @@ const Seguimientos = () => {
 
       {/* Admin view */}
       {userRole === 'ADMIN' && (
-        <Box mb={2} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-        {/* Campo de búsqueda */}
-        <TextField
-          label="Buscar cliente"
-          variant="outlined"
-          size="small"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          sx={{ width: 300 }}
-          placeholder="Buscar por nombre..."
-        />
+        <Box sx={{ 
+          mb: 2, 
+          display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' }, // Columna en móvil, fila en desktop
+          gap: 2,
+          alignItems: { xs: 'stretch', sm: 'center' }
+        }}>
+          <TextField
+            label="Buscar cliente"
+            variant="outlined"
+            size="small"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ width: { xs: '100%', sm: 300 } }}
+            placeholder="Buscar por nombre..."
+          />
         
         {/* Selector de cliente filtrado */}
-        <FormControl sx={{ minWidth: 300 }}>
-          <InputLabel>Cliente</InputLabel>
-          <Select
-            value={selectedCliente}
-            onChange={(e) => setSelectedCliente(e.target.value)}
-            label="Cliente"
-          >
+        <FormControl sx={{ width: { xs: '100%', sm: 300 } }}>
+    <InputLabel>Cliente</InputLabel>
+    <Select
+      value={selectedCliente}
+      onChange={(e) => setSelectedCliente(e.target.value)}
+      label="Cliente"
+    >
             <MenuItem value="" disabled>Seleccionar Cliente</MenuItem>
             {clientes
               .filter(cliente => 
@@ -332,20 +337,16 @@ const Seguimientos = () => {
       
         {/* Botón de nuevo seguimiento */}
         {selectedCliente && (
-          <Button 
-            variant="contained"
-            onClick={() => setOpenDialog(true)}
-            sx={{
-              background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
-              color: 'white',
-              '&:hover': {
-                background: 'linear-gradient(45deg, #21CBF3 30%, #1976d2 90%)',
-                transform: 'translateY(-2px)'
-              }
-            }}
-          >
-            Nuevo Seguimiento
-          </Button>
+    <Button 
+      variant="contained"
+      onClick={() => setOpenDialog(true)}
+      sx={{ 
+        width: { xs: '100%', sm: 'auto' },
+        alignSelf: { sm: 'flex-start' }
+      }}
+    >
+      Nuevo Seguimiento
+    </Button>
         )}
       </Box>
       )}
@@ -354,7 +355,12 @@ const Seguimientos = () => {
       {seguimientos.length > 0 && (
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{ 
+  overflowX: 'auto',
+  '& .MuiTable-root': {
+    minWidth: { xs: 'max-content', md: '100%' }
+  }
+}}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -393,46 +399,54 @@ const Seguimientos = () => {
             </TableContainer>
           </Grid>
           <Grid item xs={12}>
-      <Box sx={{ height: '500px', width: '100%', p: 2, bgcolor: 'white', borderRadius: 2, boxShadow: 1 }}>
-        <Line 
-          data={chartData} 
-          options={{
-            ...chartOptions,
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                ...chartOptions.scales.x,
-                ticks: {
-                  font: {
-                    size: 14,
-                    weight: 'bold'
-                  }
-                }
-              },
-              y: {
-                ...chartOptions.scales.y,
-                beginAtZero: true,
-                ticks: {
-                  font: {
-                    size: 14,
-                    weight: 'bold'
-                  }
-                }
-              }
-            },
-            elements: {
-              line: {
-                tension: 0.3,
-                borderWidth: 3
-              },
-              point: {
-                radius: 6,
-                hoverRadius: 8
-              }
+          <Box sx={{ 
+  height: { xs: '300px', sm: '400px', md: '500px' }, // Altura responsive
+  width: '100%',
+  p: { xs: 1, sm: 2 }, // Padding responsive
+  bgcolor: 'white',
+  borderRadius: 2,
+  boxShadow: 1,
+  mb: 3 // Margen inferior
+}}>
+  <Line 
+    data={chartData} 
+    options={{
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top'
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: true,
+            color: 'rgba(0,0,0,0.05)'
+          },
+          ticks: {
+            font: {
+              size: 12,
+              weight: 'bold'
             }
-          }}
-        />
-      </Box>
+          }
+        },
+        y: {
+          grid: {
+            display: true,
+            color: 'rgba(0,0,0,0.05)'
+          },
+          ticks: {
+            font: {
+              size: 12,
+              weight: 'bold'
+            }
+          }
+        }
+      }
+    }}
+  />
+</Box>
     </Grid>
         </Grid>
       )}
