@@ -17,6 +17,8 @@ import Clientes from './pages/Clientes';
 import Profesores from './pages/Profesores';
 import DashboardCliente from './pages/DashboardCliente'; 
 import { Navigate } from 'react-router-dom';
+import Productos from './pages/Productos';
+import Ventas from './pages/Ventas';
 
 
 const theme = createTheme({
@@ -147,6 +149,18 @@ function App() {
             <Route path="/seguimientos" element={
   <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE', 'ENTRENADOR']}>
     <Seguimientos />
+  </ProtectedRoute>
+} />
+
+<Route path="/productos" element={
+  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE', 'ENTRENADOR']}>
+    <Productos />
+  </ProtectedRoute>
+} />
+
+<Route path="/ventas" element={
+  <ProtectedRoute allowedRoles={['ADMIN']}>
+    <Ventas />
   </ProtectedRoute>
 } />
             

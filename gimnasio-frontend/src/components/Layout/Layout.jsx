@@ -260,7 +260,9 @@ const fetchMembresia = async () => {
     const commonItems = [
       { text: 'Rutinas', path: '/rutinas' },
       { text: 'Clases', path: '/clases' },
-      { text: 'Seguimientos', path: '/seguimientos' }
+      { text: 'Seguimientos', path: '/seguimientos' },
+      { text: 'Productos', path: '/productos' },
+      { text: 'Ventas', path: '/ventas' }
     ];
   
     if (userRole === 'ADMIN') {
