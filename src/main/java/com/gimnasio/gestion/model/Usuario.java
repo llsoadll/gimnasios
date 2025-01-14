@@ -73,6 +73,10 @@ public class Usuario {
     @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"cliente", "entrenador"})
     private List<Rutina> rutinas = new ArrayList<>();
+
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"cliente"})
+    private List<Venta> ventas = new ArrayList<>();
     
     @OneToMany(mappedBy = "entrenador", fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"cliente", "entrenador"})

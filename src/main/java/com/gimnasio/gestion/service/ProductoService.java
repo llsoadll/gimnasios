@@ -45,11 +45,8 @@ public class ProductoService {
     }
 
     @Transactional
-public Producto realizarVenta(Long productoId, Long userId) {
+public Producto realizarVenta(Long productoId, Long userId, String metodoPago) {
     try {
-        System.out.println("ProductoId recibido: " + productoId);
-        System.out.println("UserId recibido: " + userId);
-        
         Producto producto = productoRepository.findById(productoId)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
             
@@ -60,7 +57,6 @@ public Producto realizarVenta(Long productoId, Long userId) {
             throw new RuntimeException("No hay stock disponible");
         }
 
-        // Crear venta
         Venta venta = new Venta();
         venta.setProducto(producto);
         venta.setCliente(cliente);
@@ -68,7 +64,9 @@ public Producto realizarVenta(Long productoId, Long userId) {
         venta.setCantidad(1);
         venta.setPrecioUnitario(producto.getPrecio());
         venta.setTotal(producto.getPrecio());
-        venta.setMetodoPago("EFECTIVO");
+        venta.setMetodoPago(metodoPago);
+        
+        ventaRepository.save(venta);
         
         // Guardar venta
         ventaRepository.save(venta);

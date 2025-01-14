@@ -109,22 +109,19 @@ const getImageUrl = (imagen) => {
 const confirmarVenta = async () => {
   try {
     const userId = localStorage.getItem('userId');
-    console.log('Enviando venta con userId:', userId);
-
     const response = await api.post(`/productos/${productoSeleccionado.id}/venta`, {
-      userId: parseInt(userId)
+      userId: parseInt(userId),
+      metodoPago: 'EFECTIVO' // Podrías agregar un select para elegir el método
     });
-
-    console.log('Respuesta:', response.data);
-
+    
     const updatedProductos = productos.map(p => 
-      p.id === productoSeleccionado.id ? {...p, stock: p.stock - 1} : p
+      p.id === productoSeleccionado.id ? response.data : p
     );
     setProductos(updatedProductos);
     setVentaDialogOpen(false);
     setProductoSeleccionado(null);
   } catch (err) {
-    console.error('Error completo:', err);
+    console.error('Error:', err);
     setError('Error al realizar la venta');
   }
 };

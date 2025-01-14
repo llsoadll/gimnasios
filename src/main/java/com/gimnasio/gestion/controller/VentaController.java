@@ -4,19 +4,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-
-import com.gimnasio.gestion.model.Venta;
-import com.gimnasio.gestion.repository.VentaRepository;
+import com.gimnasio.gestion.service.VentaService;
+import com.gimnasio.gestion.dto.VentaDTO;
 
 @RestController
 @RequestMapping("/api/ventas")
 @CrossOrigin(origins = "http://localhost:3000")
 public class VentaController {
-    @Autowired
-    private VentaRepository ventaRepository;
     
+    @Autowired
+    private VentaService ventaService;
+
     @GetMapping
-public ResponseEntity<List<Venta>> obtenerVentas() {
-    return ResponseEntity.ok(ventaRepository.findAllByOrderByFechaDesc());
-}
+    public ResponseEntity<List<VentaDTO>> obtenerVentas() {
+        try {
+            List<VentaDTO> ventas = ventaService.obtenerVentas();
+            return ResponseEntity.ok(ventas);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

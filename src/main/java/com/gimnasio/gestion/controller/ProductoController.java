@@ -33,10 +33,9 @@ public ResponseEntity<Producto> venderProducto(
     @PathVariable Long id, 
     @RequestBody Map<String, Object> body) {
     
-    System.out.println("Body recibido: " + body); // Debug
     Long userId = Long.valueOf(body.get("userId").toString());
-    System.out.println("UserId extraído: " + userId); // Debug
+    String metodoPago = body.get("metodoPago").toString();
     
-    return ResponseEntity.ok(productoService.realizarVenta(id, userId));
+    return ResponseEntity.ok(productoService.realizarVenta(id, userId, metodoPago));
 }
 }
