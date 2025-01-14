@@ -229,24 +229,22 @@ const agregarMembresia = async (e) => {
       </Box>
 
 
-      <Button 
-        variant="contained" 
-        onClick={() => setOpenDialog(true)} 
-        sx={{ mb: 2 }}
-      >
-        Nueva Membresía
-      </Button>
-
-      <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+      <Box sx={{ 
+  mb: 2, 
+  display: 'flex', 
+  flexDirection: { xs: 'column', sm: 'row' }, // Columna en móvil, fila en desktop
+  gap: 2,
+  alignItems: { xs: 'stretch', sm: 'center' } // Estiran en móvil, centrados en desktop
+}}>
   <TextField
     label="Buscar membresía"
     variant="outlined"
     size="small"
-    sx={{ width: 300 }}
+    sx={{ width: { xs: '100%', sm: 300 } }} // Ancho completo en móvil, 300px en desktop
     onChange={(e) => setSearchTerm(e.target.value)}
     placeholder="Buscar por nombre de cliente..."
   />
-  <FormControl size="small" sx={{ minWidth: 200 }}>
+  <FormControl size="small" sx={{ width: { xs: '100%', sm: 200 } }}>
     <InputLabel>Filtrar por tipo</InputLabel>
     <Select
       value={filterTipo || ''}
@@ -271,6 +269,16 @@ const agregarMembresia = async (e) => {
       <MenuItem value="false">Inactivas</MenuItem>
     </Select>
   </FormControl>
+  <Button 
+    variant="contained" 
+    onClick={() => setOpenDialog(true)}
+    sx={{ 
+      width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
+      alignSelf: { sm: 'flex-start' }
+    }}
+  >
+    Nueva Membresía
+  </Button>
 </Box>
 
       <Grid container spacing={3}>
