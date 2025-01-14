@@ -427,7 +427,7 @@ const fetchMembresia = async () => {
 
       <Box component="main" sx={{ 
   flexGrow: 1,
-  p: { xs: 2, sm: 3 },  // Padding general más pequeño
+  p: { xs: 2, sm: 5 },  // Padding general más pequeño
   pl: { sm: 6 }, // Padding izquierdo específico para tamaños sm y superiores
   minHeight: '100vh',
   backgroundColor: '#f5f5f5',
