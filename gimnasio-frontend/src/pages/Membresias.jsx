@@ -22,6 +22,8 @@ const [mensaje, setMensaje] = useState(null);
 const [searchTerm, setSearchTerm] = useState('');
 const [filterTipo, setFilterTipo] = useState('');
 const [filterEstado, setFilterEstado] = useState('');
+const [itemsPorPagina] = useState(10);
+const [paginaActual, setPaginaActual] = useState(1);
   const [nuevaMembresia, setNuevaMembresia] = useState({
     clienteId: '',
     fechaInicio: '',
@@ -67,19 +69,37 @@ const [membresiaEdit, setMembresiaEdit] = useState({
     }
   };
 
-  const membresiasFiltradas = membresias.filter(membresia => {
-    const matchSearch = searchTerm === '' || 
-      `${membresia.cliente.nombre} ${membresia.cliente.apellido}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-        
-    const matchTipo = filterTipo === '' || membresia.tipo === filterTipo;
+// Primero filtrar las membresías
+const membresiasFiltradas = membresias.filter(membresia => {
+  const matchSearch = searchTerm === '' || 
+    `${membresia.cliente.nombre} ${membresia.cliente.apellido}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+  
+  const matchTipo = filterTipo === '' || membresia.tipo === filterTipo;
+  
+  const matchEstado = filterEstado === '' || 
+    membresia.activa === (filterEstado === 'true');
     
-    const matchEstado = filterEstado === '' || 
-      membresia.activa === (filterEstado === 'true');
-      
-    return matchSearch && matchTipo && matchEstado;
-  });
+  return matchSearch && matchTipo && matchEstado;
+});
+
+// Calcular total de páginas y asegurar que sea al menos 1
+const totalPaginas = Math.max(1, Math.ceil(membresiasFiltradas.length / itemsPorPagina));
+
+// Paginar solo las membresías filtradas
+const membresiasAPaginar = membresiasFiltradas.slice(
+    (paginaActual - 1) * itemsPorPagina,
+    paginaActual * itemsPorPagina
+);
+
+// Reset página actual si no hay resultados o estamos en una página inválida
+useEffect(() => {
+  if (membresiasFiltradas.length === 0 || 
+      paginaActual > Math.ceil(membresiasFiltradas.length / itemsPorPagina)) {
+      setPaginaActual(1);
+  }
+}, [membresiasFiltradas.length, itemsPorPagina]);
   
   const fetchClientes = async () => {
     try {
@@ -282,7 +302,7 @@ const agregarMembresia = async (e) => {
 </Box>
 
       <Grid container spacing={3}>
-      {membresiasFiltradas.map((membresia) => (
+      {membresiasAPaginar.map((membresia) => (
     <Grid item xs={12} sm={6} md={4} key={membresia.id}>
       <Card 
         sx={{ 
@@ -353,6 +373,23 @@ const agregarMembresia = async (e) => {
   ))}
 </Grid>
 
+<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+  <Button 
+    disabled={paginaActual === 1 || membresiasFiltradas.length === 0} 
+    onClick={() => setPaginaActual(prev => prev - 1)}
+  >
+    Anterior
+  </Button>
+  <Typography sx={{ alignSelf: 'center' }}>
+    Página {membresiasFiltradas.length === 0 ? 0 : paginaActual} de {membresiasFiltradas.length === 0 ? 0 : totalPaginas}
+  </Typography>
+  <Button 
+    disabled={paginaActual === totalPaginas || membresiasFiltradas.length === 0} 
+    onClick={() => setPaginaActual(prev => prev + 1)}
+  >
+    Siguiente
+  </Button>
+</Box>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Nueva Membresía</DialogTitle>
