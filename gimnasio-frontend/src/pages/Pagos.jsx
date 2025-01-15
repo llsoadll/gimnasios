@@ -21,6 +21,8 @@ const Pagos = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [itemsPorPagina] = useState(10);
+const [paginaActual, setPaginaActual] = useState(1);
   const [nuevoPago, setNuevoPago] = useState({
     membresiaId: '',
     fecha: '',
@@ -57,18 +59,6 @@ const [filterMetodoPago, setFilterMetodoPago] = useState('');
     }
 };
 
-  const eliminarPago = async (id) => {
-    if (window.confirm('¿Está seguro de eliminar este pago?')) {
-        try {
-            await api.delete(`/pagos/${id}`);
-            setPagos(pagos.filter(pago => pago.id !== id));
-        } catch (err) {
-            console.error('Error:', err);
-            setError(err.response?.data?.message || 'Error al eliminar el pago');
-        }
-    }
-};
-
 const pagosFiltrados = pagos.filter(pago => {
   const matchSearch = searchTerm === '' || 
     `${pago.clienteNombre} ${pago.clienteApellido}`
@@ -80,6 +70,29 @@ const pagosFiltrados = pagos.filter(pago => {
       
   return matchSearch && matchMetodoPago;
 });
+
+// Calcular total de páginas
+const totalPaginas = Math.max(1, Math.ceil(pagosFiltrados.length / itemsPorPagina));
+
+// Paginar los resultados
+const pagosAPaginar = pagosFiltrados.slice(
+  (paginaActual - 1) * itemsPorPagina,
+  paginaActual * itemsPorPagina
+);
+
+
+
+  const eliminarPago = async (id) => {
+    if (window.confirm('¿Está seguro de eliminar este pago?')) {
+        try {
+            await api.delete(`/pagos/${id}`);
+            setPagos(pagos.filter(pago => pago.id !== id));
+        } catch (err) {
+            console.error('Error:', err);
+            setError(err.response?.data?.message || 'Error al eliminar el pago');
+        }
+    }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -187,7 +200,7 @@ const pagosFiltrados = pagos.filter(pago => {
 </Box>
 
       <Grid container spacing={3}>
-      {pagosFiltrados.map((pago) => (
+      {pagosAPaginar.map((pago) => (
     <Grid item xs={12} sm={6} md={4} key={pago.id}>
       <Card sx={{ 
         height: '100%',
@@ -239,6 +252,28 @@ const pagosFiltrados = pagos.filter(pago => {
     </Grid>
   ))}
 </Grid>
+
+
+<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+  <Button 
+    disabled={paginaActual === 1 || pagosFiltrados.length === 0} 
+    onClick={() => setPaginaActual(prev => prev - 1)}
+  >
+    Anterior
+  </Button>
+  <Typography sx={{ alignSelf: 'center' }}>
+    Página {pagosFiltrados.length === 0 ? 0 : paginaActual} de {pagosFiltrados.length === 0 ? 0 : totalPaginas}
+  </Typography>
+  <Button 
+    disabled={paginaActual === totalPaginas || pagosFiltrados.length === 0} 
+    onClick={() => setPaginaActual(prev => prev + 1)}
+  >
+    Siguiente
+  </Button>
+</Box>
+
+
+
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Registrar Pago</DialogTitle>
