@@ -1,13 +1,11 @@
 package com.gimnasio.gestion.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.model.CajaIngreso;
@@ -16,8 +14,6 @@ import com.gimnasio.gestion.model.Usuario;
 import com.gimnasio.gestion.model.Venta;
 import com.gimnasio.gestion.repository.CajaIngresoRepository;
 import com.gimnasio.gestion.repository.ProductoRepository;
-
-import org.springframework.security.core.Authentication;
 import com.gimnasio.gestion.repository.UsuarioRepository;
 import com.gimnasio.gestion.repository.VentaRepository;
 

@@ -1,16 +1,16 @@
 package com.gimnasio.gestion.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.gimnasio.gestion.repository.VentaRepository;
-import com.gimnasio.gestion.dto.VentaDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.gimnasio.gestion.dto.ClienteVentaDTO;
 import com.gimnasio.gestion.dto.ProductoVentaDTO;
-import com.gimnasio.gestion.model.Venta;
+import com.gimnasio.gestion.dto.VentaDTO;
+import com.gimnasio.gestion.repository.VentaRepository;
 
 @Service
 public class VentaService {

@@ -215,7 +215,7 @@ return (
           <AttachMoney sx={{ fontSize: 40, mr: 1 }} />
           <Typography variant="h5">Total Diario</Typography>
         </Box>
-        <Typography variant="h4">${totalDiario}</Typography>
+        <Typography variant="h4">${totalDiario.toFixed(0)}</Typography>
       </Paper>
     </Grid>
   )}
@@ -233,7 +233,8 @@ return (
           <AttachMoney sx={{ fontSize: 40, mr: 1 }} />
           <Typography variant="h5">Total Mensual</Typography>
         </Box>
-        <Typography variant="h4">${totalMensual}</Typography>
+        <Typography variant="h4">${totalMensual.toFixed(0)}</Typography>
+
       </Paper>
     </Grid>
   )}
@@ -251,7 +252,7 @@ return (
           <AttachMoney sx={{ fontSize: 40, mr: 1 }} />
           <Typography variant="h5">Total Anual</Typography>
         </Box>
-        <Typography variant="h4">${totalAnual}</Typography>
+        <Typography variant="h4">${totalAnual.toFixed(0)}</Typography>
       </Paper>
     </Grid>
   )}
@@ -275,7 +276,7 @@ return (
               <TableCell>{ingreso.fecha}</TableCell>
               <TableCell>{ingreso.cliente}</TableCell>
               <TableCell>{ingreso.concepto}</TableCell>
-              <TableCell align="right">${ingreso.monto}</TableCell>
+              <TableCell align="right">${Math.round(ingreso.monto)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -283,8 +284,8 @@ return (
           <TableRow>
             <TableCell colSpan={3}><strong>Total</strong></TableCell>
             <TableCell align="right">
-              <strong>${ingresos.reduce((sum, i) => sum + i.monto, 0).toFixed(2)}</strong>
-            </TableCell>
+  <strong>${Math.round(ingresos.reduce((sum, i) => sum + i.monto, 0))}</strong>
+</TableCell>
           </TableRow>
         </TableFooter>
       </Table>
