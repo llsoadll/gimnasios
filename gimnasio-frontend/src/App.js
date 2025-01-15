@@ -95,9 +95,13 @@ function App() {
             
             {/* Ruta raíz con redirección basada en rol */}
             <Route path="/" element={
-  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE']}>
+  <ProtectedRoute allowedRoles={['ADMIN', 'CLIENTE', 'ENTRENADOR']}>
     <Navigate 
-      to={userRole === 'ADMIN' ? '/usuarios/clientes' : '/dashboard'} // Cambiar '/clases' por '/dashboard'
+      to={
+        userRole === 'ADMIN' ? '/usuarios/clientes' : 
+        userRole === 'CLIENTE' ? '/dashboard' :
+        userRole === 'ENTRENADOR' ? '/usuarios/clientes' : '/rutinas'
+      }
       replace 
     />
   </ProtectedRoute>

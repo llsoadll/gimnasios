@@ -22,13 +22,16 @@ const LoginPage = () => {
           localStorage.setItem('userId', response.data.id);
           
           // Redirect based on role
-          if (response.data.role === 'ADMIN') {
-            navigate('/usuarios/clientes'); 
-          } else if (response.data.role === 'CLIENTE') {
-            navigate('/dashboard');
-          } else {
-            navigate('/rutinas');
-          }
+          // Redirect based on role
+if (response.data.role === 'ADMIN') {
+  navigate('/usuarios/clientes');
+} else if (response.data.role === 'CLIENTE') {
+  navigate('/dashboard');
+} else if (response.data.role === 'ENTRENADOR') {
+  navigate('/usuarios/clientes'); // Cambiar esta línea
+} else {
+  navigate('/rutinas');
+}
         } catch (err) {
           console.error('Error de login:', err);
           // Extraer el mensaje de error de la respuesta
