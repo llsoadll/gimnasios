@@ -43,6 +43,10 @@ const Clases = () => {
   const [alumnosDialogOpen, setAlumnosDialogOpen] = useState(false);
 const [claseSeleccionada, setClaseSeleccionada] = useState(null);
   const [error, setError] = useState(null);
+  const [itemsPorPagina] = useState(10);
+const [paginaActual, setPaginaActual] = useState(1);
+const [searchTerm, setSearchTerm] = useState('');
+const [filterDia, setFilterDia] = useState('');
   const [searchClientTerm, setSearchClientTerm] = useState('');
   const handleOpenInscripcionDialog = (clase) => {
     setSelectedClase(clase);
@@ -79,6 +83,28 @@ const [claseSeleccionada, setClaseSeleccionada] = useState(null);
         setLoading(false);
     }
 };
+
+
+// Paginar las clases
+const clasesFiltradas = clases.filter(clase => {
+  const matchSearch = searchTerm === '' || 
+    clase.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${clase.entrenador?.nombre} ${clase.entrenador?.apellido}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+      
+  const matchDia = filterDia === '' || clase.dia === filterDia;
+      
+  return matchSearch && matchDia;
+});
+
+const totalPaginas = Math.ceil(clasesFiltradas.length / itemsPorPagina);
+
+const clasesAPaginar = clasesFiltradas.slice(
+  (paginaActual - 1) * itemsPorPagina,
+  paginaActual * itemsPorPagina
+);
+
 
 const darDeBajaCliente = async (inscripcionId) => {
   if (window.confirm('¿Está seguro de dar de baja a este cliente?')) {
@@ -255,22 +281,52 @@ const inscribirme = async (claseId) => {
     </Box>
 
     <Box sx={{ 
-  display: 'flex',
-  mb: 3 // Agregar margen inferior de 24px (3 * 8px)
+  mb: 2, 
+  display: 'flex', 
+  flexDirection: { xs: 'column', sm: 'row' },
+  gap: 2,
+  alignItems: { xs: 'stretch', sm: 'center' }
 }}>
-      {userRole === 'ADMIN' && (
-      <Button 
-          variant="contained" 
-          onClick={() => setOpenDialog(true)}
-          sx={{ 
-            width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
-            alignSelf: { sm: 'flex-start' }
-          }}
-        >
-          Nueva Clase
-        </Button>
-      )}
-      </Box>
+  <TextField
+    label="Buscar clase"
+    variant="outlined"
+    size="small"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    sx={{ width: { xs: '100%', sm: 300 } }}
+    placeholder="Buscar por nombre o entrenador..."
+  />
+  
+  <FormControl size="small" sx={{ width: { xs: '100%', sm: 200 } }}>
+    <InputLabel>Día</InputLabel>
+    <Select
+      value={filterDia}
+      onChange={(e) => setFilterDia(e.target.value)}
+      label="Día"
+    >
+      <MenuItem value="">Todos</MenuItem>
+      <MenuItem value="LUNES">Lunes</MenuItem>
+      <MenuItem value="MARTES">Martes</MenuItem>
+      <MenuItem value="MIÉRCOLES">Miércoles</MenuItem>
+      <MenuItem value="JUEVES">Jueves</MenuItem>
+      <MenuItem value="VIERNES">Viernes</MenuItem>
+      <MenuItem value="SÁBADO">Sábado</MenuItem>
+    </Select>
+  </FormControl>
+
+  {userRole === 'ADMIN' && (
+    <Button 
+      variant="contained" 
+      onClick={() => setOpenDialog(true)}
+      sx={{ 
+        width: { xs: '100%', sm: 'auto' },
+        alignSelf: { sm: 'flex-start' }
+      }}
+    >
+      Nueva Clase
+    </Button>
+  )}
+</Box>
 
 
 <TableContainer component={Paper}>
@@ -290,7 +346,7 @@ const inscribirme = async (claseId) => {
   </TableRow>
 </TableHead>
 <TableBody>
-  {clases.map((clase) => (
+{clasesAPaginar.map((clase) => (
     <TableRow key={clase.id}>
       <TableCell>{clase.nombre}</TableCell>
       <TableCell>{clase.descripcion}</TableCell>
@@ -362,6 +418,27 @@ const inscribirme = async (claseId) => {
 </TableBody>
   </Table>
 </TableContainer>
+
+
+<Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+  <Button 
+    disabled={paginaActual === 1 || clasesFiltradas.length === 0} 
+    onClick={() => setPaginaActual(prev => prev - 1)}
+  >
+    Anterior
+  </Button>
+  <Typography sx={{ alignSelf: 'center' }}>
+    Página {clasesFiltradas.length === 0 ? 0 : paginaActual} de {clasesFiltradas.length === 0 ? 0 : totalPaginas}
+  </Typography>
+  <Button 
+    disabled={paginaActual === totalPaginas || clasesFiltradas.length === 0} 
+    onClick={() => setPaginaActual(prev => prev + 1)}
+  >
+    Siguiente
+  </Button>
+</Box>
+
+
 
 {/* Diálogo para mostrar alumnos */}
 <Dialog 
