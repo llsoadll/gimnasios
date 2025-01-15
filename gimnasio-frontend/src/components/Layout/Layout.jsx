@@ -337,12 +337,12 @@ const fetchMembresia = async () => {
       maxHeight: { 
         xs: '130px',    // Más pequeño en móvil
         sm: '150px',    // Tamaño medio en tablet
-        md: '250px'     // Tamaño completo en desktop
+        md: '240px'     // Tamaño completo en desktop
       },
       maxWidth: { 
         xs: '150px',   // Más pequeño en móvil
         sm: '200px',   // Tamaño medio en tablet
-        md: '300px'    // Tamaño completo en desktop
+        md: '240px'    // Tamaño completo en desktop
       },
       marginRight: 2,
       objectFit: 'contain',
