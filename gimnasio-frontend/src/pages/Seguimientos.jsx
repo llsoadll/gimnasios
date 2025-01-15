@@ -50,7 +50,7 @@ const Seguimientos = () => {
   );
 
   useEffect(() => {
-    if (userRole === 'ADMIN') {
+    if (userRole === 'ADMIN' || userRole === 'ENTRENADOR') {
       fetchClientes();
     } else if (userRole === 'CLIENTE') {
       fetchSeguimientos(userId);
@@ -59,8 +59,8 @@ const Seguimientos = () => {
 
   const fetchClientes = async () => {
     try {
-      const response = await api.get('/usuarios/clientes');
-      setClientes(response.data);
+      const response = await api.get('/usuarios');
+      setClientes(response.data.filter(u => u.tipo === 'CLIENTE'));
     } catch (err) {
       setError('Error al cargar clientes');
     }
@@ -81,16 +81,31 @@ const Seguimientos = () => {
   };
 
   const fetchSeguimientos = async (clienteId) => {
+    if (!clienteId) return;
+    
+    setLoading(true);
     try {
       const response = await api.get(`/seguimientos/cliente/${clienteId}`);
       setSeguimientos(response.data);
+      setError(null);
     } catch (err) {
       setError('Error al cargar seguimientos');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (selectedCliente && userRole === 'ADMIN') {
+    if (userRole === 'ADMIN' || userRole === 'ENTRENADOR') {
+      fetchClientes();
+    } else if (userRole === 'CLIENTE') {
+      fetchSeguimientos(userId);
+    }
+  }, [userRole, userId]);
+  
+  useEffect(() => {
+    if (selectedCliente) {
       fetchSeguimientos(selectedCliente);
     }
   }, [selectedCliente]);
@@ -293,7 +308,7 @@ const Seguimientos = () => {
 
 
       {/* Admin view */}
-      {userRole === 'ADMIN' && (
+      {(userRole === 'ADMIN' || userRole === 'ENTRENADOR') && (
         <Box sx={{ 
           mb: 2, 
           display: 'flex', 
@@ -451,7 +466,7 @@ const Seguimientos = () => {
         </Grid>
       )}
 
-      {userRole === 'ADMIN' && (
+{(userRole === 'ADMIN' || userRole === 'ENTRENADOR') && (
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Nuevo Seguimiento</DialogTitle>
         <DialogContent>
