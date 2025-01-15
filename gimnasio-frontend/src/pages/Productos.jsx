@@ -17,6 +17,7 @@ const [openDialog, setOpenDialog] = useState(false);
 const [ventaDialogOpen, setVentaDialogOpen] = useState(false);
 const [itemsPorPagina] = useState(9); // 9 productos por página
 const [paginaActual, setPaginaActual] = useState(1);
+const [clientSearchTerm, setClientSearchTerm] = useState('');
 const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 const [nuevoProducto, setNuevoProducto] = useState({
   nombre: '',
@@ -377,17 +378,33 @@ const confirmarVenta = async () => {
         <Typography><strong>Producto:</strong> {productoSeleccionado.nombre}</Typography>
         <Typography><strong>Precio:</strong> ${productoSeleccionado.precio}</Typography>
         
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Buscar cliente"
+          value={clientSearchTerm}
+          onChange={(e) => setClientSearchTerm(e.target.value)}
+          placeholder="Buscar por nombre..."
+        />
+
         <FormControl fullWidth margin="normal">
           <InputLabel>Cliente</InputLabel>
           <Select
             value={ventaData.clienteId}
             onChange={(e) => setVentaData({...ventaData, clienteId: e.target.value})}
           >
-            {clientes.map(cliente => (
-              <MenuItem key={cliente.id} value={cliente.id}>
-                {`${cliente.nombre} ${cliente.apellido}`}
-              </MenuItem>
-            ))}
+            {clientes
+              .filter(cliente => 
+                clientSearchTerm === '' || 
+                `${cliente.nombre} ${cliente.apellido}`
+                  .toLowerCase()
+                  .includes(clientSearchTerm.toLowerCase())
+              )
+              .map(cliente => (
+                <MenuItem key={cliente.id} value={cliente.id}>
+                  {`${cliente.nombre} ${cliente.apellido}`}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
 
