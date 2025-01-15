@@ -14,6 +14,7 @@ import com.gimnasio.gestion.exception.ResourceNotFoundException;
 import com.gimnasio.gestion.mapper.ClienteDetalleMapper;
 import com.gimnasio.gestion.mapper.UsuarioMapper;
 import com.gimnasio.gestion.model.Usuario;
+import com.gimnasio.gestion.repository.CajaIngresoRepository;
 import com.gimnasio.gestion.repository.UsuarioRepository;
 
 @Service
@@ -24,6 +25,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioMapper usuarioMapper;
+
+    @Autowired
+    private CajaIngresoRepository cajaIngresoRepository;
 
     @Autowired
     private ClienteDetalleMapper clienteDetalleMapper;  
@@ -68,16 +72,16 @@ public Usuario guardarUsuario(Usuario usuario) {
         }
     }
 
-    public void eliminarUsuario(Long id) {
-        Usuario usuario = usuarioRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id));
-            
-        try {
-            usuarioRepository.delete(usuario);
-        } catch (Exception e) {
-            throw new RuntimeException("Error al eliminar usuario: " + e.getMessage());
-        }
-    }
+    @Transactional
+public void eliminarUsuario(Long id) {
+    Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+    
+    // Primero eliminar los registros relacionados
+    cajaIngresoRepository.deleteByClienteId(id);
+    // Luego eliminar el usuario
+    usuarioRepository.delete(usuario);
+}
 
     public String obtenerCredenciales(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)

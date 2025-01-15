@@ -41,4 +41,6 @@ Double obtenerTotalDiario(@Param("fecha") LocalDate fecha);
     );
 
     Optional<CajaIngreso> findByPago(Pago pago);
+
+    void deleteByClienteId(Long clienteId);
 }
