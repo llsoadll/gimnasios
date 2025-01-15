@@ -31,6 +31,8 @@ const [paginaActual, setPaginaActual] = useState(1);
 const [templateEdit, setTemplateEdit] = useState(null);
 const [editDialogOpen, setEditDialogOpen] = useState(false);
 const [itemsPorPagina] = useState(6); // 6 rutinas por página
+const [paginaActualTemplates, setPaginaActualTemplates] = useState(1);
+const [itemsPorPaginaTemplates] = useState(6); // 6 templates por página
   const userRole = localStorage.getItem('userRole');
 
   const [nuevaRutina, setNuevaRutina] = useState({
@@ -121,6 +123,27 @@ const categoriaColors = {
     }
     return url;
   };
+
+
+// Filtrar templates
+const templatesFiltrados = templates.filter(template => {
+  const matchSearch = searchTerm === '' || 
+    template.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+    
+  const matchNivel = filterNivel === '' || template.nivel === filterNivel;
+      
+  return matchSearch && matchNivel;
+});
+
+// Calcular páginas para templates
+const totalPaginasTemplates = Math.ceil(templatesFiltrados.length / itemsPorPaginaTemplates);
+
+// Paginar templates
+const templatesAPaginar = templatesFiltrados.slice(
+  (paginaActualTemplates - 1) * itemsPorPaginaTemplates,
+  paginaActualTemplates * itemsPorPaginaTemplates
+);
+
 
   const rutinasFiltradas = rutinas.filter(rutina => {
     const matchSearch = searchTerm === '' || 
@@ -506,7 +529,7 @@ const agregarTemplate = async (e) => {
     ))
   ) : (
     // Vista para ADMIN/ENTRENADOR - muestra templates o rutinas según la pestaña
-    (tabValue === 0 ? templates : rutinasAPaginar).map((item) => (
+    (tabValue === 0 ? templatesAPaginar : rutinasAPaginar).map((item) => (
       <Grid item xs={12} sm={6} md={4} key={item.id}>
         <Card sx={{ 
           height: '100%',
@@ -622,6 +645,26 @@ const agregarTemplate = async (e) => {
     ))
   )}
 </Grid>
+
+{tabValue === 0 && (
+  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+    <Button 
+      disabled={paginaActualTemplates === 1 || templatesFiltrados.length === 0} 
+      onClick={() => setPaginaActualTemplates(prev => prev - 1)}
+    >
+      Anterior
+    </Button>
+    <Typography sx={{ alignSelf: 'center' }}>
+      Página {templatesFiltrados.length === 0 ? 0 : paginaActualTemplates} de {templatesFiltrados.length === 0 ? 0 : totalPaginasTemplates}
+    </Typography>
+    <Button 
+      disabled={paginaActualTemplates === totalPaginasTemplates || templatesFiltrados.length === 0} 
+      onClick={() => setPaginaActualTemplates(prev => prev + 1)}
+    >
+      Siguiente
+    </Button>
+  </Box>
+)}
 
 {tabValue === 1 && (
   <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
