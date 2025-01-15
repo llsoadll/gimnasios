@@ -17,6 +17,7 @@ const [itemsPorPagina] = useState(10);
 const [paginaActual, setPaginaActual] = useState(1);
   
 
+// Primero filtrar las ventas
 const ventasFiltradas = ventas.filter(venta => {
   const matchSearch = searchTerm === '' || 
     venta.producto?.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -26,10 +27,21 @@ const ventasFiltradas = ventas.filter(venta => {
     venta.metodoPago === filterMetodoPago;
     
   return matchSearch && matchMetodoPago;
-})
-.slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
+});
 
-const totalPaginas = Math.ceil(ventas.length / itemsPorPagina);
+// Calcular el total de páginas basado en las ventas filtradas
+const totalPaginas = Math.max(1, Math.ceil(ventasFiltradas.length / itemsPorPagina));
+
+// Paginar las ventas filtradas
+const ventasPaginadas = ventasFiltradas.slice(
+  (paginaActual - 1) * itemsPorPagina,
+  paginaActual * itemsPorPagina
+);
+
+// Agregar useEffect para resetear la página cuando cambian los filtros
+useEffect(() => {
+  setPaginaActual(1);
+}, [searchTerm, filterMetodoPago]);
 
 
   useEffect(() => {
@@ -141,7 +153,7 @@ const totalPaginas = Math.ceil(ventas.length / itemsPorPagina);
               </TableRow>
             </TableHead>
             <TableBody>
-            {ventasFiltradas.map(venta => (
+            {ventasPaginadas.map(venta => (
                 <TableRow key={venta.id}>
                   <TableCell>
   {venta.fecha ? moment(venta.fecha).format('DD/MM/YYYY HH:mm') : 'N/A'}
