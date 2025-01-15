@@ -15,6 +15,8 @@ const Productos = () => {
 const [error, setError] = useState(null);
 const [openDialog, setOpenDialog] = useState(false);
 const [ventaDialogOpen, setVentaDialogOpen] = useState(false);
+const [itemsPorPagina] = useState(9); // 9 productos por página
+const [paginaActual, setPaginaActual] = useState(1);
 const [productoSeleccionado, setProductoSeleccionado] = useState(null);
 const [nuevoProducto, setNuevoProducto] = useState({
   nombre: '',
@@ -36,6 +38,13 @@ const productosFiltrados = productos.filter(producto => {
   
   return matchSearch && matchCategoria;
 });
+
+const totalPaginas = Math.max(1, Math.ceil(productosFiltrados.length / itemsPorPagina));
+
+const productosAPaginar = productosFiltrados.slice(
+  (paginaActual - 1) * itemsPorPagina,
+  paginaActual * itemsPorPagina
+);
 
 
 // Función para cargar productos
@@ -214,7 +223,7 @@ const confirmarVenta = async () => {
         </Box>
   
         <Grid container spacing={3}>
-        {productosFiltrados.map(producto => (
+        {productosAPaginar.map(producto => (
             <Grid item xs={12} sm={6} md={4} key={producto.id}>
               <Card>
                 <CardMedia
@@ -257,6 +266,7 @@ const confirmarVenta = async () => {
   </CardActions>
                 </CardContent>
               </Card>
+
 
               <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
   <DialogTitle>Nuevo Producto</DialogTitle>
@@ -351,6 +361,25 @@ const confirmarVenta = async () => {
             </Grid>
           ))}
         </Grid>
+
+        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+  <Button 
+    disabled={paginaActual === 1 || productosFiltrados.length === 0} 
+    onClick={() => setPaginaActual(prev => prev - 1)}
+  >
+    Anterior
+  </Button>
+  <Typography sx={{ alignSelf: 'center' }}>
+    Página {productosFiltrados.length === 0 ? 0 : paginaActual} de {productosFiltrados.length === 0 ? 0 : totalPaginas}
+  </Typography>
+  <Button 
+    disabled={paginaActual === totalPaginas || productosFiltrados.length === 0} 
+    onClick={() => setPaginaActual(prev => prev + 1)}
+  >
+    Siguiente
+  </Button>
+</Box>
+
       </>
     );
   };
