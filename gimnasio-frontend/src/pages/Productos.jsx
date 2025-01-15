@@ -80,6 +80,20 @@ const agregarProducto = async (e) => {
   }
 };
 
+
+const eliminarProducto = async (id) => {
+  if (window.confirm('¿Está seguro de eliminar este producto?')) {
+    try {
+      await api.delete(`/productos/${id}`);
+      setProductos(productos.filter(producto => producto.id !== id));
+      setError(null);
+    } catch (err) {
+      console.error('Error al eliminar producto:', err);
+      setError('Error al eliminar el producto');
+    }
+  }
+};
+
 // Función para vender producto
 const handleVenta = async (producto) => {
   try {
@@ -198,6 +212,17 @@ const confirmarVenta = async () => {
 >
   Vender
 </Button>
+
+{userRole === 'ADMIN' && (
+      <Button 
+        variant="contained" 
+        color="error"
+        fullWidth 
+        onClick={() => eliminarProducto(producto.id)}
+      >
+        Eliminar
+      </Button>
+      )}
                 </CardContent>
               </Card>
 

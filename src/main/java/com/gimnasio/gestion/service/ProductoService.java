@@ -88,4 +88,15 @@ public Producto realizarVenta(Long productoId, Long userId, String metodoPago) {
         throw new RuntimeException("Error al realizar la venta: " + e.getMessage());
     }
 }
+
+public void eliminarProducto(Long id) {
+    Producto producto = productoRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
+        
+    // Primero eliminar las ventas asociadas
+    ventaRepository.deleteByProducto(producto);
+    
+    // Luego eliminar el producto
+    productoRepository.delete(producto);
+}
 }

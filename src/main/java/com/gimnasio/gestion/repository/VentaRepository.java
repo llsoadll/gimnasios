@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
+import com.gimnasio.gestion.model.Producto;
 import com.gimnasio.gestion.model.Venta;
 import com.gimnasio.gestion.dto.VentaDTO;
 import com.gimnasio.gestion.dto.ClienteVentaDTO;
@@ -22,4 +24,8 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
            "JOIN v.producto p " +
            "ORDER BY v.fecha DESC")
     List<VentaDTO> findAllVentasDTO();  // Cambiamos el nombre del método
+
+    void deleteByProducto(Producto producto);
 }
+
+
