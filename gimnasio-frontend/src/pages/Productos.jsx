@@ -26,6 +26,25 @@ const [nuevoProducto, setNuevoProducto] = useState({
   categoria: '',
   imagen: ''
 });
+const [clientes, setClientes] = useState([]);
+const [ventaData, setVentaData] = useState({
+  clienteId: '',
+  cantidad: 1,
+  metodoPago: 'EFECTIVO'
+});
+
+const fetchClientes = async () => {
+  try {
+    const response = await api.get('/usuarios');
+    setClientes(response.data.filter(u => u.tipo === 'CLIENTE'));
+  } catch (err) {
+    setError('Error al cargar clientes');
+  }
+};
+
+useEffect(() => {
+  fetchClientes();
+}, []);
 
 // Filtrar productos según búsqueda y categoría
 const productosFiltrados = productos.filter(producto => {
@@ -132,20 +151,38 @@ const getImageUrl = (imagen) => {
 
 const confirmarVenta = async () => {
   try {
-    const userId = localStorage.getItem('userId');
-    const response = await api.post(`/productos/${productoSeleccionado.id}/venta`, {
-      userId: parseInt(userId),
-      metodoPago: 'EFECTIVO' // Podrías agregar un select para elegir el método
-    });
-    
-    const updatedProductos = productos.map(p => 
-      p.id === productoSeleccionado.id ? response.data : p
+    const ventaPayload = {
+      userId: ventaData.clienteId,
+      cantidad: Number(ventaData.cantidad), // Asegurar que sea número
+      metodoPago: ventaData.metodoPago
+    };
+
+    console.log('Datos de venta:', ventaPayload); // Para debug
+
+    const response = await api.post(
+      `/productos/${productoSeleccionado.id}/venta`, 
+      ventaPayload
     );
+    
+    // Actualizar el producto con los datos de la respuesta
+    const updatedProductos = productos.map(p => 
+      p.id === productoSeleccionado.id ? 
+        {...p, stock: p.stock - ventaData.cantidad} : p
+    );
+    
     setProductos(updatedProductos);
     setVentaDialogOpen(false);
     setProductoSeleccionado(null);
+    setVentaData({
+      clienteId: '',
+      cantidad: 1,
+      metodoPago: 'EFECTIVO'
+    });
+
+    // Opcional: agregar mensaje de éxito
+    setError(null);
   } catch (err) {
-    console.error('Error:', err);
+    console.error('Error en venta:', err);
     setError('Error al realizar la venta');
   }
 };
@@ -333,26 +370,54 @@ const confirmarVenta = async () => {
 </Dialog>
 
 <Dialog open={ventaDialogOpen} onClose={() => setVentaDialogOpen(false)}>
-  <DialogTitle>Confirmar Venta</DialogTitle>  
+  <DialogTitle>Realizar Venta</DialogTitle>  
   <DialogContent>
     {productoSeleccionado && (
-      <>
-        <Typography>¿Está seguro de vender este producto?</Typography>
-        <Box sx={{ mt: 2 }}>
-          <Typography><strong>Producto:</strong> {productoSeleccionado.nombre}</Typography>
-          <Typography><strong>Precio:</strong> ${productoSeleccionado.precio}</Typography>
-        </Box>
-      </>
+      <Box sx={{ mt: 2 }}>
+        <Typography><strong>Producto:</strong> {productoSeleccionado.nombre}</Typography>
+        <Typography><strong>Precio:</strong> ${productoSeleccionado.precio}</Typography>
+        
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Cliente</InputLabel>
+          <Select
+            value={ventaData.clienteId}
+            onChange={(e) => setVentaData({...ventaData, clienteId: e.target.value})}
+          >
+            {clientes.map(cliente => (
+              <MenuItem key={cliente.id} value={cliente.id}>
+                {`${cliente.nombre} ${cliente.apellido}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          fullWidth
+          margin="normal"
+          label="Cantidad"
+          type="number"
+          value={ventaData.cantidad}
+          onChange={(e) => setVentaData({...ventaData, cantidad: parseInt(e.target.value)})}
+          InputProps={{ inputProps: { min: 1, max: productoSeleccionado.stock } }}
+        />
+
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Método de Pago</InputLabel>
+          <Select
+            value={ventaData.metodoPago}
+            onChange={(e) => setVentaData({...ventaData, metodoPago: e.target.value})}
+          >
+            <MenuItem value="EFECTIVO">Efectivo</MenuItem>
+            <MenuItem value="TARJETA">Tarjeta</MenuItem>
+            <MenuItem value="TRANSFERENCIA">Transferencia</MenuItem>
+          </Select>
+        </FormControl>
+      </Box>
     )}
   </DialogContent>
   <DialogActions>
     <Button onClick={() => setVentaDialogOpen(false)}>Cancelar</Button>
-    <Button 
-      onClick={confirmarVenta} 
-      variant="contained" 
-      color="primary"
-      type="button"
-    >
+    <Button onClick={confirmarVenta} variant="contained" color="primary">
       Confirmar Venta
     </Button>
   </DialogActions>

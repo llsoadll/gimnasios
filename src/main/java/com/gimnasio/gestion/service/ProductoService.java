@@ -41,7 +41,7 @@ public class ProductoService {
     }
 
     @Transactional
-public Producto realizarVenta(Long productoId, Long userId, String metodoPago) {
+public Producto realizarVenta(Long productoId, Long userId, Integer cantidad, String metodoPago) {
     try {
         Producto producto = productoRepository.findById(productoId)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
@@ -49,41 +49,37 @@ public Producto realizarVenta(Long productoId, Long userId, String metodoPago) {
         Usuario cliente = usuarioRepository.findById(userId)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        if (producto.getStock() <= 0) {
-            throw new RuntimeException("No hay stock disponible");
+        if (producto.getStock() < cantidad) {
+            throw new RuntimeException("No hay stock suficiente");
         }
 
         Venta venta = new Venta();
         venta.setProducto(producto);
         venta.setCliente(cliente);
         venta.setFecha(LocalDateTime.now());
-        venta.setCantidad(1);
+        venta.setCantidad(cantidad); // Usar la cantidad recibida
         venta.setPrecioUnitario(producto.getPrecio());
-        venta.setTotal(producto.getPrecio());
+        venta.setTotal(producto.getPrecio() * cantidad); // Multiplicar por cantidad
         venta.setMetodoPago(metodoPago);
         
-        ventaRepository.save(venta);
-        
-        // Guardar venta
         ventaRepository.save(venta);
 
         // Registrar en caja
         CajaIngreso ingreso = new CajaIngreso();
         ingreso.setFecha(LocalDateTime.now().toLocalDate());
-        ingreso.setMonto(producto.getPrecio());
+        ingreso.setMonto(producto.getPrecio() * cantidad); // Multiplicar por cantidad
         ingreso.setConcepto("VENTA_PRODUCTO");
         ingreso.setCliente(cliente);
         cajaIngresoRepository.save(ingreso);
 
         // Actualizar stock
-        producto.setStock(producto.getStock() - 1);
+        producto.setStock(producto.getStock() - cantidad); // Restar la cantidad correcta
         return productoRepository.save(producto);
-        
     } catch (Exception e) {
-        e.printStackTrace();
         throw new RuntimeException("Error al realizar la venta: " + e.getMessage());
     }
 }
+
 
 public void eliminarProducto(Long id) {
     Producto producto = productoRepository.findById(id)

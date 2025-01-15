@@ -35,9 +35,10 @@ public ResponseEntity<Producto> venderProducto(
     @RequestBody Map<String, Object> body) {
     
     Long userId = Long.valueOf(body.get("userId").toString());
+    Integer cantidad = Integer.valueOf(body.get("cantidad").toString());
     String metodoPago = body.get("metodoPago").toString();
     
-    return ResponseEntity.ok(productoService.realizarVenta(id, userId, metodoPago));
+    return ResponseEntity.ok(productoService.realizarVenta(id, userId, cantidad, metodoPago));
 }
 
 @DeleteMapping("/{id}")
