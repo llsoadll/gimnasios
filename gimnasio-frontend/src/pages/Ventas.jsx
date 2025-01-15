@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Typography, Box, Alert, CircularProgress
+  Paper, Typography, Box, Alert, CircularProgress, TextField, FormControl, Select, MenuItem, Button, InputLabel
 } from '@mui/material';
 import { LocalMall, ShoppingCart } from '@mui/icons-material';
 import api from '../utils/axios';
@@ -11,7 +11,27 @@ const Ventas = () => {
   const [ventas, setVentas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+const [filterMetodoPago, setFilterMetodoPago] = useState('');
+const [itemsPorPagina] = useState(10);
+const [paginaActual, setPaginaActual] = useState(1);
   
+
+const ventasFiltradas = ventas.filter(venta => {
+  const matchSearch = searchTerm === '' || 
+    venta.producto?.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${venta.cliente?.nombre} ${venta.cliente?.apellido}`.toLowerCase().includes(searchTerm.toLowerCase());
+    
+  const matchMetodoPago = filterMetodoPago === '' || 
+    venta.metodoPago === filterMetodoPago;
+    
+  return matchSearch && matchMetodoPago;
+})
+.slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina);
+
+const totalPaginas = Math.ceil(ventas.length / itemsPorPagina);
+
+
   useEffect(() => {
     const fetchVentas = async () => {
       setLoading(true);
@@ -77,6 +97,33 @@ const Ventas = () => {
   </Typography>
 </Box>
 
+
+<Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+  <TextField
+    label="Buscar venta"
+    variant="outlined"
+    size="small"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    sx={{ width: { xs: '100%', sm: 300 } }}
+    placeholder="Buscar por producto o cliente..."
+  />
+  
+  <FormControl size="small" sx={{ width: { xs: '100%', sm: 200 } }}>
+    <InputLabel>Método de Pago</InputLabel>
+    <Select
+      value={filterMetodoPago}
+      onChange={(e) => setFilterMetodoPago(e.target.value)}
+      label="Método de Pago"
+    >
+      <MenuItem value="">Todos</MenuItem>
+      <MenuItem value="EFECTIVO">Efectivo</MenuItem>
+      <MenuItem value="TARJETA">Tarjeta</MenuItem>
+      <MenuItem value="TRANSFERENCIA">Transferencia</MenuItem>
+    </Select>
+  </FormControl>
+</Box>
+
       {ventas.length === 0 ? (
         <Alert severity="info">No hay ventas registradas</Alert>
       ) : (
@@ -94,7 +141,7 @@ const Ventas = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {ventas.map(venta => (
+            {ventasFiltradas.map(venta => (
                 <TableRow key={venta.id}>
                   <TableCell>
   {venta.fecha ? moment(venta.fecha).format('DD/MM/YYYY HH:mm') : 'N/A'}
@@ -111,6 +158,23 @@ const Ventas = () => {
               ))}
             </TableBody>
           </Table>
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center', gap: 1 }}>
+  <Button 
+    disabled={paginaActual === 1} 
+    onClick={() => setPaginaActual(prev => prev - 1)}
+  >
+    Anterior
+  </Button>
+  <Typography sx={{ alignSelf: 'center' }}>
+    Página {paginaActual} de {totalPaginas}
+  </Typography>
+  <Button 
+    disabled={paginaActual === totalPaginas} 
+    onClick={() => setPaginaActual(prev => prev + 1)}
+  >
+    Siguiente
+  </Button>
+</Box>
         </TableContainer>
       )}
     </>
