@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Grid, Card, CardContent, CardMedia, Typography, Button,
-  TextField, Dialog, Box, FormControl, Select, MenuItem, DialogTitle, DialogContent, DialogActions, InputLabel
+  TextField, Dialog, Box, FormControl, Select, MenuItem, DialogTitle, DialogContent, DialogActions, InputLabel, CardActions
 } from '@mui/material';
 import api from '../utils/axios';
 
@@ -203,26 +203,27 @@ const confirmarVenta = async () => {
                   <Typography variant="caption">
                     Stock: {producto.stock}
                   </Typography>
-                  <Button 
-  variant="contained" 
-  fullWidth 
-  sx={{ mt: 2 }}
-  onClick={() => handleVentaClick(producto)}
-  disabled={producto.stock <= 0}
->
-  Vender
-</Button>
+                  <CardActions sx={{ mt: 'auto', justifyContent: 'flex-end', gap: 1 }}>
+    <Button 
+      size="small"
+      variant="contained"
+      onClick={() => handleVentaClick(producto)}
+      disabled={producto.stock <= 0}
+    >
+      Vender
+    </Button>
 
-{userRole === 'ADMIN' && (
+    {userRole === 'ADMIN' && (
       <Button 
-        variant="contained" 
+        size="small"
+        variant="contained"
         color="error"
-        fullWidth 
         onClick={() => eliminarProducto(producto.id)}
       >
         Eliminar
       </Button>
-      )}
+    )}
+  </CardActions>
                 </CardContent>
               </Card>
 
