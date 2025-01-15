@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -109,13 +110,31 @@ void testCrearRutina() {
     assertEquals("Rutina Test", resultado.getNombre());
 }
 
-    @Test
-    void testObtenerRutinas() {
-        when(rutinaRepository.findAll()).thenReturn(Arrays.asList(rutinaTest));
+@Test
+void testObtenerRutinas() {
+    // Crear rutina de prueba
+    Rutina rutina = new Rutina();
+    rutina.setId(1L);
+    rutina.setNombre("Test");
+    rutina.setDescripcion("Rutina test");
+    
+    Usuario cliente = new Usuario();
+    cliente.setId(1L);
+    cliente.setNombre("Test");
+    cliente.setApellido("User");
+    rutina.setCliente(cliente);
 
-        var resultado = rutinaService.obtenerTodas();
+    // Configurar mock
+    when(rutinaRepository.findAll()).thenReturn(Arrays.asList(rutina));
+    when(rutinaMapper.toDTO(any(Rutina.class))).thenReturn(new RutinaDTO()); // Usar rutinaMapper en lugar de mapper
 
-        assertFalse(resultado.isEmpty());
-        assertEquals(1, resultado.size());
-    }
+    // Ejecutar
+    List<RutinaDTO> rutinas = rutinaService.obtenerTodas(); // También cambiar a obtenerTodas()
+
+    // Verificar
+    assertNotNull(rutinas);
+    assertEquals(1, rutinas.size());
+    verify(rutinaRepository).findAll();
+    verify(rutinaMapper).toDTO(any(Rutina.class)); // Usar rutinaMapper en lugar de mapper
+}
 }

@@ -3,3 +3,13 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import React from 'react';
+
+// Mock para react-quill
+jest.mock('react-quill', () => ({
+  __esModule: true,
+  default: () => <div />,
+}));
+
+// Mock para archivos CSS
+jest.mock('react-quill/dist/quill.snow.css', () => ({}));

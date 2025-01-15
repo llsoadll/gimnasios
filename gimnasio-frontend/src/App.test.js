@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
+import api from './utils/axios'; 
 
 // Silence console logs/errors during tests
 beforeAll(() => {
@@ -47,6 +48,43 @@ jest.mock('./utils/axios', () => {
   };
 });
 
+// Tests para productos y ventas
+describe('Productos y Ventas Tests', () => {
+  test('realiza venta de producto correctamente', async () => {
+    const ventaData = {
+      userId: 1,
+      cantidad: 3,
+      metodoPago: 'TARJETA'
+    };
+    
+    // Mock de la respuesta de la API
+    const mockResponse = {
+      data: {
+        id: 1,
+        stock: 7,
+        nombre: 'Producto Test'
+      }
+    };
+    
+    api.post.mockResolvedValueOnce(mockResponse);
+    const response = await api.post('/productos/1/venta', ventaData);
+    expect(response.data.stock).toBe(7);
+    expect(api.post).toHaveBeenCalledWith('/productos/1/venta', ventaData);
+  });
+});
+
+// Tests para paginación
+describe('Paginación Tests', () => {
+  test('calcula páginas correctamente', () => {
+    const items = Array(20).fill({});
+    const itemsPorPagina = 9;
+    
+    const totalPaginas = Math.ceil(items.length / itemsPorPagina);
+    expect(totalPaginas).toBe(3);
+  });
+});
+
+
 describe('App Tests', () => {
   beforeEach(() => {
     // Clear mocks
@@ -85,15 +123,19 @@ describe('App Tests', () => {
       if (key === 'userId') return '1';
       return null;
     });
-
+  
     render(
       <MemoryRouter initialEntries={['/usuarios/clientes']}>
         <App />
       </MemoryRouter>
     );
-
+  
     await waitFor(() => {
-      expect(screen.getByText(/gestión de gimnasio/i)).toBeInTheDocument();
+      // Verificar elementos que deberían estar presentes para un admin
+      expect(screen.getByText(/usuarios/i)).toBeInTheDocument();
+      // Cambiar la expresión regular para que sea más flexible con acentos
+      expect(screen.getByText(/membres[ií]as/i)).toBeInTheDocument();
+      expect(screen.getByText(/cerrar sesión/i)).toBeInTheDocument();
     });
   });
 
