@@ -105,7 +105,7 @@ function App() {
 
             {/* Rutas protegidas */}
             <Route path="/usuarios/clientes" element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'ENTRENADOR']}>
                 <Clientes />
               </ProtectedRoute>
             } />
@@ -117,7 +117,7 @@ function App() {
             } />
             
             <Route path="/usuarios/:id/detalle" element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
+              <ProtectedRoute allowedRoles={['ADMIN', 'ENTRENADOR']}>
                 <DetalleCliente />
               </ProtectedRoute>
             } />

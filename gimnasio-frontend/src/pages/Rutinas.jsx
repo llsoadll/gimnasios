@@ -369,62 +369,53 @@ const agregarTemplate = async (e) => {
 
 
 
-{userRole === 'ADMIN' && (
-  <Tabs value={tabValue} onChange={handleTabChange}>
-    <Tab label="Templates" />
-    <Tab label="Rutinas Asignadas" />
-  </Tabs>
-)}
+{(userRole === 'ADMIN' || userRole === 'ENTRENADOR') && (
+  <>
+    <Tabs value={tabValue} onChange={handleTabChange}>
+      <Tab label="Templates" />
+      <Tab label="Rutinas Asignadas" />
+    </Tabs>
 
-    {/* Botones de acción según la pestaña */}
-    <Box sx={{ 
-      display: 'flex', 
-      gap: 2, 
-      mb: 3, 
-      mt: 2,
-    }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3, mt: 2 }}>
       {tabValue === 0 ? (
-        // Pestaña Templates
-        userRole === 'ADMIN' && (
-          <Button 
-  variant="contained" 
-  onClick={() => setOpenDialog(true)}
-  startIcon={<AddIcon />}
-  sx={{ 
-    width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
-    alignSelf: { sm: 'flex-start' }
-  }}
->
-  Nuevo Template
-</Button>
-        )
+        <Button 
+          variant="contained" 
+          onClick={() => setOpenDialog(true)}
+          startIcon={<AddIcon />}
+          sx={{ 
+            width: { xs: '100%', sm: 'auto' },
+            alignSelf: { sm: 'flex-start' }
+          }}
+        >
+          Nuevo Template
+        </Button>
       ) : (
-        // Pestaña Rutinas Asignadas
-        <>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button 
-  variant="contained"
-  onClick={() => setAsignarDialogOpen(true)}
-  startIcon={<AssignmentIcon />}
-  sx={{ 
-    width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
-    alignSelf: { sm: 'flex-start' }
-  }}
->
-  Asignar Template
-</Button>
+            variant="contained"
+            onClick={() => setAsignarDialogOpen(true)}
+            startIcon={<AssignmentIcon />}
+            sx={{ 
+              width: { xs: '100%', sm: 'auto' }
+            }}
+          >
+            Asignar Template
+          </Button>
           <Typography 
             variant="subtitle2" 
             sx={{ 
-              alignSelf: 'center',
               color: 'text.secondary',
               fontStyle: 'italic'
             }}
           >
             Selecciona un template existente para asignarlo a un cliente
           </Typography>
-        </>
+        </Box>
       )}
     </Box>
+  </>
+)}
+
 
     {tabValue === 1 && (
   <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center' }}>

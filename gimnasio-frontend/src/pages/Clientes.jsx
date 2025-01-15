@@ -21,6 +21,7 @@ const Clientes = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [itemsPorPagina] = useState(10);
 const [paginaActual, setPaginaActual] = useState(1);
+const userRole = localStorage.getItem('userRole');
   const [nuevoUsuario, setNuevoUsuario] = useState({
     nombre: '',
     apellido: '',
@@ -235,16 +236,18 @@ const clientesFiltrados = clientes
       <MenuItem value="false">Inactivos</MenuItem>
     </Select>
   </FormControl>
+  {userRole === 'ADMIN' && (
   <Button 
     variant="contained" 
     onClick={() => setOpenDialog(true)}
     sx={{ 
-      width: { xs: '100%', sm: 'auto' }, // Ancho completo en móvil, automático en desktop
+      width: { xs: '100%', sm: 'auto' },
       alignSelf: { sm: 'flex-start' }
     }}
   >
     Nuevo Cliente
   </Button>
+)}
 </Box>
 
     
@@ -279,23 +282,27 @@ const clientesFiltrados = clientes
         />
       </TableCell>
       <TableCell>
-        <Button 
-          variant="contained"
-          color="error"
-          size="small"
-          onClick={() => eliminarUsuario(cliente.id)}
-          sx={{ mr: 1 }}
-        >
-          Eliminar
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => handleEditClick(cliente)}
-        >
-          Modificar
-        </Button>
-      </TableCell>
+  {userRole === 'ADMIN' && (
+    <>
+      <Button 
+        variant="contained"
+        color="error"
+        size="small"
+        onClick={() => eliminarUsuario(cliente.id)}
+        sx={{ mr: 1 }}
+      >
+        Eliminar
+      </Button>
+      <Button
+        variant="contained"
+        size="small"
+        onClick={() => handleEditClick(cliente)}
+      >
+        Modificar
+      </Button>
+    </>
+  )}
+</TableCell>
       <TableCell>
         <Button
           variant="contained"

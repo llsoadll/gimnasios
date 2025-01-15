@@ -261,10 +261,15 @@ const fetchMembresia = async () => {
       { text: 'Rutinas', path: '/rutinas' },
       { text: 'Clases', path: '/clases' },
       { text: 'Seguimientos', path: '/seguimientos' },
-      { text: 'Productos', path: '/productos' },
-      { text: 'Ventas', path: '/ventas' }
     ];
   
+    // Items para ADMIN y ENTRENADOR
+    const adminTrainerItems = [
+      { text: 'Clientes', path: '/usuarios/clientes' },
+      ...commonItems,
+      { text: 'Productos', path: '/productos' },
+    ];
+    
     if (userRole === 'ADMIN') {
       return [
         { 
@@ -277,15 +282,14 @@ const fetchMembresia = async () => {
         { text: 'Membresías', path: '/membresias' },
         { text: 'Pagos', path: '/pagos' },
         { text: 'Caja', path: '/caja' },
-        ...commonItems
+        ...commonItems,
+        { text: 'Productos', path: '/productos' },
+        { text: 'Ventas', path: '/ventas' }
       ];
     } else if (userRole === 'ENTRENADOR') {
-      return commonItems;
+      return adminTrainerItems;
     } else {
-      return [
-        { text: 'Dashboard', path: '/dashboard' },
-        ...commonItems
-      ];
+      return commonItems;
     }
   };
 
