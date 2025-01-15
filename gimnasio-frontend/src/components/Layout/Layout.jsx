@@ -262,6 +262,12 @@ const fetchMembresia = async () => {
       { text: 'Clases', path: '/clases' },
       { text: 'Seguimientos', path: '/seguimientos' },
     ];
+
+     // Items específicos para CLIENTE
+  const clienteItems = [
+    { text: 'Dashboard', path: '/dashboard' },  // Agregar el Dashboard al inicio
+    ...commonItems
+  ];
   
     // Items para ADMIN y ENTRENADOR
     const adminTrainerItems = [
@@ -289,7 +295,7 @@ const fetchMembresia = async () => {
     } else if (userRole === 'ENTRENADOR') {
       return adminTrainerItems;
     } else {
-      return commonItems;
+      return clienteItems; 
     }
   };
 
