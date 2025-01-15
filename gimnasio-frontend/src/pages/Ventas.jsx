@@ -18,6 +18,7 @@ const Ventas = () => {
       try {
         const response = await api.get('/ventas');
         console.log('Ventas recibidas:', response.data);
+        console.log('Formato de fecha recibido:', response.data[0]?.fecha); // Ver el formato
         if (!response.data) {
           throw new Error('No se recibieron datos');
         }
@@ -95,7 +96,9 @@ const Ventas = () => {
             <TableBody>
               {ventas.map(venta => (
                 <TableRow key={venta.id}>
-                  <TableCell>{moment(venta.fecha).format('DD/MM/YYYY HH:mm')}</TableCell>
+                  <TableCell>
+  {venta.fecha ? moment(venta.fecha).format('DD/MM/YYYY HH:mm') : 'N/A'}
+</TableCell>
                   <TableCell>{venta.producto?.nombre || 'N/A'}</TableCell>
                   <TableCell>
                     {venta.cliente ? `${venta.cliente.nombre} ${venta.cliente.apellido}` : 'N/A'}
